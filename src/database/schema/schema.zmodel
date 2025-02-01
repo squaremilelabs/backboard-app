@@ -99,7 +99,7 @@ model TaskChecklistItem {
 
   order         Int
   description   String
-  is_completed  Boolean  @default(false)
+  is_checked  Boolean  @default(false)
 }
 
 enum TopicStatus {
