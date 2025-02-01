@@ -6,9 +6,19 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:generate": "npx zenstack generate",
+    "db:push": "npx db push"
+  },
+  "prisma": {
+    "schema": "src/generated/prisma-schema/schema.prisma"
+  },
+  "zenstack": {
+    "schema": "src/database/schema/schema.zmodel"
   },
   "dependencies": {
+    "@prisma/client": "6.3.x",
+    "@zenstackhq/runtime": "2.11.5",
     "lucide-react": "^0.474.0",
     "next": "15.1.6",
     "next-themes": "^0.4.4",
@@ -22,13 +32,16 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@zenstackhq/tanstack-query": "^2.11.5",
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "postcss": "^8",
     "prettier-plugin-tailwindcss": "^0.6.11",
+    "prisma": "6.3.x",
     "tailwindcss": "^4.0.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "zenstack": "2.11.5"
   }
 }

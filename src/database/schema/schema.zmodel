@@ -1,0 +1,122 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+
+plugin prisma {
+  provider = '@core/prisma'
+  output = '../generated/prisma-schema/schema.prisma'
+}
+
+plugin hooks {
+  provider = '@zenstackhq/tanstack-query'
+  output = "../generated/hooks"
+  target = "react"
+}
+
+model User {
+  id                    String              @id @default(cuid())
+  name                  String
+  email                 String              @unique
+  associated_as_persons Person[]            @relation('associated_as_persons')
+
+  persons               Person[]            @relation('created_persons')
+  topics                Topic[]
+  topic_notes           TopicNote[]
+  tasks                 Task[]
+  task_checklist_items  TaskChecklistItem[]
+}
+
+model Person {
+  id                 String   @id @default(cuid())
+  created_at         DateTime @default(now()) @db.Timestamptz
+  created_by_id      String
+  created_by         User     @relation('created_persons', fields: [created_by_id], references: [id])
+
+  name               String
+  topics             Topic[]
+  tasks              Task[]
+
+  // The user who is later associated with this person
+  associated_user_id String?
+  associated_user    User?    @relation('associated_as_persons', fields: [associated_user_id], references: [id])
+}
+
+model Topic {
+  id            String      @id @default(cuid())
+  created_at    DateTime    @default(now()) @db.Timestamptz
+  created_by_id String
+  created_by    User        @relation(fields: [created_by_id], references: [id])
+
+  title         String
+  description   String
+  status        TopicStatus @default(PENDING)
+  notes         TopicNote[]
+  people        Person[]
+  tasks         Task[]
+}
+
+model TopicNote {
+  id            String   @id @default(cuid())
+  created_at    DateTime @default(now()) @db.Timestamptz
+  created_by_id String
+  created_by    User     @relation(fields: [created_by_id], references: [id])
+
+  topic_id      String
+  topic         Topic    @relation(fields: [topic_id], references: [id])
+  content       String
+}
+
+model Task {
+  id              String              @id @default(cuid())
+  created_at      DateTime            @default(now()) @db.Timestamptz
+  created_by_id   String
+  created_by      User                @relation(fields: [created_by_id], references: [id])
+
+  title           String
+  description     String
+  status          TaskStatus          @default(DRAFT)
+  date            String? // yyyy-mm-dd format
+  size            String? // hh:mm format
+  checklist_items TaskChecklistItem[]
+
+  doer_id         String?
+  doer            Person?             @relation(fields: [doer_id], references: [id])
+  topics          Topic[]
+}
+
+model TaskChecklistItem {
+  id            String   @id @default(cuid())
+  created_at    DateTime @default(now()) @db.Timestamptz
+  created_by_id String
+  created_by    User     @relation(fields: [created_by_id], references: [id])
+  task_id       String
+  task          Task     @relation(fields: [task_id], references: [id])
+
+  order         Int
+  description   String
+  is_completed  Boolean  @default(false)
+}
+
+enum TopicStatus {
+  PENDING
+  TABLED
+  FUTURE
+  CURRENT
+  CLOSED
+  CANCELED
+  MERGED
+  FORKED
+}
+
+enum TaskStatus {
+  DRAFT
+  TO_DO
+  BLOCKED
+  DONE
+  CANCELED
+}
