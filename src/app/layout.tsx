@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import "../styles/globals.css"
+import "@/styles/globals.css"
 import { fontsClassName } from "@/styles/fonts"
 
 export const metadata: Metadata = {
