@@ -29,21 +29,25 @@ model User {
   topic_notes           TopicNote[]
   tasks                 Task[]
   task_checklist_items  TaskChecklistItem[]
+
+  @@auth
 }
 
 model Person {
   id                 String   @id @default(cuid())
   created_at         DateTime @default(now()) @db.Timestamptz
-  created_by_id      String
+  created_by_id      String   @default(auth().id)
   created_by         User     @relation('created_persons', fields: [created_by_id], references: [id])
 
-  name               String
+  name               String   @trim @length(1,  50, "Name must be between 1 and 50 characters")
   topics             Topic[]
   tasks              Task[]
 
   // The user who is later associated with this person
   associated_user_id String?
   associated_user    User?    @relation('associated_as_persons', fields: [associated_user_id], references: [id])
+  
+  @@unique([created_by_id, name], name: "unique_person_name")
 }
 
 model Topic {
@@ -99,7 +103,7 @@ model TaskChecklistItem {
 
   order         Int
   description   String
-  is_checked  Boolean  @default(false)
+  is_checked    Boolean  @default(false)
 }
 
 enum TopicStatus {
