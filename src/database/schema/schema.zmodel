@@ -19,9 +19,10 @@ plugin hooks {
 }
 
 model User {
-  id                    String              @id @default(cuid())
-  name                  String
-  email                 String              @unique
+  id                    String              @id @default(cuid()) @deny('update', true)
+  created_at            DateTime            @default(now()) @db.Timestamptz @deny('update', true)
+  name                  String              @trim @length(1, 50, "Name must be between 1 and 50 characters")
+  email                 String              @email @unique
   associated_as_persons Person[]            @relation('associated_as_persons')
 
   persons               Person[]            @relation('created_persons')
@@ -31,6 +32,9 @@ model User {
   task_checklist_items  TaskChecklistItem[]
 
   @@auth
+  @@allow("create,read", true)
+  @@allow("update", auth().id == id)
+  @@map("users")
 }
 
 model Person {
@@ -39,40 +43,54 @@ model Person {
   created_by_id      String   @default(auth().id)
   created_by         User     @relation('created_persons', fields: [created_by_id], references: [id])
 
-  name               String   @trim @length(1,  50, "Name must be between 1 and 50 characters")
+  name               String   @trim @length(1, 50, "Name must be between 1 and 50 characters")
   topics             Topic[]
   tasks              Task[]
 
   // The user who is later associated with this person
   associated_user_id String?
   associated_user    User?    @relation('associated_as_persons', fields: [associated_user_id], references: [id])
-  
-  @@unique([created_by_id, name], name: "unique_person_name")
+
+  @@map("persons")
+  @@allow('all', created_by_id == auth().id)
+  @@allow('read', associated_user_id == auth().id)
+  @@unique([created_by_id, name])
 }
 
 model Topic {
   id            String      @id @default(cuid())
   created_at    DateTime    @default(now()) @db.Timestamptz
-  created_by_id String
+  created_by_id String      @default(auth().id)
   created_by    User        @relation(fields: [created_by_id], references: [id])
 
-  title         String
-  description   String
-  status        TopicStatus @default(PENDING)
+  title         String      @trim @length(1, 300, "must be between 1 and 300 characters")
+  description   String?
+  
+  status        TopicStatus @default(DRAFT)
   notes         TopicNote[]
-  people        Person[]
+  persons       Person[]
   tasks         Task[]
+
+  @@map("topics")
+  @@allow("all", created_by_id == auth().id)
+  @@allow("read", persons?[associated_user_id == auth().id])
 }
 
 model TopicNote {
   id            String   @id @default(cuid())
   created_at    DateTime @default(now()) @db.Timestamptz
-  created_by_id String
+  created_by_id String   @default(auth().id)
   created_by    User     @relation(fields: [created_by_id], references: [id])
 
   topic_id      String
   topic         Topic    @relation(fields: [topic_id], references: [id])
-  content       String
+  
+  content       String?
+  is_archived   Boolean  @default(false)
+
+  @@map("topic_notes")
+  @@allow("all", created_by_id == auth().id || topic.created_by_id == auth().id)
+  @@allow("read", topic.persons?[associated_user_id == auth().id])
 }
 
 model Task {
@@ -81,16 +99,26 @@ model Task {
   created_by_id   String
   created_by      User                @relation(fields: [created_by_id], references: [id])
 
-  title           String
-  description     String
+  title           String              @trim @length(1, 300, "must be between 1 and 300 characters")
+  description     String?
   status          TaskStatus          @default(DRAFT)
-  date            String? // yyyy-mm-dd format
-  size            String? // hh:mm format
+  date            String?             @datetime("date must be in YYYY-MM-DD format") @length(10, 10, "date must be in YYYY-MM-DD format")
+  size            String?             @regex("^(00:(0[1-9]|[1-5][0-9])|0[1-3]:([0-5][0-9])|04:00)$", "size must be in HH:mm format between 00:05 and 04:00") @length(5, 5, "size must be in HH:mm format")
+  
   checklist_items TaskChecklistItem[]
 
   doer_id         String?
   doer            Person?             @relation(fields: [doer_id], references: [id])
   topics          Topic[]
+
+
+  @@validate((status != TO_DO && status != DONE) || (date != null && size != null), "date and size must be set for tasks with status TO_DO or DONE")
+
+  @@allow("all", created_by_id == auth().id)
+  @@allow("read,update", doer.associated_user_id == auth().id)
+  @@allow("read", topics?[persons?[associated_user_id == auth().id]])
+
+  @@map("tasks")
 }
 
 model TaskChecklistItem {
@@ -101,13 +129,18 @@ model TaskChecklistItem {
   task_id       String
   task          Task     @relation(fields: [task_id], references: [id])
 
-  order         Int
-  description   String
+  order         Int      @default(0)
+  text          String   @trim @length(1, 300, "must be between 1 and 300 characters")
   is_checked    Boolean  @default(false)
+
+  @@map("task_checklist_items")
+  @@allow("all", created_by_id == auth().id)
+  @@allow("read,update", task.doer.associated_user_id == auth().id)
+  @@allow("read", task.topics?[persons?[associated_user_id == auth().id]])
 }
 
 enum TopicStatus {
-  PENDING
+  DRAFT
   TABLED
   FUTURE
   CURRENT
@@ -115,6 +148,8 @@ enum TopicStatus {
   CANCELED
   MERGED
   FORKED
+
+  @@map("TOPIC_STATUS")
 }
 
 enum TaskStatus {
@@ -123,4 +158,6 @@ enum TaskStatus {
   BLOCKED
   DONE
   CANCELED
+
+  @@map("TASK_STATUS")
 }

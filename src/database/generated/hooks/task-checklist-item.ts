@@ -5,7 +5,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import type { Prisma, TaskChecklistItem } from "@prisma/client";
+import type { Prisma, TaskChecklistItem } from "@zenstackhq/runtime/models";
 import type { UseMutationOptions, UseQueryOptions, UseInfiniteQueryOptions, InfiniteData } from '@tanstack/react-query';
 import { getHooksContext } from '@zenstackhq/tanstack-query/runtime-v5/react';
 import { useModelQuery, useInfiniteModelQuery, useModelMutation } from '@zenstackhq/tanstack-query/runtime-v5/react';
@@ -328,7 +328,7 @@ export function useSuspenseCountTaskChecklistItem<TArgs extends Prisma.TaskCheck
     return useSuspenseModelQuery<TQueryFnData, TData, TError>('TaskChecklistItem', `${endpoint}/taskChecklistItem/count`, args, options, fetch);
 }
 
-export function useCheckTaskChecklistItem<TError = DefaultError>(args: { operation: PolicyCrudKind; where?: { id?: string; created_by_id?: string; task_id?: string; order?: number; description?: string; is_completed?: boolean }; }, options?: (Omit<UseQueryOptions<boolean, TError, boolean>, 'queryKey'> & ExtraQueryOptions)) {
+export function useCheckTaskChecklistItem<TError = DefaultError>(args: { operation: PolicyCrudKind; where?: { id?: string; created_by_id?: string; task_id?: string; order?: number; text?: string; is_checked?: boolean }; }, options?: (Omit<UseQueryOptions<boolean, TError, boolean>, 'queryKey'> & ExtraQueryOptions)) {
     const { endpoint, fetch } = getHooksContext();
     return useModelQuery<boolean, boolean, TError>('TaskChecklistItem', `${endpoint}/taskChecklistItem/check`, args, options, fetch);
 }

@@ -5,7 +5,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import type { Prisma, Topic } from "@prisma/client";
+import type { Prisma, Topic } from "@zenstackhq/runtime/models";
 import type { UseMutationOptions, UseQueryOptions, UseInfiniteQueryOptions, InfiniteData } from '@tanstack/react-query';
 import { getHooksContext } from '@zenstackhq/tanstack-query/runtime-v5/react';
 import { useModelQuery, useInfiniteModelQuery, useModelMutation } from '@zenstackhq/tanstack-query/runtime-v5/react';
@@ -327,7 +327,7 @@ export function useSuspenseCountTopic<TArgs extends Prisma.TopicCountArgs, TQuer
     const { endpoint, fetch } = getHooksContext();
     return useSuspenseModelQuery<TQueryFnData, TData, TError>('Topic', `${endpoint}/topic/count`, args, options, fetch);
 }
-import type { TopicStatus } from '@prisma/client';
+import type { TopicStatus } from '@zenstackhq/runtime/models';
 
 export function useCheckTopic<TError = DefaultError>(args: { operation: PolicyCrudKind; where?: { id?: string; created_by_id?: string; title?: string; description?: string; status?: TopicStatus }; }, options?: (Omit<UseQueryOptions<boolean, TError, boolean>, 'queryKey'> & ExtraQueryOptions)) {
     const { endpoint, fetch } = getHooksContext();

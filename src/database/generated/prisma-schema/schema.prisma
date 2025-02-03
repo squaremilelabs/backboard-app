@@ -13,7 +13,7 @@ generator client {
 }
 
 enum TopicStatus {
-  PENDING
+  DRAFT
   TABLED
   FUTURE
   CURRENT
@@ -21,6 +21,8 @@ enum TopicStatus {
   CANCELED
   MERGED
   FORKED
+
+  @@map("TOPIC_STATUS")
 }
 
 enum TaskStatus {
@@ -29,10 +31,13 @@ enum TaskStatus {
   BLOCKED
   DONE
   CANCELED
+
+  @@map("TASK_STATUS")
 }
 
 model User {
   id                    String              @id() @default(cuid())
+  created_at            DateTime            @default(now()) @db.Timestamptz()
   name                  String
   email                 String              @unique()
   associated_as_persons Person[]            @relation("associated_as_persons")
@@ -41,6 +46,8 @@ model User {
   topic_notes           TopicNote[]
   tasks                 Task[]
   task_checklist_items  TaskChecklistItem[]
+
+  @@map("users")
 }
 
 model Person {
@@ -53,6 +60,9 @@ model Person {
   tasks              Task[]
   associated_user_id String?
   associated_user    User?    @relation("associated_as_persons", fields: [associated_user_id], references: [id])
+
+  @@unique([created_by_id, name])
+  @@map("persons")
 }
 
 model Topic {
@@ -61,11 +71,13 @@ model Topic {
   created_by_id String
   created_by    User        @relation(fields: [created_by_id], references: [id])
   title         String
-  description   String
-  status        TopicStatus @default(PENDING)
+  description   String?
+  status        TopicStatus @default(DRAFT)
   notes         TopicNote[]
-  people        Person[]
+  persons       Person[]
   tasks         Task[]
+
+  @@map("topics")
 }
 
 model TopicNote {
@@ -75,7 +87,10 @@ model TopicNote {
   created_by    User     @relation(fields: [created_by_id], references: [id])
   topic_id      String
   topic         Topic    @relation(fields: [topic_id], references: [id])
-  content       String
+  content       String?
+  is_archived   Boolean  @default(false)
+
+  @@map("topic_notes")
 }
 
 model Task {
@@ -84,7 +99,7 @@ model Task {
   created_by_id   String
   created_by      User                @relation(fields: [created_by_id], references: [id])
   title           String
-  description     String
+  description     String?
   status          TaskStatus          @default(DRAFT)
   date            String?
   size            String?
@@ -92,6 +107,8 @@ model Task {
   doer_id         String?
   doer            Person?             @relation(fields: [doer_id], references: [id])
   topics          Topic[]
+
+  @@map("tasks")
 }
 
 model TaskChecklistItem {
@@ -101,7 +118,9 @@ model TaskChecklistItem {
   created_by    User     @relation(fields: [created_by_id], references: [id])
   task_id       String
   task          Task     @relation(fields: [task_id], references: [id])
-  order         Int
-  description   String
-  is_completed  Boolean  @default(false)
+  order         Int      @default(0)
+  text          String
+  is_checked    Boolean  @default(false)
+
+  @@map("task_checklist_items")
 }

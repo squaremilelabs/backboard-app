@@ -34,7 +34,7 @@ export function TaskStatusButton({
   return (
     <Button
       className={twMerge(
-        "flex h-[30px] cursor-pointer items-center space-x-1 px-2 hover:opacity-80",
+        "flex h-[30px] cursor-pointer items-center space-x-1 px-2",
         colorClassName,
         className
       )}

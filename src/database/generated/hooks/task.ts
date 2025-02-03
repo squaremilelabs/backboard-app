@@ -5,7 +5,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import type { Prisma, Task } from "@prisma/client";
+import type { Prisma, Task } from "@zenstackhq/runtime/models";
 import type { UseMutationOptions, UseQueryOptions, UseInfiniteQueryOptions, InfiniteData } from '@tanstack/react-query';
 import { getHooksContext } from '@zenstackhq/tanstack-query/runtime-v5/react';
 import { useModelQuery, useInfiniteModelQuery, useModelMutation } from '@zenstackhq/tanstack-query/runtime-v5/react';
@@ -327,7 +327,7 @@ export function useSuspenseCountTask<TArgs extends Prisma.TaskCountArgs, TQueryF
     const { endpoint, fetch } = getHooksContext();
     return useSuspenseModelQuery<TQueryFnData, TData, TError>('Task', `${endpoint}/task/count`, args, options, fetch);
 }
-import type { TaskStatus } from '@prisma/client';
+import type { TaskStatus } from '@zenstackhq/runtime/models';
 
 export function useCheckTask<TError = DefaultError>(args: { operation: PolicyCrudKind; where?: { id?: string; created_by_id?: string; title?: string; description?: string; status?: TaskStatus; date?: string; size?: string; doer_id?: string }; }, options?: (Omit<UseQueryOptions<boolean, TError, boolean>, 'queryKey'> & ExtraQueryOptions)) {
     const { endpoint, fetch } = getHooksContext();

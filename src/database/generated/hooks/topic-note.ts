@@ -5,7 +5,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import type { Prisma, TopicNote } from "@prisma/client";
+import type { Prisma, TopicNote } from "@zenstackhq/runtime/models";
 import type { UseMutationOptions, UseQueryOptions, UseInfiniteQueryOptions, InfiniteData } from '@tanstack/react-query';
 import { getHooksContext } from '@zenstackhq/tanstack-query/runtime-v5/react';
 import { useModelQuery, useInfiniteModelQuery, useModelMutation } from '@zenstackhq/tanstack-query/runtime-v5/react';
@@ -328,7 +328,7 @@ export function useSuspenseCountTopicNote<TArgs extends Prisma.TopicNoteCountArg
     return useSuspenseModelQuery<TQueryFnData, TData, TError>('TopicNote', `${endpoint}/topicNote/count`, args, options, fetch);
 }
 
-export function useCheckTopicNote<TError = DefaultError>(args: { operation: PolicyCrudKind; where?: { id?: string; created_by_id?: string; topic_id?: string; content?: string }; }, options?: (Omit<UseQueryOptions<boolean, TError, boolean>, 'queryKey'> & ExtraQueryOptions)) {
+export function useCheckTopicNote<TError = DefaultError>(args: { operation: PolicyCrudKind; where?: { id?: string; created_by_id?: string; topic_id?: string; content?: string; is_archived?: boolean }; }, options?: (Omit<UseQueryOptions<boolean, TError, boolean>, 'queryKey'> & ExtraQueryOptions)) {
     const { endpoint, fetch } = getHooksContext();
     return useModelQuery<boolean, boolean, TError>('TopicNote', `${endpoint}/topicNote/check`, args, options, fetch);
 }
