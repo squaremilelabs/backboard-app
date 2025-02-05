@@ -8,11 +8,11 @@
 }
 
 * {
-  @apply ring-gold-600 outline-gold-600;
+  @apply ring-gold-600 outline-gold-600 box-border;
 }
 
 button {
-  @apply cursor-pointer outline-0 rounded-xs;
+  @apply cursor-pointer outline-0;
   &[data-hovered] {
     @apply opacity-70;
   }

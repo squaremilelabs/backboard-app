@@ -25,23 +25,22 @@ const taskStatusDisplayMap: Record<
 export function TaskStatusButton({
   status,
   className,
+  endContent,
   ...buttonProps
 }: {
   status: TaskStatus
   className?: ClassNameValue
+  endContent?: React.ReactNode
 } & Omit<ButtonProps, "className" | "children">) {
   const { label, Icon, colorClassName } = taskStatusDisplayMap[status]
   return (
     <Button
-      className={twMerge(
-        "flex h-[30px] cursor-pointer items-center space-x-1 px-2",
-        colorClassName,
-        className
-      )}
+      className={twMerge("flex items-center space-x-1 px-2 py-1", colorClassName, className)}
       {...buttonProps}
     >
       <Icon size={16} />
       <span>{label}</span>
+      {endContent ?? null}
     </Button>
   )
 }
