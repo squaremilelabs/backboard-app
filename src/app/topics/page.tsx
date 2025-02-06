@@ -1,5 +1,5 @@
-"use client"
+import { Placeholder } from "@/components/dev"
 
 export default function Page() {
-  return <h1>Topics</h1>
+  return <Placeholder />
 }
