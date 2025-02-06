@@ -11,6 +11,10 @@
   @apply ring-gold-600 outline-gold-600 box-border;
 }
 
+html {
+  @apply bg-neutral-100;
+}
+
 button {
   @apply cursor-pointer outline-0;
   &[data-hovered] {
