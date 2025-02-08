@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -40,6 +40,8 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "postcss": "^8",
+    "prettier-plugin-classnames": "^0.7.6",
+    "prettier-plugin-merge": "^0.7.2",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "prisma": "6.3.x",
     "tailwindcss": "^4.0.0",

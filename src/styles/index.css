@@ -8,7 +8,12 @@
 }
 
 * {
-  @apply ring-neutral-500 outline-neutral-500;
+  @apply outline-0;
+}
+
+:not([data-rac]):focus-visible,
+[data-rac][data-focus-visible] {
+  @apply focus-visible:ring-2 focus-visible:ring-gold-500;
 }
 
 html {

@@ -14,8 +14,8 @@ export function Placeholder({
 }) {
   const pathname = usePathname()
   return (
-    <div className={twMerge("h-full w-full", className)}>
-      {content ?? <Link href={`${pathname}?panel=`}>Open Panel</Link>}
+    <div className={twMerge("h-[1000px] w-full", className)}>
+      {content ?? <Link href={`${pathname}?panel=dev`}>Open Panel</Link>}
     </div>
   )
 }

@@ -21,7 +21,11 @@ export default [
       "prettier/prettier": [
         "error",
         {
-          plugins: ["prettier-plugin-tailwindcss"],
+          plugins: [
+            "prettier-plugin-tailwindcss",
+            "prettier-plugin-classnames",
+            "prettier-plugin-merge",
+          ],
           semi: false,
           printWidth: 100,
           proseWrap: "always",
