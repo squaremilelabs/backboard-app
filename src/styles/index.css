@@ -24,6 +24,5 @@ html {
 }
 :not([data-rac]):focus-visible,
 [data-rac][data-focus-visible] {
-  @apply focus-visible:ring-2 focus-visible:ring-gold-500;
+  @apply focus-visible:ring-2 focus-visible:ring-neutral-500;
 }
-

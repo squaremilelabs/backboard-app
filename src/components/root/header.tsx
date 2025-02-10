@@ -25,7 +25,8 @@ function Brand() {
   return (
     <Link
       href="/"
-      className="grid grid-cols-[20px] items-center gap-2 hover:underline sm:grid-cols-[20px_1fr]"
+      className="grid grid-cols-[20px] items-center gap-2 !ring-0 hover:underline focus-visible:underline
+        sm:grid-cols-[20px_1fr]"
     >
       <Image src={logoSrc} alt="Backboard" width={20} height={20} />
       <h1 className="hidden text-xl font-semibold text-neutral-600 sm:block dark:text-neutral-700">
