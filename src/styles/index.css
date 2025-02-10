@@ -7,21 +7,23 @@
   --font-mono: var(--font-mono);
 }
 
-* {
-  @apply outline-0;
-}
-
-:not([data-rac]):focus-visible,
-[data-rac][data-focus-visible] {
-  @apply focus-visible:ring-2 focus-visible:ring-gold-500;
-}
-
 html {
-  @apply bg-neutral-100 dark:bg-neutral-50;
+  @apply bg-neutral-50 text-neutral-950;
 }
 
+/*  As of Tailwind V4, border-color defaulted to currentColor. Modified here. */
 @layer base {
   *, ::after, ::before, ::backdrop, ::file-selector-button {
     border-color: var(--bb-neutral-200, currentColor);
   }
 }
+
+/* Override RAC behavior: focus-visible applies on mouse interactions  */
+* {
+  @apply outline-0;
+}
+:not([data-rac]):focus-visible,
+[data-rac][data-focus-visible] {
+  @apply focus-visible:ring-2 focus-visible:ring-gold-500;
+}
+
