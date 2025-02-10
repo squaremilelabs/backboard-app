@@ -98,7 +98,7 @@ function TasksNavTabs({ mode }: { mode: "tabs" | "dropdown" }) {
     >
       <TabList className={twMerge(mode === "tabs" ? "grid grid-cols-5" : "grid")}>
         <Tab id="all" href={`/tasks${appendedPanelParam}`} className={twMerge(baseTabClassName)}>
-          All
+          Overview
         </Tab>
         <Tab
           id="today"

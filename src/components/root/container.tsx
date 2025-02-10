@@ -8,7 +8,7 @@ import RootHeader from "./header"
 import PanelRouter from "./panel-router"
 
 const basePanelClassName = twMerge(
-  "bg-canvas h-full max-h-full w-auto overflow-auto border-t-2 sm:rounded sm:border-2"
+  "bg-canvas h-full max-h-full w-auto overflow-auto border-t-2 sm:rounded sm:border-2 grid grid-rows-1 grid-cols-1"
 )
 
 export function RootContainer({ children }: { children: React.ReactNode }) {

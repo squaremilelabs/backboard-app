@@ -304,9 +304,9 @@ const metadata = {
                     name: "date",
                     type: "String",
                     isOptional: true,
-                }, size: {
-                    name: "size",
-                    type: "String",
+                }, size_minutes: {
+                    name: "size_minutes",
+                    type: "Int",
                     isOptional: true,
                 }, checklist_items: {
                     name: "checklist_items",

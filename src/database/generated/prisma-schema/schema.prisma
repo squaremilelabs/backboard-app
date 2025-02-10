@@ -13,9 +13,8 @@ generator client {
 }
 
 enum TopicStatus {
-  DRAFT
-  TABLED
   FUTURE
+  TABLED
   CURRENT
   CLOSED
   CANCELED
@@ -72,7 +71,7 @@ model Topic {
   created_by    User        @relation(fields: [created_by_id], references: [id])
   title         String
   description   String?
-  status        TopicStatus @default(DRAFT)
+  status        TopicStatus @default(FUTURE)
   notes         TopicNote[]
   persons       Person[]
   tasks         Task[]
@@ -102,7 +101,7 @@ model Task {
   description     String?
   status          TaskStatus          @default(DRAFT)
   date            String?
-  size            String?
+  size_minutes    Int?
   checklist_items TaskChecklistItem[]
   doer_id         String?
   doer            Person?             @relation(fields: [doer_id], references: [id])
