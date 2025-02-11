@@ -1,13 +1,11 @@
 "use client"
 
-import { Link } from "react-aria-components"
+import { TaskCreateForm } from "@/components/task/task-create-form"
 
 export default function Page() {
   return (
     <div className="grid gap-2">
-      <Link className="border" href="/tasks?panel=task:1">
-        Open Task
-      </Link>
+      <TaskCreateForm />
     </div>
   )
 }

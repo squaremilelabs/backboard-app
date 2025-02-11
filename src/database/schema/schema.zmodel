@@ -19,7 +19,7 @@ plugin hooks {
 }
 
 model User {
-  id                    String              @id @default(cuid()) @deny('update', true)
+  id                    String              @id @deny('update', true) // Should match clerk auth ID
   created_at            DateTime            @default(now()) @db.Timestamptz @deny('update', true)
   name                  String              @trim @length(1, 50, "Name must be between 1 and 50 characters")
   email                 String              @email @unique
@@ -103,7 +103,7 @@ model Task {
   description     String?
   status          TaskStatus          @default(DRAFT)
   date            String?             @datetime("date must be in YYYY-MM-DD format") @length(10, 10, "date must be in YYYY-MM-DD format")
-  size_minutes    Int?                @gte(5, "size must be 5 minutes or more") @lte(240, "size must be 4 hours or less")
+  size_minutes    Int?                @gte(5, "size must be at least 5 minnutes") @lte(240, "size must be at most 4 hours (240 minutes)")
   
   checklist_items TaskChecklistItem[]
 

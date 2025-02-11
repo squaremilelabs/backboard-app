@@ -17,7 +17,7 @@ export default function TasksNav() {
   )
 }
 
-function getSelectedKey(pathname: string): "all" | "today" | "upcoming" | "review" | "closed" {
+function getSelectedKey(pathname: string): "overview" | "today" | "upcoming" | "review" | "closed" {
   return pathname === "/tasks/today"
     ? "today"
     : pathname === "/tasks/upcoming"
@@ -26,13 +26,13 @@ function getSelectedKey(pathname: string): "all" | "today" | "upcoming" | "revie
         ? "review"
         : pathname === "/tasks/closed"
           ? "closed"
-          : "all"
+          : "overview"
 }
 
 function TasksNavDropdown() {
   const pathname = usePathname()
   const labelMap = {
-    all: "All",
+    overview: "Overview",
     today: "Today",
     upcoming: "Upcoming",
     review: "To Review",
@@ -68,7 +68,7 @@ function TasksNavDropdown() {
 const baseTabClassName = twMerge(
   "p-2",
   "flex items-center space-x-2",
-  "opacity-50 data-selected:opacity-100 focus-within:opacity-100 hover:opacity-100",
+  "opacity-50 data-selected:opacity-100 focus-visible:opacity-100 hover:opacity-100",
   "border-b-2 data-selected:border-gold-600",
   "data-pressed:scale-98",
   "text-sm data-selected:font-medium data-selected:text-gold-600",
@@ -97,7 +97,11 @@ function TasksNavTabs({ mode }: { mode: "tabs" | "dropdown" }) {
       keyboardActivation="manual"
     >
       <TabList className={twMerge(mode === "tabs" ? "grid grid-cols-5" : "grid")}>
-        <Tab id="all" href={`/tasks${appendedPanelParam}`} className={twMerge(baseTabClassName)}>
+        <Tab
+          id="overview"
+          href={`/tasks${appendedPanelParam}`}
+          className={twMerge(baseTabClassName)}
+        >
           Overview
         </Tab>
         <Tab
