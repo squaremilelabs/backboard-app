@@ -13,7 +13,6 @@ const metadata = {
                     name: "id",
                     type: "String",
                     isId: true,
-                    attributes: [{ "name": "@default", "args": [] }],
                 }, created_at: {
                     name: "created_at",
                     type: "DateTime",
@@ -280,6 +279,8 @@ const metadata = {
                 }, created_by_id: {
                     name: "created_by_id",
                     type: "String",
+                    attributes: [{ "name": "@default", "args": [] }],
+                    defaultValueProvider: $default$Task$created_by_id,
                     isForeignKey: true,
                     relationField: 'created_by',
                 }, created_by: {
@@ -360,6 +361,8 @@ const metadata = {
                 }, created_by_id: {
                     name: "created_by_id",
                     type: "String",
+                    attributes: [{ "name": "@default", "args": [] }],
+                    defaultValueProvider: $default$TaskChecklistItem$created_by_id,
                     isForeignKey: true,
                     relationField: 'created_by',
                 }, created_by: {
@@ -384,7 +387,6 @@ const metadata = {
                 }, order: {
                     name: "order",
                     type: "Int",
-                    attributes: [{ "name": "@default", "args": [{ "value": 0 }] }],
                 }, text: {
                     name: "text",
                     type: "String",
@@ -398,6 +400,9 @@ const metadata = {
                 id: {
                     name: "id",
                     fields: ["id"]
+                }, task_id_order: {
+                    name: "task_id_order",
+                    fields: ["task_id", "order"]
                 },
             }
             ,
@@ -419,6 +424,14 @@ function $default$Topic$created_by_id(user: any): unknown {
 }
 
 function $default$TopicNote$created_by_id(user: any): unknown {
+    return user?.id;
+}
+
+function $default$Task$created_by_id(user: any): unknown {
+    return user?.id;
+}
+
+function $default$TaskChecklistItem$created_by_id(user: any): unknown {
     return user?.id;
 }
 export default metadata;

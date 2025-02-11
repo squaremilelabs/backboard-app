@@ -1,10 +1,11 @@
 "use client"
 
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs"
 import { Bookmark, SquareCheck } from "lucide-react"
 import { useTheme } from "next-themes"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
-import { Link, Tab, TabList, Tabs } from "react-aria-components"
+import { Button, Link, Tab, TabList, Tabs } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
 
 export default function RootHeader() {
@@ -14,7 +15,16 @@ export default function RootHeader() {
         <Brand />
         <Navigation />
       </div>
-      <div>{/* Clerk button will go here */}</div>
+      <div className="flex items-center">
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
+        <SignedOut>
+          <SignInButton>
+            <Button className="bg-canvas rounded px-2 text-sm">Sign In</Button>
+          </SignInButton>
+        </SignedOut>
+      </div>
     </header>
   )
 }
