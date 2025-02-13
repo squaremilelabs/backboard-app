@@ -11,6 +11,7 @@ export default function TasksList({ tasks }: { tasks: Task[] }) {
   return (
     <Accordion>
       <AccordionItem
+        initialEntered
         header={({ state }) => (
           <div
             className={twMerge(
@@ -27,7 +28,7 @@ export default function TasksList({ tasks }: { tasks: Task[] }) {
           </div>
         )}
         buttonProps={{
-          className: "rounded",
+          className: "rounded w-full",
         }}
       >
         <div className={twMerge("border-t-2 border-neutral-100 py-2", "grid grid-cols-1 gap-2")}>

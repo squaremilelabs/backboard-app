@@ -26,8 +26,3 @@ html {
 [data-rac][data-focus-visible] {
   @apply focus-visible:ring-2 focus-visible:ring-neutral-500;
 }
-
-/* Expand accordion button to full width */
-.szh-accordion__item-btn {
-  @apply w-full;
-}

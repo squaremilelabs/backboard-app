@@ -23,12 +23,14 @@ async function seed() {
             {
               created_by_id: user.id,
               title: "Reconcile balance sheet accounts",
+              date: new Date(),
               size_minutes: 150,
               status: "TO_DO",
             },
             {
               created_by_id: user.id,
               title: "Gather all available tax documents",
+              date: new Date(),
               size_minutes: 45,
               status: "TO_DO",
             },

@@ -1,20 +1,6 @@
 import { Timer } from "lucide-react"
 import { twMerge } from "tailwind-merge"
 
-function formatMinutesToTime(minutes: number): string {
-  if (isNaN(minutes) || minutes < 0) {
-    throw new Error("Invalid minutes value. Expected a non-negative number.")
-  }
-
-  const hours = Math.floor(minutes / 60)
-  const remainingMinutes = minutes % 60
-
-  if (hours === 0 && remainingMinutes === 0) return "0m"
-  if (hours === 0) return `${remainingMinutes}m`
-  if (remainingMinutes === 0) return `${hours}h`
-  return `${hours}h ${remainingMinutes}m`
-}
-
 export function TaskSizeDisplay({
   minutes,
   size = "default",
@@ -34,8 +20,20 @@ export function TaskSizeDisplay({
     >
       <Timer size={size === "sm" ? 16 : 20} />
       <span className={twMerge(size === "sm" ? "text-sm" : "text-base")}>
-        {minutes ? formatMinutesToTime(minutes) : "-"}
+        {minutes ? formatMinutesToTimeString(minutes) : "-"}
       </span>
     </div>
   )
+}
+
+export function formatMinutesToTimeString(minutes: number | null | undefined): string {
+  if (minutes === null || minutes === undefined) return "-"
+  if (isNaN(minutes) || minutes < 0)
+    throw new Error("Invalid minutes value. Expected a non-negative number.")
+  const hours = Math.floor(minutes / 60)
+  const remainingMinutes = minutes % 60
+  if (hours === 0 && remainingMinutes === 0) return "0m"
+  if (hours === 0) return `${remainingMinutes}m`
+  if (remainingMinutes === 0) return `${hours}h`
+  return `${hours}h ${remainingMinutes}m`
 }

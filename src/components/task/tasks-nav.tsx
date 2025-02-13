@@ -1,6 +1,7 @@
 "use client"
 import { Menu } from "lucide-react"
 import { usePathname, useSearchParams } from "next/navigation"
+import { useEffect, useState } from "react"
 import { Button, Dialog, DialogTrigger, Popover, Tab, TabList, Tabs } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
 
@@ -39,8 +40,15 @@ function TasksNavDropdown() {
     closed: "Closed",
   }
   const selectedKey = getSelectedKey(pathname)
+
+  // close dialog on reroute
+  const [open, setOpen] = useState(false)
+  useEffect(() => {
+    setOpen(false)
+  }, [pathname])
+
   return (
-    <DialogTrigger>
+    <DialogTrigger isOpen={open} onOpenChange={setOpen}>
       <Button
         className={twMerge(
           "p-2",
@@ -88,8 +96,8 @@ function TasksNavTabs({ mode }: { mode: "tabs" | "dropdown" }) {
   const searchParams = useSearchParams()
   const panelParam = searchParams.get("panel")
   const appendedPanelParam = panelParam ? `?panel=${panelParam}` : ""
-
   const selectedKey = getSelectedKey(pathname)
+
   return (
     <Tabs
       selectedKey={selectedKey}
