@@ -15,6 +15,8 @@ export function TaskCreateForm() {
     initialValues: {
       title: "",
       status: "TO_DO",
+      date: "2024-02-25",
+      size_minutes: 5,
     },
     validationSchema: toFormikValidationSchema(TaskCreateScalarSchema),
     onSubmit: (values) => {

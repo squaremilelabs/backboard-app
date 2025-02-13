@@ -303,7 +303,7 @@ const metadata = {
                     attributes: [{ "name": "@default", "args": [] }],
                 }, date: {
                     name: "date",
-                    type: "String",
+                    type: "DateTime",
                     isOptional: true,
                 }, size_minutes: {
                     name: "size_minutes",

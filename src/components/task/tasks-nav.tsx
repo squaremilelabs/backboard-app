@@ -1,5 +1,5 @@
 "use client"
-import { ChevronDown } from "lucide-react"
+import { Menu } from "lucide-react"
 import { usePathname, useSearchParams } from "next/navigation"
 import { Button, Dialog, DialogTrigger, Popover, Tab, TabList, Tabs } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
@@ -45,7 +45,7 @@ function TasksNavDropdown() {
         className={twMerge(
           "p-2",
           "cursor-pointer",
-          "flex items-center space-x-2",
+          "flex items-center justify-between",
           "border-b-2 border-neutral-100",
           "text-sm font-medium",
           "text-gold-600",
@@ -53,10 +53,10 @@ function TasksNavDropdown() {
           "focus-visible:bg-neutral-50"
         )}
       >
-        <ChevronDown size={20} />
         <div>{labelMap[selectedKey]}</div>
+        <Menu size={20} className="text-neutral-600" />
       </Button>
-      <Popover placement="bottom start" offset={4}>
+      <Popover placement="bottom end" offset={4}>
         <Dialog className="bg-canvas grid min-w-40 rounded border-2">
           <TasksNavTabs mode="dropdown" />
         </Dialog>

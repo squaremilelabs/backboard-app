@@ -1,19 +1,13 @@
 "use client"
 
-import { TaskCreateForm } from "@/components/task/task-create-form"
+import TasksList from "@/components/task/tasks-list"
 import { useFindManyTask } from "@/database/generated/hooks"
 
 export default function Page() {
-  const { data: tasks } = useFindManyTask({
-    take: 5,
-    orderBy: { created_at: "desc" },
-  })
+  const tasksQuery = useFindManyTask()
   return (
-    <div className="grid gap-2">
-      {tasks?.map((task) => {
-        return <div key={task.id}>{task.title}</div>
-      })}
-      <TaskCreateForm />
+    <div className="grid">
+      <TasksList tasks={tasksQuery?.data ?? []} />
     </div>
   )
 }

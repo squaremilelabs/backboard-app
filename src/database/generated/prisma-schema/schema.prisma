@@ -100,7 +100,7 @@ model Task {
   title           String
   description     String?
   status          TaskStatus          @default(DRAFT)
-  date            String?
+  date            DateTime?           @db.Date()
   size_minutes    Int?
   checklist_items TaskChecklistItem[]
   doer_id         String?

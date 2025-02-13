@@ -1,13 +1,10 @@
 "use client"
-
-import { Link } from "react-aria-components"
+import { TopicsGrid } from "@/components/topic/topics-grid"
 
 export default function Page() {
   return (
     <div>
-      <Link className="border" href="/topics?panel=topic:1">
-        Open Topic
-      </Link>
+      <TopicsGrid />
     </div>
   )
 }

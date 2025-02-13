@@ -329,7 +329,7 @@ export function useSuspenseCountTask<TArgs extends Prisma.TaskCountArgs, TQueryF
 }
 import type { TaskStatus } from '@zenstackhq/runtime/models';
 
-export function useCheckTask<TError = DefaultError>(args: { operation: PolicyCrudKind; where?: { id?: string; created_by_id?: string; title?: string; description?: string; status?: TaskStatus; date?: string; size_minutes?: number; doer_id?: string }; }, options?: (Omit<UseQueryOptions<boolean, TError, boolean>, 'queryKey'> & ExtraQueryOptions)) {
+export function useCheckTask<TError = DefaultError>(args: { operation: PolicyCrudKind; where?: { id?: string; created_by_id?: string; title?: string; description?: string; status?: TaskStatus; size_minutes?: number; doer_id?: string }; }, options?: (Omit<UseQueryOptions<boolean, TError, boolean>, 'queryKey'> & ExtraQueryOptions)) {
     const { endpoint, fetch } = getHooksContext();
     return useModelQuery<boolean, boolean, TError>('Task', `${endpoint}/task/check`, args, options, fetch);
 }
