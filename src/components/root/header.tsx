@@ -30,9 +30,9 @@ function Brand() {
   return (
     <Link
       href="/"
-      className="text-neutral-600 !ring-0 hover:underline focus-visible:text-purple-600"
+      className="h-[30px] w-[30px] text-neutral-600 !ring-0 hover:underline focus-visible:text-purple-600"
     >
-      <BackboardLogo size={28} color="currentColor" />
+      <BackboardLogo size="100%" color="currentColor" />
     </Link>
   )
 }
@@ -46,7 +46,8 @@ const baseTabClassName = twMerge(
   "cursor-pointer hover:bg-canvas",
   "flex items-center",
   "data-pressed:scale-95",
-  "data-selected:font-medium"
+  "data-selected:font-medium",
+  "h-[30px]"
 )
 
 function Navigation() {
@@ -58,13 +59,13 @@ function Navigation() {
       : null
   return (
     <Tabs selectedKey={selectedKey} orientation="horizontal" keyboardActivation="manual">
-      <TabList className={twMerge("flex items-center space-x-2")}>
+      <TabList className={twMerge("flex items-stretch space-x-2")}>
         <Tab
           id="topics"
           href="/topics"
           className={twMerge(
             baseTabClassName,
-            "data-selected:canvas data-selected:border-blue-600 data-selected:text-blue-600"
+            "data-selected:bg-canvas data-selected:border-blue-600 data-selected:text-blue-600"
           )}
         >
           <span>Topics</span>
