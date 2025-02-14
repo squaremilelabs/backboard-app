@@ -1,15 +1,14 @@
 "use client"
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs"
-import { useTheme } from "next-themes"
-import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { Button, Link, Tab, TabList, Tabs } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
+import BackboardLogo from "../common/backboard-logo"
 
 export default function RootHeader() {
   return (
     <header className="flex items-center justify-between p-2">
-      <div className="flex items-center space-x-2 sm:space-x-4">
+      <div className="flex items-center space-x-2">
         <Brand />
         <Navigation />
       </div>
@@ -28,18 +27,12 @@ export default function RootHeader() {
 }
 
 function Brand() {
-  const { resolvedTheme } = useTheme()
-  const logoSrc = resolvedTheme === "dark" ? "/logo-neutral-300.png" : "/logo-neutral-600.png"
   return (
     <Link
       href="/"
-      className="grid grid-cols-[30px] items-center gap-1.5 !ring-0 hover:underline focus-visible:underline
-        sm:grid-cols-[30px_1fr]"
+      className="text-neutral-600 !ring-0 hover:underline focus-visible:text-purple-600"
     >
-      <Image src={logoSrc} alt="Backboard" width={30} height={30} />
-      <h1 className="hidden text-xl font-medium text-neutral-600 sm:block dark:text-neutral-700">
-        Backboard
-      </h1>
+      <BackboardLogo size={28} color="currentColor" />
     </Link>
   )
 }
