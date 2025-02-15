@@ -4,7 +4,7 @@ import { twMerge } from "tailwind-merge"
 import RootHeader from "./header"
 import PanelRouter from "./panel-router"
 
-const basePanelClassName = twMerge("h-full max-h-full overflow-auto grid grid-rows-1 grid-cols-1")
+const sectionClassName = twMerge("h-full max-h-full overflow-auto grid grid-rows-1 grid-cols-1")
 
 export function RootContainer({ children }: { children: React.ReactNode }) {
   const searchParams = useSearchParams()
@@ -21,8 +21,8 @@ export function RootContainer({ children }: { children: React.ReactNode }) {
       >
         <main
           className={twMerge(
-            "@container/panel",
-            basePanelClassName,
+            "@container/section",
+            sectionClassName,
             panelOpen ? "hidden w-auto md:grid" : null
           )}
         >
@@ -30,8 +30,8 @@ export function RootContainer({ children }: { children: React.ReactNode }) {
         </main>
         <aside
           className={twMerge(
-            "@container/panel",
-            basePanelClassName,
+            "@container/section",
+            sectionClassName,
             panelOpen ? "w-full md:w-auto" : "hidden"
           )}
         >
