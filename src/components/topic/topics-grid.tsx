@@ -11,6 +11,7 @@ export function TopicsGrid() {
   return (
     <div
       className={twMerge(
+        "w-full",
         "grid grid-cols-1 gap-2 p-2",
         "@5xl:grid-cols-3 @5xl:gap-4 @5xl:p-4",
         "@2xl:grid-cols-2"

@@ -16,14 +16,14 @@ export function RootContainer({ children }: { children: React.ReactNode }) {
       <div
         className={twMerge(
           "relative grid h-full max-h-full overflow-auto",
-          panelOpen ? "grid-cols-[1fr] divide-x lg:grid-cols-[1fr_1fr]" : "grid-cols-[1fr]"
+          panelOpen ? "grid-cols-[1fr] divide-x md:grid-cols-[1fr_1fr]" : "grid-cols-[1fr]"
         )}
       >
         <main
           className={twMerge(
             "@container/panel",
             basePanelClassName,
-            panelOpen ? "hidden w-auto lg:grid" : null
+            panelOpen ? "hidden w-auto md:grid" : null
           )}
         >
           {children}
@@ -32,7 +32,7 @@ export function RootContainer({ children }: { children: React.ReactNode }) {
           className={twMerge(
             "@container/panel",
             basePanelClassName,
-            panelOpen ? "w-full lg:w-auto" : "hidden"
+            panelOpen ? "w-full md:w-auto" : "hidden"
           )}
         >
           <PanelRouter />
