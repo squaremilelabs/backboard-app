@@ -8,10 +8,10 @@ import { twMerge } from "tailwind-merge"
 export default function TasksNav() {
   return (
     <div>
-      <div className="hidden @3xl:grid">
+      <div className="hidden @md:grid">
         <TasksNavTabs mode="tabs" />
       </div>
-      <div className="grid @3xl:hidden">
+      <div className="grid @md:hidden">
         <TasksNavDropdown />
       </div>
     </div>
