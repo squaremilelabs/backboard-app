@@ -1,13 +1,22 @@
 "use client"
 
-import { Link } from "react-aria-components"
+import { Button } from "react-aria-components"
+import { useFindUniqueTopic } from "@/database/generated/hooks"
+import useAside from "@/hooks/useAside"
 
-export default function TopicPanel() {
+export default function TopicPanel({ id }: { id: string }) {
+  const topicQuery = useFindUniqueTopic({ where: { id } })
+  const topic = topicQuery.data
+
+  const { closeAside } = useAside()
+
+  if (!topic) return null
   return (
-    <div className="grid h-[1000px] w-full content-start">
-      <h2 className="text-lg">Topic Panel</h2>
-      <Link href="/topic/1">Go to Topic Page</Link>
-      <Link href="/topic/1?panel=task:1">Open Task</Link>
+    <div className="grid w-full grid-rows-[auto_1fr]">
+      <div className="flex items-center justify-between p-4">
+        <h1 className="text-lg">{topic.title}</h1>
+        <Button onPress={closeAside}>Close</Button>
+      </div>
     </div>
   )
 }

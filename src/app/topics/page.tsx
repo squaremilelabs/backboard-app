@@ -1,11 +1,5 @@
-"use client"
-import ResponsiveDiv from "@/components/common/responsive-div"
-import { TopicsGrid } from "@/components/topic/topics-grid"
+import TopicsPanel from "@/components/topic/topics-panel"
 
 export default function Page() {
-  return (
-    <ResponsiveDiv width="lg">
-      <TopicsGrid />
-    </ResponsiveDiv>
-  )
+  return <TopicsPanel />
 }

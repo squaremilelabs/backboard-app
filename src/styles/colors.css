@@ -149,12 +149,12 @@
   --bb-green-900: oklch(95.05% 0.05 163.05);
   --bb-green-950: oklch(97.93% 0.02 166.11);
   /* CANVAS */
-  --bb-canvas: #11181c;
+  --bb-canvas: #0a0a0a;
 }
 
 @theme {
   --color-*: initial;
-  --color-black: #11181C;
+  --color-black: #0a0a0a;
   --color-white: #ffffff;
 }
 

@@ -44,10 +44,7 @@ export default function TasksList({ tasks }: { tasks: Task[] }) {
 function TaskListItem({ task }: { task: Task }) {
   return (
     <div
-      className={twMerge(
-        "rounded border bg-neutral-50 p-0.5",
-        "flex items-stretch justify-between"
-      )}
+      className={twMerge("bg-canvas rounded border p-0.5", "flex items-stretch justify-between")}
     >
       <div className="flex items-center px-1">
         <p className="grow">{task.title}</p>
