@@ -1,4 +1,4 @@
-import { Link } from "react-aria-components"
+import Link from "next/link"
 
 export default function TaskPanel() {
   return (
