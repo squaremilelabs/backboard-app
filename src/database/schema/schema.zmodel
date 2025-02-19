@@ -20,17 +20,16 @@ plugin hooks {
 }
 
 model User {
-  id                    String              @id @deny('update', true) // Should match clerk auth ID
-  created_at            DateTime            @default(now()) @db.Timestamptz @deny('update', true)
-  name                  String              @trim @length(min: 1, max: 50, "name must be between 1 and 50 characters")
-  email                 String              @email @unique
-  associated_as_persons Person[]            @relation('associated_as_persons')
+  id                    String   @id @deny('update', true) // Should match clerk auth ID
+  created_at            DateTime @default(now()) @db.Timestamptz @deny('update', true)
+  display_name          String   @trim @length(min: 1, max: 50, "name must be between 1 and 50 characters")
+  email                 String   @email @unique
+  associated_as_persons Person[] @relation('associated_as_persons')
 
-  persons               Person[]            @relation('created_persons')
+  persons               Person[] @relation('created_persons')
   topics                Topic[]
-  topic_notes           TopicNote[]
+  posts                 Post[]
   tasks                 Task[]
-  task_checklist_items  TaskChecklistItem[]
 
   @@auth
   @@allow("create,read", true)
@@ -39,22 +38,22 @@ model User {
 }
 
 model Person {
-  id                 String   @id @default(cuid())
-  created_at         DateTime @default(now()) @db.Timestamptz
-  created_by_id      String   @default(auth().id)
-  created_by         User     @relation('created_persons', fields: [created_by_id], references: [id])
+  id                  String   @id @default(cuid())
+  created_at          DateTime @default(now()) @db.Timestamptz
+  created_by_id       String   @default(auth().id)
+  created_by          User     @relation('created_persons', fields: [created_by_id], references: [id])
 
-  name               String   @trim @length(min: 1, max: 50, "name must be between 1 and 50 characters")
-  topics             Topic[]
-  tasks              Task[]
+  name                String   @trim @length(min: 1, max: 50, "name must be between 1 and 50 characters")
+  contributing_topics Topic[]  @relation("topic_contributors")
+  viewing_topics      Topic[]  @relation("topic_viewers")
+  tasks               Task[]
 
   // The user who is later associated with this person
-  associated_user_id String?
-  associated_user    User?    @relation('associated_as_persons', fields: [associated_user_id], references: [id])
+  associated_user_id  String?
+  associated_user     User?    @relation('associated_as_persons', fields: [associated_user_id], references: [id])
 
   @@map("persons")
   @@allow('all', created_by_id == auth().id)
-  @@allow('read', associated_user_id == auth().id)
   @@unique([created_by_id, name])
 }
 
@@ -67,17 +66,21 @@ model Topic {
   title         String      @trim @length(min: 1, max: 300, "title must be between 1 and 300 characters")
   description   String?
 
-  status        TopicStatus @default(FUTURE)
-  notes         TopicNote[]
-  persons       Person[]
+  contributors  Person[]    @relation("topic_contributors")
+  viewers       Person[]    @relation("topic_viewers")
+  is_public     Boolean     @default(false)
+
+  status        TopicStatus @default(ACTIVE)
+  posts         Post[]
   tasks         Task[]
 
   @@map("topics")
   @@allow("all", created_by_id == auth().id)
-  @@allow("read", persons?[associated_user_id == auth().id])
+  @@allow("read", contributors?[associated_user_id == auth().id])
+  @@allow("read", viewers?[associated_user_id == auth().id])
 }
 
-model TopicNote {
+model Post {
   id            String   @id @default(cuid())
   created_at    DateTime @default(now()) @db.Timestamptz
   created_by_id String   @default(auth().id)
@@ -86,65 +89,47 @@ model TopicNote {
   topic_id      String
   topic         Topic    @relation(fields: [topic_id], references: [id])
 
-  content       String?
+  content       String
   is_archived   Boolean  @default(false)
 
-  @@map("topic_notes")
+  @@map("posts")
   @@allow("all", created_by_id == auth().id || topic.created_by_id == auth().id)
-  @@allow("read", topic.persons?[associated_user_id == auth().id])
+  @@allow("create,read", topic.contributors?[associated_user_id == auth().id])
+  @@allow("read", topic.viewers?[associated_user_id == auth().id])
 }
 
 model Task {
-  id              String              @id @default(cuid())
-  created_at      DateTime            @default(now()) @db.Timestamptz
-  created_by_id   String              @default(auth().id)
-  created_by      User                @relation(fields: [created_by_id], references: [id])
+  id                 String     @id @default(cuid())
+  created_at         DateTime   @default(now()) @db.Timestamptz
+  created_by_id      String     @default(auth().id)
+  created_by         User       @relation(fields: [created_by_id], references: [id])
 
-  title           String              @trim @length(min: 1, max: 300, "title must be between 1 and 300 characters")
-  description     String?
-  status          TaskStatus          @default(DRAFT)
-  date            DateTime?           @db.Date
-  size_minutes    Int?                @gte(5, "size must be at least 5 minnutes") @lte(240, "size must be at most 4 hours (240 minutes)")
+  topic_id           String
+  topic              Topic      @relation(fields: [topic_id], references: [id])
+  order              Int
+  @@unique([topic_id, order])
 
-  checklist_items TaskChecklistItem[]
+  title              String     @trim @length(min: 1, max: 300, "title must be between 1 and 300 characters")
+  timing             TaskTiming @default(NO_TARGET)
+  timing_last_set_at DateTime?  @db.Timestamptz
+  size_minutes       Int?       @gte(5, "size must be at least 5 minnutes") @lte(240, "size must be at most 4 hours (240 minutes)")
+  is_done            Boolean    @default(false)
+  done_at            DateTime?  @db.Timestamptz
 
-  doer_id         String?
-  doer            Person?             @relation(fields: [doer_id], references: [id])
-  topics          Topic[]
+  doer_id            String?
+  doer               Person?    @relation(fields: [doer_id], references: [id])
 
-
-  @@validate((status != "TO_DO" && status != "DONE") || (date != null && size_minutes != null), "date and size must be set for tasks with status TO_DO or DONE")
-  @@validate(status != "DRAFT" || date == null || size_minutes == null, "date or size should be null for tasks with status DRAFT, otherwise move to another status")
+  @@validate(is_done == false || done_at != null, "done_at must be set if is_done is true")
   @@allow("all", created_by_id == auth().id)
-  @@allow("read,update", doer.associated_user_id == auth().id)
-  @@allow("read", topics?[persons?[associated_user_id == auth().id]])
-
+  @@allow("read,update", topic.contributors?[associated_user_id == auth().id] && doer.associated_user_id == auth().id)
+  @@allow("read", topic.contributors?[associated_user_id == auth().id])
+  @@allow("read", topic.viewers?[associated_user_id == auth().id])
   @@map("tasks")
 }
 
-model TaskChecklistItem {
-  id            String   @id @default(cuid())
-  created_at    DateTime @default(now()) @db.Timestamptz
-  created_by_id String   @default(auth().id)
-  created_by    User     @relation(fields: [created_by_id], references: [id])
-  task_id       String
-  task          Task     @relation(fields: [task_id], references: [id])
-
-  order         Int
-  text          String   @trim @length(min: 1, max: 300, "text must be between 1 and 300 characters")
-  is_checked    Boolean  @default(false)
-
-  @@unique([task_id, order]) // order should be unique for each task
-  @@map("task_checklist_items")
-  @@allow("all", created_by_id == auth().id)
-  @@allow("read,update", task.doer.associated_user_id == auth().id)
-  @@allow("read", task.topics?[persons?[associated_user_id == auth().id]])
-}
 
 enum TopicStatus {
-  FUTURE
-  TABLED
-  CURRENT
+  ACTIVE
   CLOSED
   CANCELED
   MERGED
@@ -153,12 +138,14 @@ enum TopicStatus {
   @@map("TOPIC_STATUS")
 }
 
-enum TaskStatus {
-  DRAFT
-  TO_DO
-  BLOCKED
-  DONE
-  CANCELED
+enum TaskTiming {
+  TODAY
+  THIS_WEEK
+  NEXT_WEEK
+  THIS_MONTH
+  NEXT_MONTH
+  SOMEDAY
+  NO_TARGET
 
-  @@map("TASK_STATUS")
+  @@map("TASK_TIMING")
 }

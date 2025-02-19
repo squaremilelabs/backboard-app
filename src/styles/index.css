@@ -36,7 +36,6 @@
   --container-xl: 1440px;
 }
 
-/* Base Styles */
 html {
   @apply bg-neutral-50;
   @apply text-neutral-950;
@@ -44,18 +43,12 @@ html {
 
 @layer base {
   * {
-    @apply outline-0;
     @apply text-base;
     @apply relative;
   }
   /*  As of Tailwind V4, border-color defaulted to currentColor. Modified here. */
   *, ::after, ::before, ::backdrop, ::file-selector-button {
     @apply border-neutral-200;
-  }
-  /* Override RAC behavior: focus-visible applies on mouse interactions  */
-  :not([data-rac]):focus-visible,
-  [data-rac][data-focus-visible] {
-    @apply focus-visible:ring-2 focus-visible:ring-neutral-500;
   }
 }
 

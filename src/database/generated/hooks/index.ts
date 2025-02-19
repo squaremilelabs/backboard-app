@@ -8,9 +8,8 @@
 export * from './user';
 export * from './person';
 export * from './topic';
-export * from './topic-note';
+export * from './post';
 export * from './task';
-export * from './task-checklist-item';
 export { getQueryKey } from '@zenstackhq/tanstack-query/runtime-v5';
 export { Provider } from '@zenstackhq/tanstack-query/runtime-v5/react';
 export { default as metadata } from './__model_meta';

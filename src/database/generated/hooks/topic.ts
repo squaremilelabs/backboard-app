@@ -329,7 +329,7 @@ export function useSuspenseCountTopic<TArgs extends Prisma.TopicCountArgs, TQuer
 }
 import type { TopicStatus } from '@zenstackhq/runtime/models';
 
-export function useCheckTopic<TError = DefaultError>(args: { operation: PolicyCrudKind; where?: { id?: string; created_by_id?: string; title?: string; description?: string; status?: TopicStatus }; }, options?: (Omit<UseQueryOptions<boolean, TError, boolean>, 'queryKey'> & ExtraQueryOptions)) {
+export function useCheckTopic<TError = DefaultError>(args: { operation: PolicyCrudKind; where?: { id?: string; created_by_id?: string; title?: string; description?: string; is_public?: boolean; status?: TopicStatus }; }, options?: (Omit<UseQueryOptions<boolean, TError, boolean>, 'queryKey'> & ExtraQueryOptions)) {
     const { endpoint, fetch } = getHooksContext();
     return useModelQuery<boolean, boolean, TError>('Topic', `${endpoint}/topic/check`, args, options, fetch);
 }

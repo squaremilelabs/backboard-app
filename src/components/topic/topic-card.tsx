@@ -1,7 +1,6 @@
 import { Topic } from "@prisma/client"
 import Link from "next/link"
 import { twMerge } from "tailwind-merge"
-import { TopicStatusDisplay } from "./topic-status"
 
 export default function TopicCard({
   topic,
@@ -23,7 +22,6 @@ export default function TopicCard({
     >
       <div className="flex items-center justify-between">
         <p>{topic.title}</p>
-        <TopicStatusDisplay status={topic.status} />
       </div>
     </Link>
   )

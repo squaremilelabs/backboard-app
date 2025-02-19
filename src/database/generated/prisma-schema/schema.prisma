@@ -13,9 +13,7 @@ generator client {
 }
 
 enum TopicStatus {
-  FUTURE
-  TABLED
-  CURRENT
+  ACTIVE
   CLOSED
   CANCELED
   MERGED
@@ -24,41 +22,43 @@ enum TopicStatus {
   @@map("TOPIC_STATUS")
 }
 
-enum TaskStatus {
-  DRAFT
-  TO_DO
-  BLOCKED
-  DONE
-  CANCELED
+enum TaskTiming {
+  TODAY
+  THIS_WEEK
+  NEXT_WEEK
+  THIS_MONTH
+  NEXT_MONTH
+  SOMEDAY
+  NO_TARGET
 
-  @@map("TASK_STATUS")
+  @@map("TASK_TIMING")
 }
 
 model User {
-  id                    String              @id()
-  created_at            DateTime            @default(now()) @db.Timestamptz()
-  name                  String
-  email                 String              @unique()
-  associated_as_persons Person[]            @relation("associated_as_persons")
-  persons               Person[]            @relation("created_persons")
+  id                    String   @id()
+  created_at            DateTime @default(now()) @db.Timestamptz()
+  display_name          String
+  email                 String   @unique()
+  associated_as_persons Person[] @relation("associated_as_persons")
+  persons               Person[] @relation("created_persons")
   topics                Topic[]
-  topic_notes           TopicNote[]
+  posts                 Post[]
   tasks                 Task[]
-  task_checklist_items  TaskChecklistItem[]
 
   @@map("users")
 }
 
 model Person {
-  id                 String   @id() @default(cuid())
-  created_at         DateTime @default(now()) @db.Timestamptz()
-  created_by_id      String
-  created_by         User     @relation("created_persons", fields: [created_by_id], references: [id])
-  name               String
-  topics             Topic[]
-  tasks              Task[]
-  associated_user_id String?
-  associated_user    User?    @relation("associated_as_persons", fields: [associated_user_id], references: [id])
+  id                  String   @id() @default(cuid())
+  created_at          DateTime @default(now()) @db.Timestamptz()
+  created_by_id       String
+  created_by          User     @relation("created_persons", fields: [created_by_id], references: [id])
+  name                String
+  contributing_topics Topic[]  @relation("topic_contributors")
+  viewing_topics      Topic[]  @relation("topic_viewers")
+  tasks               Task[]
+  associated_user_id  String?
+  associated_user     User?    @relation("associated_as_persons", fields: [associated_user_id], references: [id])
 
   @@unique([created_by_id, name])
   @@map("persons")
@@ -71,56 +71,46 @@ model Topic {
   created_by    User        @relation(fields: [created_by_id], references: [id])
   title         String
   description   String?
-  status        TopicStatus @default(FUTURE)
-  notes         TopicNote[]
-  persons       Person[]
+  contributors  Person[]    @relation("topic_contributors")
+  viewers       Person[]    @relation("topic_viewers")
+  is_public     Boolean     @default(false)
+  status        TopicStatus @default(ACTIVE)
+  posts         Post[]
   tasks         Task[]
 
   @@map("topics")
 }
 
-model TopicNote {
+model Post {
   id            String   @id() @default(cuid())
   created_at    DateTime @default(now()) @db.Timestamptz()
   created_by_id String
   created_by    User     @relation(fields: [created_by_id], references: [id])
   topic_id      String
   topic         Topic    @relation(fields: [topic_id], references: [id])
-  content       String?
+  content       String
   is_archived   Boolean  @default(false)
 
-  @@map("topic_notes")
+  @@map("posts")
 }
 
 model Task {
-  id              String              @id() @default(cuid())
-  created_at      DateTime            @default(now()) @db.Timestamptz()
-  created_by_id   String
-  created_by      User                @relation(fields: [created_by_id], references: [id])
-  title           String
-  description     String?
-  status          TaskStatus          @default(DRAFT)
-  date            DateTime?           @db.Date()
-  size_minutes    Int?
-  checklist_items TaskChecklistItem[]
-  doer_id         String?
-  doer            Person?             @relation(fields: [doer_id], references: [id])
-  topics          Topic[]
+  id                 String     @id() @default(cuid())
+  created_at         DateTime   @default(now()) @db.Timestamptz()
+  created_by_id      String
+  created_by         User       @relation(fields: [created_by_id], references: [id])
+  topic_id           String
+  topic              Topic      @relation(fields: [topic_id], references: [id])
+  order              Int
+  title              String
+  timing             TaskTiming @default(NO_TARGET)
+  timing_last_set_at DateTime?  @db.Timestamptz()
+  size_minutes       Int?
+  is_done            Boolean    @default(false)
+  done_at            DateTime?  @db.Timestamptz()
+  doer_id            String?
+  doer               Person?    @relation(fields: [doer_id], references: [id])
 
+  @@unique([topic_id, order])
   @@map("tasks")
-}
-
-model TaskChecklistItem {
-  id            String   @id() @default(cuid())
-  created_at    DateTime @default(now()) @db.Timestamptz()
-  created_by_id String
-  created_by    User     @relation(fields: [created_by_id], references: [id])
-  task_id       String
-  task          Task     @relation(fields: [task_id], references: [id])
-  order         Int
-  text          String
-  is_checked    Boolean  @default(false)
-
-  @@unique([task_id, order])
-  @@map("task_checklist_items")
 }

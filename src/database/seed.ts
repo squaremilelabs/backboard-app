@@ -7,8 +7,15 @@ async function seed() {
   const user = await prisma.user.create({
     data: {
       id: "user_2oGddhKfCXSQ7WiFT0RvWJJtBRO",
-      name: "E",
+      display_name: "E",
       email: "e@squaremilelabs.com",
+    },
+  })
+
+  const tony = await prisma.person.create({
+    data: {
+      created_by_id: user.id,
+      name: "Tony",
     },
   })
 
@@ -17,27 +24,24 @@ async function seed() {
       data: {
         created_by_id: user.id,
         title: "2024 Taxes",
-        status: "CURRENT",
         tasks: {
           create: [
             {
               created_by_id: user.id,
               title: "Reconcile balance sheet accounts",
-              date: new Date(),
+              order: 0,
               size_minutes: 150,
-              status: "TO_DO",
             },
             {
               created_by_id: user.id,
               title: "Gather all available tax documents",
-              date: new Date(),
               size_minutes: 45,
-              status: "TO_DO",
+              order: 1,
             },
             {
               created_by_id: user.id,
               title: "Engage tax accountants",
-              status: "DRAFT",
+              order: 2,
             },
           ],
         },
@@ -47,14 +51,18 @@ async function seed() {
       data: {
         created_by_id: user.id,
         title: "Backboard MVP",
-        status: "CURRENT",
+        viewers: {
+          connect: [{ id: tony.id }],
+        },
       },
     }),
     prisma.topic.create({
       data: {
         created_by_id: user.id,
         title: "Update MSA Template",
-        status: "FUTURE",
+        contributors: {
+          connect: [{ id: tony.id }],
+        },
       },
     }),
   ])

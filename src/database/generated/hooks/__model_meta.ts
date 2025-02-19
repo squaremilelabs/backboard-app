@@ -17,8 +17,8 @@ const metadata = {
                     name: "created_at",
                     type: "DateTime",
                     attributes: [{ "name": "@default", "args": [] }],
-                }, name: {
-                    name: "name",
+                }, display_name: {
+                    name: "display_name",
                     type: "String",
                 }, email: {
                     name: "email",
@@ -41,21 +41,15 @@ const metadata = {
                     isDataModel: true,
                     isArray: true,
                     backLink: 'created_by',
-                }, topic_notes: {
-                    name: "topic_notes",
-                    type: "TopicNote",
+                }, posts: {
+                    name: "posts",
+                    type: "Post",
                     isDataModel: true,
                     isArray: true,
                     backLink: 'created_by',
                 }, tasks: {
                     name: "tasks",
                     type: "Task",
-                    isDataModel: true,
-                    isArray: true,
-                    backLink: 'created_by',
-                }, task_checklist_items: {
-                    name: "task_checklist_items",
-                    type: "TaskChecklistItem",
                     isDataModel: true,
                     isArray: true,
                     backLink: 'created_by',
@@ -101,13 +95,18 @@ const metadata = {
                 }, name: {
                     name: "name",
                     type: "String",
-                }, topics: {
-                    name: "topics",
+                }, contributing_topics: {
+                    name: "contributing_topics",
                     type: "Topic",
                     isDataModel: true,
                     isArray: true,
-                    backLink: 'persons',
-                    isRelationOwner: true,
+                    backLink: 'contributors',
+                }, viewing_topics: {
+                    name: "viewing_topics",
+                    type: "Topic",
+                    isDataModel: true,
+                    isArray: true,
+                    backLink: 'viewers',
                 }, tasks: {
                     name: "tasks",
                     type: "Task",
@@ -174,30 +173,38 @@ const metadata = {
                     name: "description",
                     type: "String",
                     isOptional: true,
+                }, contributors: {
+                    name: "contributors",
+                    type: "Person",
+                    isDataModel: true,
+                    isArray: true,
+                    backLink: 'contributing_topics',
+                }, viewers: {
+                    name: "viewers",
+                    type: "Person",
+                    isDataModel: true,
+                    isArray: true,
+                    backLink: 'viewing_topics',
+                }, is_public: {
+                    name: "is_public",
+                    type: "Boolean",
+                    attributes: [{ "name": "@default", "args": [{ "value": false }] }],
                 }, status: {
                     name: "status",
                     type: "TopicStatus",
                     attributes: [{ "name": "@default", "args": [] }],
-                }, notes: {
-                    name: "notes",
-                    type: "TopicNote",
+                }, posts: {
+                    name: "posts",
+                    type: "Post",
                     isDataModel: true,
                     isArray: true,
                     backLink: 'topic',
-                }, persons: {
-                    name: "persons",
-                    type: "Person",
-                    isDataModel: true,
-                    isArray: true,
-                    backLink: 'topics',
-                    isRelationOwner: true,
                 }, tasks: {
                     name: "tasks",
                     type: "Task",
                     isDataModel: true,
                     isArray: true,
-                    backLink: 'topics',
-                    isRelationOwner: true,
+                    backLink: 'topic',
                 },
             }
             , uniqueConstraints: {
@@ -209,8 +216,8 @@ const metadata = {
             ,
         }
         ,
-        topicNote: {
-            name: 'TopicNote', fields: {
+        post: {
+            name: 'Post', fields: {
                 id: {
                     name: "id",
                     type: "String",
@@ -224,14 +231,14 @@ const metadata = {
                     name: "created_by_id",
                     type: "String",
                     attributes: [{ "name": "@default", "args": [] }],
-                    defaultValueProvider: $default$TopicNote$created_by_id,
+                    defaultValueProvider: $default$Post$created_by_id,
                     isForeignKey: true,
                     relationField: 'created_by',
                 }, created_by: {
                     name: "created_by",
                     type: "User",
                     isDataModel: true,
-                    backLink: 'topic_notes',
+                    backLink: 'posts',
                     isRelationOwner: true,
                     foreignKeyMapping: { "id": "created_by_id" },
                 }, topic_id: {
@@ -243,13 +250,12 @@ const metadata = {
                     name: "topic",
                     type: "Topic",
                     isDataModel: true,
-                    backLink: 'notes',
+                    backLink: 'posts',
                     isRelationOwner: true,
                     foreignKeyMapping: { "id": "topic_id" },
                 }, content: {
                     name: "content",
                     type: "String",
-                    isOptional: true,
                 }, is_archived: {
                     name: "is_archived",
                     type: "Boolean",
@@ -290,31 +296,44 @@ const metadata = {
                     backLink: 'tasks',
                     isRelationOwner: true,
                     foreignKeyMapping: { "id": "created_by_id" },
+                }, topic_id: {
+                    name: "topic_id",
+                    type: "String",
+                    isForeignKey: true,
+                    relationField: 'topic',
+                }, topic: {
+                    name: "topic",
+                    type: "Topic",
+                    isDataModel: true,
+                    backLink: 'tasks',
+                    isRelationOwner: true,
+                    foreignKeyMapping: { "id": "topic_id" },
+                }, order: {
+                    name: "order",
+                    type: "Int",
                 }, title: {
                     name: "title",
                     type: "String",
-                }, description: {
-                    name: "description",
-                    type: "String",
-                    isOptional: true,
-                }, status: {
-                    name: "status",
-                    type: "TaskStatus",
+                }, timing: {
+                    name: "timing",
+                    type: "TaskTiming",
                     attributes: [{ "name": "@default", "args": [] }],
-                }, date: {
-                    name: "date",
+                }, timing_last_set_at: {
+                    name: "timing_last_set_at",
                     type: "DateTime",
                     isOptional: true,
                 }, size_minutes: {
                     name: "size_minutes",
                     type: "Int",
                     isOptional: true,
-                }, checklist_items: {
-                    name: "checklist_items",
-                    type: "TaskChecklistItem",
-                    isDataModel: true,
-                    isArray: true,
-                    backLink: 'task',
+                }, is_done: {
+                    name: "is_done",
+                    type: "Boolean",
+                    attributes: [{ "name": "@default", "args": [{ "value": false }] }],
+                }, done_at: {
+                    name: "done_at",
+                    type: "DateTime",
+                    isOptional: true,
                 }, doer_id: {
                     name: "doer_id",
                     type: "String",
@@ -329,80 +348,15 @@ const metadata = {
                     backLink: 'tasks',
                     isRelationOwner: true,
                     foreignKeyMapping: { "id": "doer_id" },
-                }, topics: {
-                    name: "topics",
-                    type: "Topic",
-                    isDataModel: true,
-                    isArray: true,
-                    backLink: 'tasks',
-                    isRelationOwner: true,
                 },
             }
             , uniqueConstraints: {
                 id: {
                     name: "id",
                     fields: ["id"]
-                },
-            }
-            ,
-        }
-        ,
-        taskChecklistItem: {
-            name: 'TaskChecklistItem', fields: {
-                id: {
-                    name: "id",
-                    type: "String",
-                    isId: true,
-                    attributes: [{ "name": "@default", "args": [] }],
-                }, created_at: {
-                    name: "created_at",
-                    type: "DateTime",
-                    attributes: [{ "name": "@default", "args": [] }],
-                }, created_by_id: {
-                    name: "created_by_id",
-                    type: "String",
-                    attributes: [{ "name": "@default", "args": [] }],
-                    defaultValueProvider: $default$TaskChecklistItem$created_by_id,
-                    isForeignKey: true,
-                    relationField: 'created_by',
-                }, created_by: {
-                    name: "created_by",
-                    type: "User",
-                    isDataModel: true,
-                    backLink: 'task_checklist_items',
-                    isRelationOwner: true,
-                    foreignKeyMapping: { "id": "created_by_id" },
-                }, task_id: {
-                    name: "task_id",
-                    type: "String",
-                    isForeignKey: true,
-                    relationField: 'task',
-                }, task: {
-                    name: "task",
-                    type: "Task",
-                    isDataModel: true,
-                    backLink: 'checklist_items',
-                    isRelationOwner: true,
-                    foreignKeyMapping: { "id": "task_id" },
-                }, order: {
-                    name: "order",
-                    type: "Int",
-                }, text: {
-                    name: "text",
-                    type: "String",
-                }, is_checked: {
-                    name: "is_checked",
-                    type: "Boolean",
-                    attributes: [{ "name": "@default", "args": [{ "value": false }] }],
-                },
-            }
-            , uniqueConstraints: {
-                id: {
-                    name: "id",
-                    fields: ["id"]
-                }, task_id_order: {
-                    name: "task_id_order",
-                    fields: ["task_id", "order"]
+                }, topic_id_order: {
+                    name: "topic_id_order",
+                    fields: ["topic_id", "order"]
                 },
             }
             ,
@@ -423,15 +377,11 @@ function $default$Topic$created_by_id(user: any): unknown {
     return user?.id;
 }
 
-function $default$TopicNote$created_by_id(user: any): unknown {
+function $default$Post$created_by_id(user: any): unknown {
     return user?.id;
 }
 
 function $default$Task$created_by_id(user: any): unknown {
-    return user?.id;
-}
-
-function $default$TaskChecklistItem$created_by_id(user: any): unknown {
     return user?.id;
 }
 export default metadata;
