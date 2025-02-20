@@ -24,25 +24,26 @@ async function seed() {
       data: {
         created_by_id: user.id,
         title: "2024 Taxes",
-        tasks: {
+        description: "SML + Personal 2024 Tax Filings",
+        child_tasks: {
           create: [
             {
               created_by_id: user.id,
               title: "Reconcile balance sheet accounts",
-              order: 0,
+              parent_topic_order: 0,
               size_minutes: 150,
-              timing: "TODAY",
+              target: "TODAY",
             },
             {
               created_by_id: user.id,
               title: "Gather all available tax documents",
               size_minutes: 45,
-              order: 1,
+              parent_topic_order: 1,
             },
             {
               created_by_id: user.id,
               title: "Engage tax accountants",
-              order: 2,
+              parent_topic_order: 2,
             },
           ],
         },
@@ -55,12 +56,12 @@ async function seed() {
         viewers: {
           connect: [{ id: tony.id }],
         },
-        tasks: {
+        child_tasks: {
           create: [
             {
               created_by_id: user.id,
               title: "Create wireframes",
-              order: 0,
+              parent_topic_order: 0,
               size_minutes: 30,
               is_done: true,
               done_at: new Date(),
@@ -68,7 +69,7 @@ async function seed() {
             {
               created_by_id: user.id,
               title: "Write database & api",
-              order: 1,
+              parent_topic_order: 1,
               size_minutes: 30,
               is_done: true,
               done_at: new Date(),
@@ -76,7 +77,7 @@ async function seed() {
             {
               created_by_id: user.id,
               title: "Build UI & deploy",
-              order: 2,
+              parent_topic_order: 2,
               size_minutes: 30,
             },
           ],
@@ -90,12 +91,12 @@ async function seed() {
         viewers: {
           connect: [{ id: tony.id }],
         },
-        tasks: {
+        child_tasks: {
           create: [
             {
               created_by_id: user.id,
               title: "Create wireframes",
-              order: 0,
+              parent_topic_order: 0,
               size_minutes: 30,
               is_done: true,
               done_at: new Date(),
@@ -103,7 +104,7 @@ async function seed() {
             {
               created_by_id: user.id,
               title: "Write database & api",
-              order: 1,
+              parent_topic_order: 1,
               size_minutes: 30,
               is_done: true,
               done_at: new Date(),

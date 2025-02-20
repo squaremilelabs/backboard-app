@@ -193,18 +193,30 @@ const metadata = {
                     name: "status",
                     type: "TopicStatus",
                     attributes: [{ "name": "@default", "args": [] }],
-                }, posts: {
-                    name: "posts",
+                }, child_posts: {
+                    name: "child_posts",
                     type: "Post",
                     isDataModel: true,
                     isArray: true,
-                    backLink: 'topic',
-                }, tasks: {
-                    name: "tasks",
+                    backLink: 'parent_topic',
+                }, child_tasks: {
+                    name: "child_tasks",
                     type: "Task",
                     isDataModel: true,
                     isArray: true,
-                    backLink: 'topic',
+                    backLink: 'parent_topic',
+                }, nibling_posts: {
+                    name: "nibling_posts",
+                    type: "Post",
+                    isDataModel: true,
+                    isArray: true,
+                    backLink: 'pibling_topics',
+                }, nibling_tasks: {
+                    name: "nibling_tasks",
+                    type: "Task",
+                    isDataModel: true,
+                    isArray: true,
+                    backLink: 'pibling_topics',
                 },
             }
             , uniqueConstraints: {
@@ -241,21 +253,31 @@ const metadata = {
                     backLink: 'posts',
                     isRelationOwner: true,
                     foreignKeyMapping: { "id": "created_by_id" },
-                }, topic_id: {
-                    name: "topic_id",
+                }, parent_topic_id: {
+                    name: "parent_topic_id",
                     type: "String",
                     isForeignKey: true,
-                    relationField: 'topic',
-                }, topic: {
-                    name: "topic",
+                    relationField: 'parent_topic',
+                }, parent_topic: {
+                    name: "parent_topic",
                     type: "Topic",
                     isDataModel: true,
-                    backLink: 'posts',
+                    backLink: 'child_posts',
                     isRelationOwner: true,
-                    foreignKeyMapping: { "id": "topic_id" },
+                    foreignKeyMapping: { "id": "parent_topic_id" },
+                }, pibling_topics: {
+                    name: "pibling_topics",
+                    type: "Topic",
+                    isDataModel: true,
+                    isArray: true,
+                    backLink: 'nibling_posts',
                 }, content: {
                     name: "content",
                     type: "String",
+                }, is_pinned: {
+                    name: "is_pinned",
+                    type: "Boolean",
+                    attributes: [{ "name": "@default", "args": [{ "value": false }] }],
                 }, is_archived: {
                     name: "is_archived",
                     type: "Boolean",
@@ -296,30 +318,36 @@ const metadata = {
                     backLink: 'tasks',
                     isRelationOwner: true,
                     foreignKeyMapping: { "id": "created_by_id" },
-                }, topic_id: {
-                    name: "topic_id",
+                }, parent_topic_id: {
+                    name: "parent_topic_id",
                     type: "String",
                     isForeignKey: true,
-                    relationField: 'topic',
-                }, topic: {
-                    name: "topic",
+                    relationField: 'parent_topic',
+                }, parent_topic: {
+                    name: "parent_topic",
                     type: "Topic",
                     isDataModel: true,
-                    backLink: 'tasks',
+                    backLink: 'child_tasks',
                     isRelationOwner: true,
-                    foreignKeyMapping: { "id": "topic_id" },
-                }, order: {
-                    name: "order",
+                    foreignKeyMapping: { "id": "parent_topic_id" },
+                }, parent_topic_order: {
+                    name: "parent_topic_order",
                     type: "Int",
+                }, pibling_topics: {
+                    name: "pibling_topics",
+                    type: "Topic",
+                    isDataModel: true,
+                    isArray: true,
+                    backLink: 'nibling_tasks',
                 }, title: {
                     name: "title",
                     type: "String",
-                }, timing: {
-                    name: "timing",
-                    type: "TaskTiming",
+                }, target: {
+                    name: "target",
+                    type: "TaskTarget",
                     attributes: [{ "name": "@default", "args": [] }],
-                }, timing_last_set_at: {
-                    name: "timing_last_set_at",
+                }, target_last_set_at: {
+                    name: "target_last_set_at",
                     type: "DateTime",
                     isOptional: true,
                 }, size_minutes: {
@@ -354,9 +382,6 @@ const metadata = {
                 id: {
                     name: "id",
                     fields: ["id"]
-                }, topic_id_order: {
-                    name: "topic_id_order",
-                    fields: ["topic_id", "order"]
                 },
             }
             ,

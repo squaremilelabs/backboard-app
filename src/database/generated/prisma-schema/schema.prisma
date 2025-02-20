@@ -22,7 +22,7 @@ enum TopicStatus {
   @@map("TOPIC_STATUS")
 }
 
-enum TaskTiming {
+enum TaskTarget {
   TODAY
   THIS_WEEK
   NEXT_WEEK
@@ -75,21 +75,25 @@ model Topic {
   viewers       Person[]    @relation("topic_viewers")
   is_public     Boolean     @default(false)
   status        TopicStatus @default(ACTIVE)
-  posts         Post[]
-  tasks         Task[]
+  child_posts   Post[]      @relation("topic_child_posts")
+  child_tasks   Task[]      @relation("topic_child_tasks")
+  nibling_posts Post[]      @relation("topic_nibling_posts")
+  nibling_tasks Task[]      @relation("topic_nibling_tasks")
 
   @@map("topics")
 }
 
 model Post {
-  id            String   @id() @default(cuid())
-  created_at    DateTime @default(now()) @db.Timestamptz()
-  created_by_id String
-  created_by    User     @relation(fields: [created_by_id], references: [id])
-  topic_id      String
-  topic         Topic    @relation(fields: [topic_id], references: [id])
-  content       String
-  is_archived   Boolean  @default(false)
+  id              String   @id() @default(cuid())
+  created_at      DateTime @default(now()) @db.Timestamptz()
+  created_by_id   String
+  created_by      User     @relation(fields: [created_by_id], references: [id])
+  parent_topic_id String
+  parent_topic    Topic    @relation("topic_child_posts", fields: [parent_topic_id], references: [id])
+  pibling_topics  Topic[]  @relation("topic_nibling_posts")
+  content         String
+  is_pinned       Boolean  @default(false)
+  is_archived     Boolean  @default(false)
 
   @@map("posts")
 }
@@ -99,18 +103,18 @@ model Task {
   created_at         DateTime   @default(now()) @db.Timestamptz()
   created_by_id      String
   created_by         User       @relation(fields: [created_by_id], references: [id])
-  topic_id           String
-  topic              Topic      @relation(fields: [topic_id], references: [id])
-  order              Int
+  parent_topic_id    String
+  parent_topic       Topic      @relation("topic_child_tasks", fields: [parent_topic_id], references: [id])
+  parent_topic_order Int
+  pibling_topics     Topic[]    @relation("topic_nibling_tasks")
   title              String
-  timing             TaskTiming @default(NO_TARGET)
-  timing_last_set_at DateTime?  @db.Timestamptz()
+  target             TaskTarget @default(NO_TARGET)
+  target_last_set_at DateTime?  @db.Timestamptz()
   size_minutes       Int?
   is_done            Boolean    @default(false)
   done_at            DateTime?  @db.Timestamptz()
   doer_id            String?
   doer               Person?    @relation(fields: [doer_id], references: [id])
 
-  @@unique([topic_id, order])
   @@map("tasks")
 }

@@ -1,10 +1,10 @@
-import { Task, TaskTiming, Topic } from "@prisma/client"
+import { Task, TaskTarget, Topic } from "@prisma/client"
 import { Circle, CircleCheckBig, CircleDashed } from "lucide-react"
 import Link from "next/link"
 import { twMerge } from "tailwind-merge"
 import { format } from "date-fns"
 
-const taskTimingDisplayMap: Record<TaskTiming, { label: string; colorClassName: string }> = {
+const taskTimingDisplayMap: Record<TaskTarget, { label: string; colorClassName: string }> = {
   NO_TARGET: { label: "No target", colorClassName: "bg-neutral-50 text-neutral-600" },
   TODAY: { label: "Today", colorClassName: "bg-gold-100 text-gold-600" },
   THIS_WEEK: { label: "This week", colorClassName: "bg-gold-100 text-gold-600" },
@@ -15,7 +15,7 @@ const taskTimingDisplayMap: Record<TaskTiming, { label: string; colorClassName: 
 }
 
 export interface TopicCardExtendedTopic extends Topic {
-  tasks: Array<Task>
+  child_tasks: Array<Task>
 }
 
 export default function TopicCard({
@@ -27,13 +27,19 @@ export default function TopicCard({
   href: string
   isFocused?: boolean
 }) {
-  const hasNoTasks = topic.tasks.length === 0
-  const todoTasks = topic.tasks.filter((task) => !task.is_done).sort((a, b) => a.order - b.order)
-  const doneTasks = topic.tasks.filter((task) => task.is_done).sort((a, b) => b.order - a.order)
+  const allTasks = topic.child_tasks
+  const todoTasks = topic.child_tasks
+    .filter((task) => !task.is_done)
+    .sort((a, b) => a.parent_topic_order - b.parent_topic_order)
+  const doneTasks = topic.child_tasks
+    .filter((task) => task.is_done)
+    .sort((a, b) => b.parent_topic_order - a.parent_topic_order)
   const nextTask = todoTasks[0] ?? null
   const lastTask = doneTasks[0] ?? null
 
-  const nextTaskTimingDisplay = nextTask ? taskTimingDisplayMap[nextTask.timing] : null
+  const hasNoTasks = allTasks.length === 0
+
+  const nextTaskTimingDisplay = nextTask ? taskTimingDisplayMap[nextTask.target] : null
   const lastTaskDateDisplay =
     lastTask && lastTask.done_at ? format(lastTask.done_at, "MMM do") : null
 
@@ -82,12 +88,12 @@ export default function TopicCard({
           <div
             className={twMerge(
               "flex items-center space-x-1 text-sm",
-              doneTasks.length === topic.tasks.length ? "text-blue-500" : null,
+              doneTasks.length === allTasks.length ? "text-blue-500" : null,
               todoTasks.length ? "text-gold-500" : ""
             )}
           >
             <span className="text-sm">
-              {doneTasks.length} / {topic.tasks.length}
+              {doneTasks.length} / {allTasks.length}
             </span>
             {todoTasks.length ? <Circle size={16} /> : <CircleCheckBig size={16} />}
           </div>

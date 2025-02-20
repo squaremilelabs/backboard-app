@@ -31,8 +31,7 @@ function Brand() {
   return (
     <Link
       href="/"
-      className="focus-visible:text-gold-600 h-[30px] w-[30px] rounded border-b-2 border-transparent text-neutral-500
-        !ring-0"
+      className="focus-visible:text-gold-600 h-[30px] w-[30px] rounded text-neutral-500 !ring-0 !outline-0"
     >
       <BackboardLogo size="100%" color="currentColor" />
     </Link>

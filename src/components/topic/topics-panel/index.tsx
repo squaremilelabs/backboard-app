@@ -12,7 +12,7 @@ export default function TopicsPanel() {
   const aside = useAside()
   const topicsQuery = useFindManyTopic({
     include: {
-      tasks: true,
+      child_tasks: true,
     },
   })
   return (
