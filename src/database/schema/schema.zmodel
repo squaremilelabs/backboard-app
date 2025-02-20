@@ -76,8 +76,8 @@ model Topic {
 
   @@map("topics")
   @@allow("all", created_by_id == auth().id)
-  @@allow("read", contributors?[associated_user_id == auth().id])
-  @@allow("read", viewers?[associated_user_id == auth().id])
+  @@allow("read", contributors?[associated_user_id == auth().id && associated_user_id != null])
+  @@allow("read", viewers?[associated_user_id == auth().id && associated_user_id != null])
 }
 
 model Post {
@@ -94,8 +94,8 @@ model Post {
 
   @@map("posts")
   @@allow("all", created_by_id == auth().id || topic.created_by_id == auth().id)
-  @@allow("create,read", topic.contributors?[associated_user_id == auth().id])
-  @@allow("read", topic.viewers?[associated_user_id == auth().id])
+  @@allow("create,read", topic.contributors?[associated_user_id == auth().id && associated_user_id != null])
+  @@allow("read", topic.viewers?[associated_user_id == auth().id && associated_user_id != null])
 }
 
 model Task {
@@ -120,10 +120,10 @@ model Task {
   doer               Person?    @relation(fields: [doer_id], references: [id])
 
   @@validate(is_done == false || done_at != null, "done_at must be set if is_done is true")
-  @@allow("all", created_by_id == auth().id)
-  @@allow("read,update", topic.contributors?[associated_user_id == auth().id] && doer.associated_user_id == auth().id)
-  @@allow("read", topic.contributors?[associated_user_id == auth().id])
-  @@allow("read", topic.viewers?[associated_user_id == auth().id])
+  @@allow("all", topic.created_by_id == auth().id)
+  @@allow("read,update", topic.contributors?[associated_user_id == auth().id && associated_user_id != null] && doer.associated_user_id == auth().id)
+  @@allow("read", topic.contributors?[associated_user_id == auth().id && associated_user_id != null])
+  @@allow("read", topic.viewers?[associated_user_id == auth().id && associated_user_id != null])
   @@map("tasks")
 }
 

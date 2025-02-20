@@ -31,6 +31,7 @@ async function seed() {
               title: "Reconcile balance sheet accounts",
               order: 0,
               size_minutes: 150,
+              timing: "TODAY",
             },
             {
               created_by_id: user.id,
@@ -53,6 +54,61 @@ async function seed() {
         title: "Backboard MVP",
         viewers: {
           connect: [{ id: tony.id }],
+        },
+        tasks: {
+          create: [
+            {
+              created_by_id: user.id,
+              title: "Create wireframes",
+              order: 0,
+              size_minutes: 30,
+              is_done: true,
+              done_at: new Date(),
+            },
+            {
+              created_by_id: user.id,
+              title: "Write database & api",
+              order: 1,
+              size_minutes: 30,
+              is_done: true,
+              done_at: new Date(),
+            },
+            {
+              created_by_id: user.id,
+              title: "Build UI & deploy",
+              order: 2,
+              size_minutes: 30,
+            },
+          ],
+        },
+      },
+    }),
+    prisma.topic.create({
+      data: {
+        created_by_id: user.id,
+        title: "Ledger MVP",
+        viewers: {
+          connect: [{ id: tony.id }],
+        },
+        tasks: {
+          create: [
+            {
+              created_by_id: user.id,
+              title: "Create wireframes",
+              order: 0,
+              size_minutes: 30,
+              is_done: true,
+              done_at: new Date(),
+            },
+            {
+              created_by_id: user.id,
+              title: "Write database & api",
+              order: 1,
+              size_minutes: 30,
+              is_done: true,
+              done_at: new Date(),
+            },
+          ],
         },
       },
     }),

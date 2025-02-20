@@ -1,19 +1,15 @@
 import { type AriaButtonOptions, useButton } from "react-aria"
-import { Slot } from "radix-ui"
-import { useRef } from "react"
+import { ElementType, useRef } from "react"
 
-export function Button({
-  asChild,
+export function Button<T extends ElementType = "button">({
   children,
   ...props
-}: { asChild?: boolean; children: React.ReactNode } & AriaButtonOptions<"button">) {
+}: { children: React.ReactNode } & AriaButtonOptions<T>) {
   const ref = useRef<HTMLButtonElement | null>(null)
-  const Component = asChild ? Slot.Root : "button"
-  const { buttonProps } = useButton({ ...props, elementType: Component }, ref)
-
+  const { buttonProps } = useButton({ ...props, elementType: "a" }, ref)
   return (
-    <Component ref={ref} {...buttonProps}>
+    <button ref={ref} {...buttonProps}>
       {children}
-    </Component>
+    </button>
   )
 }
