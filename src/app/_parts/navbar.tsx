@@ -8,7 +8,7 @@ import BackboardLogo from "@/components/common/backboard-logo"
 
 export default function RootNavbar() {
   return (
-    <header className="bg-canvas flex items-center justify-between p-2">
+    <header className="bg-canvas flex items-center justify-between border-b p-2">
       <div className="flex items-center space-x-2">
         <Brand />
         <NavItems />

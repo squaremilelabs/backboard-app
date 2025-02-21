@@ -6,7 +6,7 @@ export default function TopicLayout({
   selected: React.ReactNode
 }) {
   return (
-    <div>
+    <div className="p-8">
       <div>{children}</div>
       <div>{selected}</div>
     </div>
