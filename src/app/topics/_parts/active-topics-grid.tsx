@@ -1,10 +1,9 @@
 "use client"
 
 import { twMerge } from "tailwind-merge"
-import { useMemo } from "react"
 import { useUser } from "@clerk/nextjs"
 import TopicCard from "@/components/topic/topic-card"
-import { useFindManyTopic } from "@/database/generated/hooks"
+import { useTopicsList } from "@/lib/topic-utils"
 
 export default function ActiveTopicsGrid({
   showOtherUserTopics = true,
@@ -12,29 +11,15 @@ export default function ActiveTopicsGrid({
   showOtherUserTopics?: boolean
 }) {
   const { user } = useUser()
-  const topicsQuery = useFindManyTopic({
-    where: {
-      status: "ACTIVE",
-    },
-    include: {
-      created_by: true,
-      child_tasks: true,
-    },
+  const { listData } = useTopicsList({
+    where: { status: "ACTIVE", created_by_id: showOtherUserTopics ? undefined : user?.id },
   })
-
-  const displayedTopics = useMemo(() => {
-    if (!topicsQuery.data) return []
-    return topicsQuery.data.filter((topic) => {
-      if (showOtherUserTopics) return true
-      return topic.created_by_id === user?.id
-    })
-  }, [topicsQuery.data, showOtherUserTopics, user?.id])
 
   return (
     <div
       className={twMerge("grid", "grid-cols-1 @sm:grid-cols-2 @lg:grid-cols-3", "gap-2 @md:gap-3")}
     >
-      {displayedTopics.map((topic) => {
+      {listData?.map((topic) => {
         return <TopicCard key={topic.id} topic={topic} />
       })}
     </div>

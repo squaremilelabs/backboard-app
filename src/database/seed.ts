@@ -19,71 +19,47 @@ async function seed() {
     },
   })
 
-  await prisma.$transaction([
+  const topics = await prisma.$transaction([
+    // N-done / 1-current
     prisma.topic.create({
       data: {
         created_by_id: user.id,
         title: "2024 Taxes",
         description: "SML + Personal 2024 Tax Filings",
-        child_tasks: {
+        tasks: {
           create: [
             {
               created_by_id: user.id,
               title: "Reconcile balance sheet accounts",
-              parent_topic_order: 0,
-              size_minutes: 150,
-              target: "TODAY",
+              is_done: true,
+              done_at: new Date("2024-12-31"),
             },
             {
               created_by_id: user.id,
               title: "Gather all available tax documents",
-              size_minutes: 45,
-              parent_topic_order: 1,
+              is_done: true,
+              done_at: new Date("2025-01-15"),
             },
             {
               created_by_id: user.id,
               title: "Engage tax accountants",
-              parent_topic_order: 2,
+              is_done: true,
+              done_at: new Date("2025-02-15"),
+            },
+            {
+              created_by_id: user.id,
+              title: "Review and approve tax filings",
+              target: "THIS_WEEK",
+              is_done: false,
             },
           ],
         },
       },
-    }),
-    prisma.topic.create({
-      data: {
-        created_by_id: user.id,
-        title: "Backboard MVP",
-        viewers: {
-          connect: [{ id: tony.id }],
-        },
-        child_tasks: {
-          create: [
-            {
-              created_by_id: user.id,
-              title: "Create wireframes",
-              parent_topic_order: 0,
-              size_minutes: 30,
-              is_done: true,
-              done_at: new Date(),
-            },
-            {
-              created_by_id: user.id,
-              title: "Write database & api",
-              parent_topic_order: 1,
-              size_minutes: 30,
-              is_done: true,
-              done_at: new Date(),
-            },
-            {
-              created_by_id: user.id,
-              title: "Build UI & deploy",
-              parent_topic_order: 2,
-              size_minutes: 30,
-            },
-          ],
-        },
+      include: {
+        tasks: { where: { is_done: false } },
       },
     }),
+    // 0-done, 1 current ... Has viewers
     prisma.topic.create({
       data: {
         created_by_id: user.id,
@@ -91,28 +67,40 @@ async function seed() {
         viewers: {
           connect: [{ id: tony.id }],
         },
-        child_tasks: {
+        tasks: {
           create: [
             {
               created_by_id: user.id,
-              title: "Create wireframes",
-              parent_topic_order: 0,
-              size_minutes: 30,
-              is_done: true,
-              done_at: new Date(),
+              title: "Make wireframes",
+              target: "NEXT_MONTH",
+              is_done: false,
             },
+          ],
+        },
+      },
+      include: { tasks: true },
+    }),
+    // N-done
+    prisma.topic.create({
+      data: {
+        created_by_id: user.id,
+        title: "Backboard MVP",
+        viewers: {
+          connect: [{ id: tony.id }],
+        },
+        tasks: {
+          create: [
             {
               created_by_id: user.id,
-              title: "Write database & api",
-              parent_topic_order: 1,
-              size_minutes: 30,
+              title: "Build MVP",
               is_done: true,
-              done_at: new Date(),
+              done_at: new Date("2025-02-28"),
             },
           ],
         },
       },
     }),
+    // no tasks... Has contributors
     prisma.topic.create({
       data: {
         created_by_id: user.id,
@@ -123,6 +111,26 @@ async function seed() {
       },
     }),
   ])
+
+  const [topic1, topic2] = topics
+
+  // set last task as current for first 2 topics
+  await prisma.topic.update({
+    where: { id: topic1.id },
+    data: {
+      current_task: {
+        connect: { id: topic1.tasks[0].id },
+      },
+    },
+  })
+  await prisma.topic.update({
+    where: { id: topic2.id },
+    data: {
+      current_task: {
+        connect: { id: topic2.tasks[0].id },
+      },
+    },
+  })
 }
 
 seed()

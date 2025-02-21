@@ -59,24 +59,26 @@ model Person {
 }
 
 model Topic {
-  id            String      @id @default(cuid())
-  created_at    DateTime    @default(now()) @db.Timestamptz
-  created_by_id String      @default(auth().id)
-  created_by    User        @relation(fields: [created_by_id], references: [id])
+  id              String      @id @default(cuid())
+  created_at      DateTime    @default(now()) @db.Timestamptz
+  created_by_id   String      @default(auth().id)
+  created_by      User        @relation(fields: [created_by_id], references: [id])
 
-  title         String      @trim @length(min: 1, max: 300, "title must be between 1 and 300 characters")
-  description   String?
+  title           String      @trim @length(min: 1, max: 300, "title must be between 1 and 300 characters")
+  description     String?
 
-  contributors  Person[]    @relation("topic_contributors")
-  viewers       Person[]    @relation("topic_viewers")
-  is_public     Boolean     @default(false)
+  contributors    Person[]    @relation("topic_contributors")
+  viewers         Person[]    @relation("topic_viewers")
+  is_public       Boolean     @default(false)
 
-  status        TopicStatus @default(ACTIVE)
-  child_posts   Post[]      @relation("topic_child_posts")
-  child_tasks   Task[]      @relation("topic_child_tasks")
-  nibling_posts Post[]      @relation("topic_nibling_posts")
-  nibling_tasks Task[]      @relation("topic_nibling_tasks")
+  status          TopicStatus @default(ACTIVE)
+  posts           Post[]
+  tasks           Task[]      @relation("topic_tasks")
 
+  current_task_id String?     @unique
+  current_task    Task?       @relation("topic_current_task", fields: [current_task_id], references: [id])
+
+  @@unique([id, current_task_id])
 
   @@map("topics")
   @@allow("all", created_by_id == auth().id)
@@ -85,31 +87,27 @@ model Topic {
 }
 
 model Post {
-  id              String   @id @default(cuid())
-  created_at      DateTime @default(now()) @db.Timestamptz
-  created_by_id   String   @default(auth().id)
-  created_by      User     @relation(fields: [created_by_id], references: [id])
+  id            String   @id @default(cuid())
+  created_at    DateTime @default(now()) @db.Timestamptz
+  created_by_id String   @default(auth().id)
+  created_by    User     @relation(fields: [created_by_id], references: [id])
 
-  parent_topic_id String
-  parent_topic    Topic    @relation("topic_child_posts", fields: [parent_topic_id], references: [id])
+  topic_id      String
+  topic         Topic    @relation(fields: [topic_id], references: [id])
 
-  pibling_topics  Topic[]  @relation("topic_nibling_posts")
-
-  content         String
-  is_pinned       Boolean  @default(false)
-  is_archived     Boolean  @default(false)
+  title         String
+  content       String
+  is_pinned     Boolean  @default(false)
+  is_archived   Boolean  @default(false)
 
   @@map("posts")
 
   // The author of any post can do anything with it
-  @@allow("all", created_by_id == auth().id || parent_topic.created_by_id == auth().id)
-  // Contributors of the parent topic can create posts on the topic (thereafter, they are the creator so they can edit based on the above rule)
-  @@allow("create,read", parent_topic.contributors?[associated_user_id == auth().id && associated_user_id != null])
-  // Viewers of the parent topic can read posts on the topic
-  @@allow("read", parent_topic.viewers?[associated_user_id == auth().id && associated_user_id != null])
-  // Contributors & viewers of any pibling topics can read posts
-  @@allow("read", pibling_topics?[viewers?[associated_user_id == auth().id && associated_user_id != null]])
-  @@allow("read", pibling_topics?[contributors?[associated_user_id == auth().id && associated_user_id != null]])
+  @@allow("all", created_by_id == auth().id || topic.created_by_id == auth().id)
+  // Contributors of the topic can create posts on the topic (thereafter, they are the creator so they can edit based on the above rule)
+  @@allow("create,read", topic.contributors?[associated_user_id == auth().id && associated_user_id != null])
+  // Viewers of the topic can read posts on the topic
+  @@allow("read", topic.viewers?[associated_user_id == auth().id && associated_user_id != null])
 }
 
 model Task {
@@ -118,11 +116,10 @@ model Task {
   created_by_id      String     @default(auth().id)
   created_by         User       @relation(fields: [created_by_id], references: [id])
 
-  parent_topic_id    String
-  parent_topic       Topic      @relation("topic_child_tasks", fields: [parent_topic_id], references: [id])
-  parent_topic_order Int
+  topic_id           String
+  topic              Topic      @relation("topic_tasks", fields: [topic_id], references: [id])
 
-  pibling_topics     Topic[]    @relation("topic_nibling_tasks")
+  current_for_topic  Topic?     @relation("topic_current_task")
 
   title              String     @trim @length(min: 1, max: 300, "title must be between 1 and 300 characters")
   target             TaskTarget @default(NO_TARGET)
@@ -137,24 +134,23 @@ model Task {
   @@map("tasks")
 
   @@validate(is_done == false || done_at != null, "done_at must be set if is_done is true")
+  // Used like a validation rule (bc we can't read relations in @@validate) – ensures that there are no mismatched topics
+  @@deny('update', future().current_for_topic != null && future().current_for_topic.id != topic_id)
   // The creator of any task can do anything with it
   @@allow('all', created_by_id == auth().id)
-  // The creator of a tasks parent topic can do anything with the task
-  @@allow("all", parent_topic.created_by_id == auth().id)
+  // The creator of a tasks topic can do anything with the task
+  @@allow("all", topic.created_by_id == auth().id)
   // The assigned task doer can update the task, if they are also a contributor to the topic.
   // (Doers should always be topic contributors regardless but that cannot be enforced at the schema level)
   @@allow("read,update", 
-    parent_topic.contributors?[associated_user_id == auth().id && associated_user_id != null] 
+    topic.contributors?[associated_user_id == auth().id && associated_user_id != null] 
     && doer.associated_user_id == auth().id 
     && doer.associated_user_id != null
   )
   // Contributors of the parent topic can create tasks on the topic (thereafter, they are the creator so they can edit based on the above rule)
-  @@allow("create,read", parent_topic.contributors?[associated_user_id == auth().id && associated_user_id != null])
+  @@allow("create,read", topic.contributors?[associated_user_id == auth().id && associated_user_id != null])
   // Viewers of the parent topic can read tasks on the topic
-  @@allow("read", parent_topic.viewers?[associated_user_id == auth().id && associated_user_id != null])
-  // Contributors & viewers of any pibling topics can read tasks
-  @@allow("read", pibling_topics?[viewers?[associated_user_id == auth().id && associated_user_id != null]])
-  @@allow("read", pibling_topics?[contributors?[associated_user_id == auth().id && associated_user_id != null]])
+  @@allow("read", topic.viewers?[associated_user_id == auth().id && associated_user_id != null])
 }
 
 
@@ -177,5 +173,5 @@ enum TaskTarget {
   SOMEDAY
   NO_TARGET
 
-  @@map("TASK_TIMING")
+  @@map("TASK_TARGET")
 }
