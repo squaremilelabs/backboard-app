@@ -4,14 +4,14 @@ import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { twMerge } from "tailwind-merge"
-import BackboardLogo from "../common/backboard-logo"
+import BackboardLogo from "../../components/common/backboard-logo"
 
-export default function RootHeader() {
+export default function RootNavbar() {
   return (
     <header className="bg-canvas flex items-center justify-between p-2">
       <div className="flex items-center space-x-2">
         <Brand />
-        <Navigation />
+        <NavItems />
       </div>
       <div className="flex items-center">
         <SignedIn>
@@ -56,7 +56,7 @@ const selectedNavLinkClassName = twMerge(
   "border-neutral-600 text-neutral-600 font-medium rounded-b-none"
 )
 
-function Navigation() {
+function NavItems() {
   const pathname = usePathname()
 
   return (

@@ -8,7 +8,7 @@ import { Provider as ZenstackHooksProvider } from "@/database/generated/hooks"
 
 const queryClient = new QueryClient()
 
-export default function Providers({ children }: { children: React.ReactNode }) {
+export default function RootProviders({ children }: { children: React.ReactNode }) {
   return (
     <ClerkProvider>
       <QueryClientProvider client={queryClient}>
