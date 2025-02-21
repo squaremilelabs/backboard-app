@@ -10,16 +10,23 @@ export const metadata: Metadata = {
   title: "Backboard",
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({
+  children,
+  aside,
+}: {
+  children: React.ReactNode
+  aside: React.ReactNode
+}) {
   return (
     <html lang="en" className={twMerge(fontsClassName)} suppressHydrationWarning>
       <body>
         <RootProviders>
           <div className="@container/root grid h-dvh w-dvw grid-rows-[auto_1fr] overflow-auto">
             <RootNavbar />
-            <main className="@container/main relative grid h-full max-h-full grid-cols-1 grid-rows-1 overflow-auto">
-              {children}
-            </main>
+            <div>
+              <main>{children}</main>
+              <aside>{aside}</aside>
+            </div>
           </div>
         </RootProviders>
       </body>

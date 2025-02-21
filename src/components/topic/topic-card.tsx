@@ -26,7 +26,7 @@ export default function TopicCard({
   const isFocused = !disableFocusAccent && pathname.includes(topic.id)
 
   return (
-    <Link href={`/topics/id/${topic.id}`} scroll={false}>
+    <Link href={`/topic/${topic.id}`} scroll={false}>
       <div
         className={twMerge(
           "bg-canvas rounded border",
