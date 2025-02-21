@@ -3,12 +3,12 @@
 import { twMerge } from "tailwind-merge"
 import { useMemo } from "react"
 import { useUser } from "@clerk/nextjs"
-import TopicCard from "../topic-card"
+import TopicCard from "@/components/topic/topic-card"
 import useAside from "@/hooks/useAside"
 import { useFindManyTopic } from "@/database/generated/hooks"
 
 export default function ActiveTopicsGrid({
-  showOtherUserTopics = false,
+  showOtherUserTopics = true,
 }: {
   showOtherUserTopics?: boolean
 }) {
@@ -41,7 +41,7 @@ export default function ActiveTopicsGrid({
           <TopicCard
             key={topic.id}
             topic={topic}
-            href={`/topics?aside=topic:${topic.id}`}
+            href={`/topics/id/${topic.id}`}
             isFocused={aside.active?.id === topic.id}
           />
         )

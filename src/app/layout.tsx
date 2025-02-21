@@ -1,6 +1,7 @@
 import "@/styles/index.css"
 import type { Metadata } from "next"
 import { twMerge } from "tailwind-merge"
+import React from "react"
 import { fontsClassName } from "@/styles/fonts"
 import Providers from "@/providers"
 import { RootContainer } from "@/components/root/container"
