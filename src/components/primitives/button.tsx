@@ -1,14 +1,25 @@
-import { type AriaButtonOptions, useButton } from "react-aria"
-import { ElementType, useRef } from "react"
+"use client"
 
-export function Button<T extends ElementType = "button">({
+import { type AriaButtonOptions, useButton } from "react-aria"
+import { useRef } from "react"
+import { ClassNameValue, twMerge } from "tailwind-merge"
+
+export function Button({
   children,
+  className,
   ...props
-}: { children: React.ReactNode } & AriaButtonOptions<T>) {
+}: { children: React.ReactNode } & AriaButtonOptions<"button"> & { className?: ClassNameValue }) {
   const ref = useRef<HTMLButtonElement | null>(null)
-  const { buttonProps } = useButton({ ...props, elementType: "a" }, ref)
+  const { buttonProps } = useButton({ ...props }, ref)
+
+  const mergedClassName = twMerge(
+    "cursor-pointer hover:opacity-60",
+    "data-pressed:scale-95",
+    className
+  )
+
   return (
-    <button ref={ref} {...buttonProps}>
+    <button ref={ref} className={mergedClassName} {...buttonProps}>
       {children}
     </button>
   )

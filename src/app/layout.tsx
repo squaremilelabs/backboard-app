@@ -2,6 +2,7 @@ import "@/styles/index.css"
 import type { Metadata } from "next"
 import { twMerge } from "tailwind-merge"
 import React from "react"
+import RootMain from "./_parts/main"
 import RootProviders from "@/app/_parts/providers"
 import RootNavbar from "@/app/_parts/navbar"
 import { fontsClassName } from "@/styles/fonts"
@@ -23,10 +24,7 @@ export default async function RootLayout({
         <RootProviders>
           <div className="@container/root grid h-dvh w-dvw grid-rows-[auto_1fr] overflow-auto">
             <RootNavbar />
-            <div>
-              <main>{children}</main>
-              <aside>{aside}</aside>
-            </div>
+            <RootMain aside={aside}>{children}</RootMain>
           </div>
         </RootProviders>
       </body>
