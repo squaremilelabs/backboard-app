@@ -4,6 +4,7 @@ import { Task, Topic, User } from "@prisma/client"
 import Link from "next/link"
 import { twMerge } from "tailwind-merge"
 import { useUser } from "@clerk/nextjs"
+import { usePathname } from "next/navigation"
 import { TopicTaskCountBadge, TopicTaskTemporalBadge } from "./topic-task-info"
 import { formatDate } from "@/lib/utils"
 
@@ -12,20 +13,20 @@ interface TopicCardTopic extends Topic {
   child_tasks: Array<Task>
 }
 
-export default function TopicCardTopic({
+export default function TopicCard({
   topic,
-  href,
-  isFocused,
+  disableFocusAccent = false,
 }: {
   topic: TopicCardTopic
-  href: string
-  isFocused?: boolean
+  disableFocusAccent?: boolean
 }) {
+  const pathname = usePathname()
   const { user } = useUser()
   const otherOwnerName = user?.id === topic.created_by_id ? null : topic.created_by.display_name
+  const isFocused = !disableFocusAccent && pathname.includes(topic.id)
 
   return (
-    <Link href={href} scroll={false}>
+    <Link href={`/topics/id/${topic.id}`} scroll={false}>
       <div
         className={twMerge(
           "bg-canvas rounded border",

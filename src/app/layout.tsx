@@ -2,8 +2,8 @@ import "@/styles/index.css"
 import type { Metadata } from "next"
 import { twMerge } from "tailwind-merge"
 import React from "react"
-import RootProviders from "./_root-stuff/providers"
-import RootNavbar from "./_root-stuff/navbar"
+import RootProviders from "@/app/_parts/providers"
+import RootNavbar from "@/app/_parts/navbar"
 import { fontsClassName } from "@/styles/fonts"
 
 export const metadata: Metadata = {
@@ -15,9 +15,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={twMerge(fontsClassName)} suppressHydrationWarning>
       <body>
         <RootProviders>
-          <div className="@container/root grid h-dvh w-dvw grid-rows-[auto_1fr] divide-y overflow-auto">
+          <div className="@container/root grid h-dvh w-dvw grid-rows-[auto_1fr] overflow-auto">
             <RootNavbar />
-            <main className={twMerge("relative grid h-full max-h-full overflow-auto")}>
+            <main className="@container/main relative grid h-full max-h-full grid-cols-1 grid-rows-1 overflow-auto">
               {children}
             </main>
           </div>

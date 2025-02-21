@@ -4,7 +4,6 @@ import { twMerge } from "tailwind-merge"
 import { useMemo } from "react"
 import { useUser } from "@clerk/nextjs"
 import TopicCard from "@/components/topic/topic-card"
-import useAside from "@/hooks/useAside"
 import { useFindManyTopic } from "@/database/generated/hooks"
 
 export default function ActiveTopicsGrid({
@@ -13,7 +12,6 @@ export default function ActiveTopicsGrid({
   showOtherUserTopics?: boolean
 }) {
   const { user } = useUser()
-  const aside = useAside()
   const topicsQuery = useFindManyTopic({
     where: {
       status: "ACTIVE",
@@ -37,14 +35,7 @@ export default function ActiveTopicsGrid({
       className={twMerge("grid", "grid-cols-1 @sm:grid-cols-2 @lg:grid-cols-3", "gap-2 @md:gap-3")}
     >
       {displayedTopics.map((topic) => {
-        return (
-          <TopicCard
-            key={topic.id}
-            topic={topic}
-            href={`/topics/id/${topic.id}`}
-            isFocused={aside.active?.id === topic.id}
-          />
-        )
+        return <TopicCard key={topic.id} topic={topic} />
       })}
     </div>
   )

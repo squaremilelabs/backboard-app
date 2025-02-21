@@ -1,6 +1,6 @@
 import { Task, TaskTarget } from "@prisma/client"
 
-export const TASK_TARGET_ORDER: TaskTarget[] = [
+export const ORDERED_TASK_TARGETS: TaskTarget[] = [
   "TODAY",
   "THIS_WEEK",
   "NEXT_WEEK",
@@ -28,8 +28,8 @@ export function sortUndoneTasks({
       }
     }
 
-    const aTargetValue = TASK_TARGET_ORDER.indexOf(a.target)
-    const bTargetValue = TASK_TARGET_ORDER.indexOf(b.target)
+    const aTargetValue = ORDERED_TASK_TARGETS.indexOf(a.target)
+    const bTargetValue = ORDERED_TASK_TARGETS.indexOf(b.target)
 
     if (aTargetValue !== bTargetValue) {
       return aTargetValue - bTargetValue

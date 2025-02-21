@@ -4,7 +4,7 @@ import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { twMerge } from "tailwind-merge"
-import BackboardLogo from "../../components/common/backboard-logo"
+import BackboardLogo from "@/components/common/backboard-logo"
 
 export default function RootNavbar() {
   return (
@@ -78,6 +78,15 @@ function NavItems() {
         )}
       >
         Tasks
+      </Link>
+      <Link
+        href="/people"
+        className={twMerge(
+          navLinkClassName,
+          pathname.startsWith("/people") && selectedNavLinkClassName
+        )}
+      >
+        People
       </Link>
     </nav>
   )
