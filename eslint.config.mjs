@@ -41,6 +41,8 @@ export default [
         JSX: true,
       },
     },
-    ignores: ["node_modules/"],
+  },
+  {
+    ignores: ["node_modules", "src/database/generated"],
   },
 ]
