@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "vercel-build": "pnpm db:generate && pnpm db:push-hard && next build",
+    "vercel-build": "pnpm db:generate && pnpm db:reset && next build",
     "db:generate": "npx zenstack generate",
     "db:push": "npx prisma db push --skip-generate",
     "db:push-hard": "npx prisma db push --skip-generate --accept-data-loss",
