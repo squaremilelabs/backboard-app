@@ -54,7 +54,7 @@ export default function RootMain({
         className={twMerge(
           "@container/panel",
           "grid grid-cols-1 grid-rows-1 overflow-auto",
-          isAsideOpen ? "hidden @md:grid @md:w-auto" : "w-lg max-w-full justify-self-center"
+          isAsideOpen ? "hidden @md:grid @md:w-auto" : ""
         )}
       >
         {children}
@@ -62,7 +62,7 @@ export default function RootMain({
       <aside
         className={twMerge(
           "@container/panel",
-          "grid grid-cols-1 grid-rows-1 overflow-auto p-0",
+          "grid grid-cols-1 grid-rows-1 overflow-auto",
           isAsideOpen ? "" : "hidden"
         )}
       >

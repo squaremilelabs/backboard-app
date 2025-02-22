@@ -1,14 +1,14 @@
 import { twMerge } from "tailwind-merge"
 import { Check } from "lucide-react"
-import { TopicListItemData } from "@/lib/topic-utils"
-import { TASK_TARGET_DISPLAY_MAP } from "@/lib/task-utils"
+import { TopicItem } from "@/lib/topic/item-data"
+import { TASK_DONE_TARGET_DISPLAY_MAP } from "@/lib/task/constants"
 import { formatDate } from "@/lib/utils"
 
 export function TopicNextTaskBadge({
   topic,
   showEmptyDisplay,
 }: {
-  topic: TopicListItemData
+  topic: TopicItem
   showEmptyDisplay?: boolean
 }) {
   const nextTask = topic._next_task
@@ -23,7 +23,7 @@ export function TopicNextTaskBadge({
     }
   }
 
-  const nextTaskDisplay = TASK_TARGET_DISPLAY_MAP[nextTask.target]
+  const nextTaskDisplay = TASK_DONE_TARGET_DISPLAY_MAP[nextTask.done_target]
 
   return (
     <div className={twMerge(baseClassName, nextTaskDisplay.className, "px-2")}>
@@ -32,7 +32,7 @@ export function TopicNextTaskBadge({
   )
 }
 
-export function TopicDoneTasksBadge({ topic }: { topic: TopicListItemData }) {
+export function TopicDoneTasksBadge({ topic }: { topic: TopicItem }) {
   const lastDoneTask = topic._last_done_task
   const countDoneTasks = topic._count_done_tasks
 

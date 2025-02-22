@@ -2,7 +2,7 @@
 
 "use client"
 import { useFormik } from "formik"
-import { Task, TaskTarget } from "@prisma/client"
+import { Task, TaskDoneTarget } from "@prisma/client"
 import { TaskCreateScalarSchema, TaskUpdateScalarSchema } from "@zenstackhq/runtime/zod/models"
 import { toFormikValidate } from "zod-formik-adapter"
 import { ArrowRight, Bookmark, Check, Loader, Plus, Trash2 } from "lucide-react"
@@ -17,18 +17,18 @@ import {
   useFindManyTask,
   useUpdateTask,
 } from "@/database/generated/hooks"
-import { TopicListItemData, useTopicsListItem } from "@/lib/topic-utils"
+import { TopicItem, useTopicItem } from "@/lib/topic/item-data"
 import { formatDate } from "@/lib/utils"
-import { ORDERED_TASK_TARGETS, TASK_TARGET_DISPLAY_MAP } from "@/lib/task-utils"
+import { ORDERED_TASK_DONE_TARGETS, TASK_DONE_TARGET_DISPLAY_MAP } from "@/lib/task/constants"
 
 export default function TopicPanel({ id }: { id: string }) {
-  const topicQuery = useTopicsListItem(id)
+  const topicQuery = useTopicItem(id)
   const tasksQuery = useFindManyTask({
-    where: { topic_id: id, is_done: true },
+    where: { topic_id: id, done_at: { not: null } },
     orderBy: { done_at: "desc" },
   })
 
-  const topic = topicQuery.itemData
+  const topic = topicQuery.item
   return (
     <div className="flex flex-col gap-4 p-4">
       <div className="flex items-center gap-2">
@@ -63,9 +63,9 @@ export default function TopicPanel({ id }: { id: string }) {
   )
 }
 
-type NextTaskFormValues = Pick<Task, "title" | "target">
+type NextTaskFormValues = Pick<Task, "title" | "done_target">
 
-function TopicNextTaskForm({ topic }: { topic: TopicListItemData | undefined }) {
+function TopicNextTaskForm({ topic }: { topic: TopicItem | undefined }) {
   const currentTask = topic?._next_task
 
   const Schema = currentTask ? TaskUpdateScalarSchema : TaskCreateScalarSchema
@@ -73,7 +73,7 @@ function TopicNextTaskForm({ topic }: { topic: TopicListItemData | undefined }) 
   const formik = useFormik<NextTaskFormValues>({
     initialValues: {
       title: currentTask?.title || "",
-      target: currentTask?.target || "NO_TARGET",
+      done_target: currentTask?.done_target || "NO_TARGET",
     },
     enableReinitialize: true,
     validate: toFormikValidate(Schema),
@@ -85,7 +85,7 @@ function TopicNextTaskForm({ topic }: { topic: TopicListItemData | undefined }) 
         createMutation.mutate({
           data: {
             title: values.title,
-            target: values.target,
+            done_target: values.done_target,
             topic_id: topic?.id,
             current_for_topic: { connect: { id: topic.id } },
           },
@@ -136,10 +136,10 @@ function TopicNextTaskForm({ topic }: { topic: TopicListItemData | undefined }) 
           />
           {formik.values.title ? (
             <TaskTargetSelect
-              selected={formik.values.target}
+              selected={formik.values.done_target}
               onSelect={(target) => {
-                formik.setFieldTouched("target")
-                formik.setFieldValue("target", target)
+                formik.setFieldTouched("done_target")
+                formik.setFieldValue("done_target", target)
                 formik.submitForm()
               }}
             />
@@ -155,7 +155,6 @@ function TopicNextTaskForm({ topic }: { topic: TopicListItemData | undefined }) 
                   updateMutation.mutate({
                     where: { id: currentTask.id },
                     data: {
-                      is_done: true,
                       done_at: new Date(),
                       current_for_topic: { disconnect: { id: topic.id } },
                     },
@@ -184,14 +183,14 @@ function TaskTargetSelect({
   selected,
   onSelect,
 }: {
-  selected: TaskTarget
-  onSelect: (target: TaskTarget) => void
+  selected: TaskDoneTarget
+  onSelect: (target: TaskDoneTarget) => void
 }) {
   const [open, setOpen] = useState(false)
 
   const buttonBaseClassName = "py-0.5 rounded px-4"
 
-  const selectedDisplay = TASK_TARGET_DISPLAY_MAP[selected]
+  const selectedDisplay = TASK_DONE_TARGET_DISPLAY_MAP[selected]
   const triggerContent = (
     <div className={twMerge(buttonBaseClassName, selectedDisplay.className, "border")}>
       {selectedDisplay.label}
@@ -199,8 +198,8 @@ function TaskTargetSelect({
   )
 
   const popoverClassName = twMerge("grid grid-cols-1 gap-2 p-2")
-  const popoverContent = ORDERED_TASK_TARGETS.map((target) => {
-    const display = TASK_TARGET_DISPLAY_MAP[target]
+  const popoverContent = ORDERED_TASK_DONE_TARGETS.map((target) => {
+    const display = TASK_DONE_TARGET_DISPLAY_MAP[target]
     return (
       <Button
         key={target}

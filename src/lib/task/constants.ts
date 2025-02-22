@@ -1,6 +1,6 @@
-import { TaskTarget } from "@prisma/client"
+import { TaskDoneTarget } from "@prisma/client"
 
-export const ORDERED_TASK_TARGETS: TaskTarget[] = [
+export const ORDERED_TASK_DONE_TARGETS: TaskDoneTarget[] = [
   "TODAY",
   "THIS_WEEK",
   "NEXT_WEEK",
@@ -10,7 +10,10 @@ export const ORDERED_TASK_TARGETS: TaskTarget[] = [
   "NO_TARGET",
 ]
 
-export const TASK_TARGET_DISPLAY_MAP: Record<TaskTarget, { label: string; className: string }> = {
+export const TASK_DONE_TARGET_DISPLAY_MAP: Record<
+  TaskDoneTarget,
+  { label: string; className: string }
+> = {
   TODAY: { label: "Today", className: "bg-gold-600 text-gold-50" },
   THIS_WEEK: { label: "This week", className: "bg-gold-300 text-gold-900" },
   NEXT_WEEK: { label: "Next week", className: "bg-blue-200 text-blue-700" },

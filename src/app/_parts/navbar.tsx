@@ -1,16 +1,18 @@
 "use client"
 
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs"
-import { useSelectedLayoutSegments } from "next/navigation"
+import { usePathname, useSelectedLayoutSegments } from "next/navigation"
 import Link from "next/link"
 import { twMerge } from "tailwind-merge"
 import BackboardLogo from "@/components/common/backboard-logo"
 
 export default function RootNavbar() {
+  const pathname = usePathname()
+  const isHome = pathname === "/"
   return (
     <header className="bg-canvas flex items-center justify-between border-b p-2">
       <div className="flex items-center space-x-2">
-        <Brand />
+        {!isHome ? <Brand /> : null}
         <NavItems />
       </div>
       <div className="flex items-center">

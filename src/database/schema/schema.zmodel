@@ -22,10 +22,12 @@ plugin hooks {
 model User {
   id                    String   @id @deny('update', true) // Should match clerk auth ID
   created_at            DateTime @default(now()) @db.Timestamptz @deny('update', true)
+  updated_at            DateTime @updatedAt @db.Timestamptz
+
   display_name          String   @trim @length(min: 1, max: 50, "name must be between 1 and 50 characters")
   email                 String   @email @unique
-  associated_as_persons Person[] @relation('associated_as_persons')
 
+  associated_as_persons Person[] @relation('associated_as_persons')
   persons               Person[] @relation('created_persons')
   topics                Topic[]
   posts                 Post[]
@@ -40,6 +42,7 @@ model User {
 model Person {
   id                  String   @id @default(cuid())
   created_at          DateTime @default(now()) @db.Timestamptz
+  updated_at          DateTime @updatedAt @db.Timestamptz
   created_by_id       String   @default(auth().id)
   created_by          User     @relation('created_persons', fields: [created_by_id], references: [id])
 
@@ -61,6 +64,7 @@ model Person {
 model Topic {
   id              String      @id @default(cuid())
   created_at      DateTime    @default(now()) @db.Timestamptz
+  updated_at      DateTime    @updatedAt @db.Timestamptz
   created_by_id   String      @default(auth().id)
   created_by      User        @relation(fields: [created_by_id], references: [id])
 
@@ -89,6 +93,7 @@ model Topic {
 model Post {
   id            String   @id @default(cuid())
   created_at    DateTime @default(now()) @db.Timestamptz
+  updated_at    DateTime @updatedAt @db.Timestamptz
   created_by_id String   @default(auth().id)
   created_by    User     @relation(fields: [created_by_id], references: [id])
 
@@ -111,29 +116,28 @@ model Post {
 }
 
 model Task {
-  id                 String     @id @default(cuid())
-  created_at         DateTime   @default(now()) @db.Timestamptz
-  updated_at         DateTime   @updatedAt @db.Timestamptz
-  created_by_id      String     @default(auth().id)
-  created_by         User       @relation(fields: [created_by_id], references: [id])
+  id                String         @id @default(cuid())
+  created_at        DateTime       @default(now()) @db.Timestamptz
+  updated_at        DateTime       @updatedAt @db.Timestamptz
+  created_by_id     String         @default(auth().id)
+  created_by        User           @relation(fields: [created_by_id], references: [id])
 
-  topic_id           String
-  topic              Topic      @relation("topic_tasks", fields: [topic_id], references: [id])
+  topic_id          String
+  topic             Topic          @relation("topic_tasks", fields: [topic_id], references: [id])
 
-  current_for_topic  Topic?     @relation("topic_current_task")
+  current_for_topic Topic?         @relation("topic_current_task")
 
-  title              String     @trim @length(min: 1, max: 300, "title must be between 1 and 300 characters")
-  target             TaskTarget @default(NO_TARGET)
-  size_minutes       Int?       @gte(5, "size must be at least 5 minutes") @lte(240, "size must be at most 4 hours (240 minutes)")
-  is_done            Boolean    @default(false)
-  done_at            DateTime?  @db.Timestamptz
+  title             String         @trim @length(min: 1, max: 300, "title must be between 1 and 300 characters")
+  description       String?
 
-  doer_id            String?
-  doer               Person?    @relation(fields: [doer_id], references: [id])
+  done_target       TaskDoneTarget @default(NO_TARGET)
+  done_at           DateTime?      @db.Timestamptz
+
+  doer_id           String?
+  doer              Person?        @relation(fields: [doer_id], references: [id])
 
   @@map("tasks")
 
-  @@validate(is_done == false || done_at != null, "done_at must be set if is_done is true")
   // The creator of any task can do anything with it
   @@allow('all', created_by_id == auth().id)
   // The creator of a tasks topic can do anything with the task
@@ -142,7 +146,7 @@ model Task {
   // (Doers should always be topic contributors regardless but that cannot be enforced at the schema level)
   @@allow("read,update", 
     topic.contributors?[associated_user_id == auth().id && associated_user_id != null] 
-    && doer.associated_user_id == auth().id 
+    && doer.associated_user_id == auth().id
     && doer.associated_user_id != null
   )
   // Contributors of the parent topic can create tasks on the topic (thereafter, they are the creator so they can edit based on the above rule)
@@ -162,7 +166,7 @@ enum TopicStatus {
   @@map("TOPIC_STATUS")
 }
 
-enum TaskTarget {
+enum TaskDoneTarget {
   TODAY
   THIS_WEEK
   NEXT_WEEK
@@ -171,5 +175,5 @@ enum TaskTarget {
   SOMEDAY
   NO_TARGET
 
-  @@map("TASK_TARGET")
+  @@map("TASK_DONE_TARGET")
 }

@@ -22,7 +22,7 @@ enum TopicStatus {
   @@map("TOPIC_STATUS")
 }
 
-enum TaskTarget {
+enum TaskDoneTarget {
   TODAY
   THIS_WEEK
   NEXT_WEEK
@@ -31,12 +31,13 @@ enum TaskTarget {
   SOMEDAY
   NO_TARGET
 
-  @@map("TASK_TARGET")
+  @@map("TASK_DONE_TARGET")
 }
 
 model User {
   id                    String   @id()
   created_at            DateTime @default(now()) @db.Timestamptz()
+  updated_at            DateTime @updatedAt() @db.Timestamptz()
   display_name          String
   email                 String   @unique()
   associated_as_persons Person[] @relation("associated_as_persons")
@@ -51,6 +52,7 @@ model User {
 model Person {
   id                  String   @id() @default(cuid())
   created_at          DateTime @default(now()) @db.Timestamptz()
+  updated_at          DateTime @updatedAt() @db.Timestamptz()
   created_by_id       String
   created_by          User     @relation("created_persons", fields: [created_by_id], references: [id])
   name                String
@@ -67,6 +69,7 @@ model Person {
 model Topic {
   id              String      @id() @default(cuid())
   created_at      DateTime    @default(now()) @db.Timestamptz()
+  updated_at      DateTime    @updatedAt() @db.Timestamptz()
   created_by_id   String
   created_by      User        @relation(fields: [created_by_id], references: [id])
   title           String
@@ -87,6 +90,7 @@ model Topic {
 model Post {
   id            String   @id() @default(cuid())
   created_at    DateTime @default(now()) @db.Timestamptz()
+  updated_at    DateTime @updatedAt() @db.Timestamptz()
   created_by_id String
   created_by    User     @relation(fields: [created_by_id], references: [id])
   topic_id      String
@@ -100,21 +104,20 @@ model Post {
 }
 
 model Task {
-  id                String     @id() @default(cuid())
-  created_at        DateTime   @default(now()) @db.Timestamptz()
-  updated_at        DateTime   @updatedAt() @db.Timestamptz()
+  id                String         @id() @default(cuid())
+  created_at        DateTime       @default(now()) @db.Timestamptz()
+  updated_at        DateTime       @updatedAt() @db.Timestamptz()
   created_by_id     String
-  created_by        User       @relation(fields: [created_by_id], references: [id])
+  created_by        User           @relation(fields: [created_by_id], references: [id])
   topic_id          String
-  topic             Topic      @relation("topic_tasks", fields: [topic_id], references: [id])
-  current_for_topic Topic?     @relation("topic_current_task")
+  topic             Topic          @relation("topic_tasks", fields: [topic_id], references: [id])
+  current_for_topic Topic?         @relation("topic_current_task")
   title             String
-  target            TaskTarget @default(NO_TARGET)
-  size_minutes      Int?
-  is_done           Boolean    @default(false)
-  done_at           DateTime?  @db.Timestamptz()
+  description       String?
+  done_target       TaskDoneTarget @default(NO_TARGET)
+  done_at           DateTime?      @db.Timestamptz()
   doer_id           String?
-  doer              Person?    @relation(fields: [doer_id], references: [id])
+  doer              Person?        @relation(fields: [doer_id], references: [id])
 
   @@map("tasks")
 }

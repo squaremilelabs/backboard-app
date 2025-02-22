@@ -31,32 +31,28 @@ async function seed() {
             {
               created_by_id: user.id,
               title: "Reconcile balance sheet accounts",
-              is_done: true,
               done_at: new Date("2024-12-31"),
             },
             {
               created_by_id: user.id,
               title: "Gather all available tax documents",
-              is_done: true,
               done_at: new Date("2025-01-15"),
             },
             {
               created_by_id: user.id,
               title: "Engage tax accountants",
-              is_done: true,
               done_at: new Date("2025-02-15"),
             },
             {
               created_by_id: user.id,
               title: "Review and approve tax filings",
-              target: "THIS_WEEK",
-              is_done: false,
+              done_target: "NEXT_WEEK",
             },
           ],
         },
       },
       include: {
-        tasks: { where: { is_done: false } },
+        tasks: { where: { done_at: { not: null } } },
       },
     }),
     // 0-done, 1 current ... Has viewers
@@ -72,8 +68,7 @@ async function seed() {
             {
               created_by_id: user.id,
               title: "Make wireframes",
-              target: "NEXT_MONTH",
-              is_done: false,
+              done_target: "NEXT_MONTH",
             },
           ],
         },
@@ -93,7 +88,6 @@ async function seed() {
             {
               created_by_id: user.id,
               title: "Build MVP",
-              is_done: true,
               done_at: new Date("2025-02-28"),
             },
           ],

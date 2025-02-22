@@ -17,6 +17,10 @@ const metadata = {
                     name: "created_at",
                     type: "DateTime",
                     attributes: [{ "name": "@default", "args": [] }],
+                }, updated_at: {
+                    name: "updated_at",
+                    type: "DateTime",
+                    attributes: [{ "name": "@updatedAt", "args": [] }],
                 }, display_name: {
                     name: "display_name",
                     type: "String",
@@ -78,6 +82,10 @@ const metadata = {
                     name: "created_at",
                     type: "DateTime",
                     attributes: [{ "name": "@default", "args": [] }],
+                }, updated_at: {
+                    name: "updated_at",
+                    type: "DateTime",
+                    attributes: [{ "name": "@updatedAt", "args": [] }],
                 }, created_by_id: {
                     name: "created_by_id",
                     type: "String",
@@ -152,6 +160,10 @@ const metadata = {
                     name: "created_at",
                     type: "DateTime",
                     attributes: [{ "name": "@default", "args": [] }],
+                }, updated_at: {
+                    name: "updated_at",
+                    type: "DateTime",
+                    attributes: [{ "name": "@updatedAt", "args": [] }],
                 }, created_by_id: {
                     name: "created_by_id",
                     type: "String",
@@ -247,6 +259,10 @@ const metadata = {
                     name: "created_at",
                     type: "DateTime",
                     attributes: [{ "name": "@default", "args": [] }],
+                }, updated_at: {
+                    name: "updated_at",
+                    type: "DateTime",
+                    attributes: [{ "name": "@updatedAt", "args": [] }],
                 }, created_by_id: {
                     name: "created_by_id",
                     type: "String",
@@ -348,18 +364,14 @@ const metadata = {
                 }, title: {
                     name: "title",
                     type: "String",
-                }, target: {
-                    name: "target",
-                    type: "TaskTarget",
-                    attributes: [{ "name": "@default", "args": [] }],
-                }, size_minutes: {
-                    name: "size_minutes",
-                    type: "Int",
+                }, description: {
+                    name: "description",
+                    type: "String",
                     isOptional: true,
-                }, is_done: {
-                    name: "is_done",
-                    type: "Boolean",
-                    attributes: [{ "name": "@default", "args": [{ "value": false }] }],
+                }, done_target: {
+                    name: "done_target",
+                    type: "TaskDoneTarget",
+                    attributes: [{ "name": "@default", "args": [] }],
                 }, done_at: {
                     name: "done_at",
                     type: "DateTime",

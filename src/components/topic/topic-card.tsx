@@ -4,13 +4,13 @@ import Link from "next/link"
 import { twMerge } from "tailwind-merge"
 import { usePathname } from "next/navigation"
 import { TopicDoneTasksBadge, TopicNextTaskBadge } from "./topic-task-info"
-import { TopicListItemData } from "@/lib/topic-utils"
+import { TopicItem } from "@/lib/topic/item-data"
 
 export default function TopicCard({
   topic,
   disableFocusAccent = false,
 }: {
-  topic: TopicListItemData
+  topic: TopicItem
   disableFocusAccent?: boolean
 }) {
   const pathname = usePathname()
