@@ -49,7 +49,7 @@ export default function TopicPanel({ id }: { id: string }) {
                 </div>
               }
               panelContent={
-                <div className="flex flex-col gap-2 pt-1">
+                <div className="flex flex-col gap-1 pt-1">
                   {tasksQuery?.data?.map((task) => {
                     return <DoneTaskListItem key={task.id} task={task} />
                   })}
