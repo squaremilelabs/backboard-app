@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "vercel-build": "npx zenstack generate && npx prisma db push --skip-generate && next build",
     "db:generate": "npx zenstack generate",
     "db:push": "npx prisma db push --skip-generate",
     "db:reset": "npx prisma db push --skip-generate --force-reset && npx prisma db seed"
