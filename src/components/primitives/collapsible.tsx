@@ -1,7 +1,7 @@
 "use client"
 import { Collapsible as RadixCollapsible } from "radix-ui"
 import React, { useEffect, useState } from "react"
-import { ChevronRight } from "lucide-react"
+import { ChevronDown } from "lucide-react"
 import { ClassNameValue, twMerge } from "tailwind-merge"
 
 export default function Collapsible({
@@ -33,8 +33,11 @@ export default function Collapsible({
           titleClassName
         )}
       >
-        <ChevronRight size={20} className={open ? "rotate-90" : "rotate-0"} />
         {titleContent}
+        <ChevronDown
+          size={20}
+          className={twMerge("transition-all", open ? "rotate-0" : "rotate-90")}
+        />
       </RadixCollapsible.Trigger>
       <RadixCollapsible.Content className={twMerge("", panelClassName)}>
         {panelContent}

@@ -41,6 +41,7 @@ export default function TopicPanel({ id }: { id: string }) {
           <TopicNextTaskForm topic={topic} />
           {topic?._count_done_tasks ? (
             <Collapsible
+              defaultOpen
               titleClassName="w-full py-2 pr-2"
               titleContent={
                 <div className="flex w-full items-end gap-4">
@@ -49,7 +50,7 @@ export default function TopicPanel({ id }: { id: string }) {
                 </div>
               }
               panelContent={
-                <div className="flex flex-col gap-1 pt-1">
+                <div className="flex flex-col gap-1 p-0">
                   {tasksQuery?.data?.map((task) => {
                     return <DoneTaskListItem key={task.id} task={task} />
                   })}
@@ -109,7 +110,7 @@ function TopicNextTaskForm({ topic }: { topic: TopicListItemData | undefined }) 
         <div className="flex items-center gap-1 pr-1 @sm:items-end @sm:justify-between">
           <p className="font-medium">{topic._count_done_tasks === 0 ? "First" : "Next"} task</p>
           <p className="rounded pl-2 text-sm text-neutral-600">
-            Last updated: {formatDate(currentTask.updated_at, { withTime: true })}
+            Last edited {formatDate(currentTask.updated_at)}
           </p>
         </div>
       ) : null}
@@ -117,14 +118,11 @@ function TopicNextTaskForm({ topic }: { topic: TopicListItemData | undefined }) 
       <div className="flex flex-col gap-1">
         <form
           className={twMerge(
-            "flex w-full items-center rounded border pr-1 pl-2",
-            currentTask ? "bg-canvas" : "",
+            "bg-canvas flex w-full items-center rounded border pr-1 pl-2",
             !currentTask && !formik.values.title
-              ? "not-focus-within:w-[130px] not-focus-within:self-start"
+              ? "not-focus-within:w-[130px] not-focus-within:self-start hover:opacity-70"
               : null,
-            "ring-gold-600 focus-within:bg-canvas focus-within:ring-1",
-            "hover:bg-canvas",
-            "transition-all"
+            "ring-gold-600 focus-within:bg-canvas focus-within:ring-1"
           )}
           onSubmit={formik.handleSubmit}
         >
@@ -198,7 +196,7 @@ function TaskTargetSelect({
 }) {
   const [open, setOpen] = useState(false)
 
-  const buttonBaseClassName = "px-2 py-1 rounded @sm:px-8"
+  const buttonBaseClassName = "py-0.5 rounded px-4"
 
   const selectedDisplay = TASK_TARGET_DISPLAY_MAP[selected]
   const triggerContent = (
@@ -207,7 +205,7 @@ function TaskTargetSelect({
     </div>
   )
 
-  const popoverClassName = twMerge("grid grid-cols-1 gap-1.5")
+  const popoverClassName = twMerge("grid grid-cols-1 gap-2 p-2")
   const popoverContent = ORDERED_TASK_TARGETS.map((target) => {
     const display = TASK_TARGET_DISPLAY_MAP[target]
     return (
@@ -216,8 +214,8 @@ function TaskTargetSelect({
         className={twMerge(
           buttonBaseClassName,
           display.className,
-          "px-8",
-          selected === target ? "border-2 border-neutral-500" : null
+          "px-4",
+          selected === target ? "ring-2 ring-neutral-400 ring-offset-2" : ""
         )}
         onPress={() => {
           onSelect(target)
@@ -236,7 +234,7 @@ function TaskTargetSelect({
       triggerContent={triggerContent}
       popoverContent={popoverContent}
       popoverClassName={popoverClassName}
-      placement="bottom-end"
+      placement="right-start"
     />
   )
 }

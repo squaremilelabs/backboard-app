@@ -1,16 +1,16 @@
 :root {
   /* BACKBOARD NEUTRAL */
-  --bb-neutral-50: oklch(97.59% 0.00 264.54);
-  --bb-neutral-100: oklch(94.87% 0.01 264.53);
-  --bb-neutral-200: oklch(88.49% 0.01 266.69);
-  --bb-neutral-300: oklch(78.83% 0.02 254.94);
-  --bb-neutral-400: oklch(66.51% 0.04 256.79);
-  --bb-neutral-500: oklch(55.44% 0.04 257.42);
-  --bb-neutral-600: oklch(48.62% 0.04 260.28);
-  --bb-neutral-700: oklch(42.19% 0.03 261.30);
-  --bb-neutral-800: oklch(37.84% 0.03 264.13);
-  --bb-neutral-900: oklch(34.77% 0.02 264.22);
-  --bb-neutral-950: oklch(27.17% 0.01 261.68);
+  --bb-neutral-50: oklch(0.985 0 0);
+  --bb-neutral-100: oklch(0.97 0 0);
+  --bb-neutral-200: oklch(0.922 0 0);
+  --bb-neutral-300: oklch(0.87 0 0);
+  --bb-neutral-400: oklch(0.708 0 0);
+  --bb-neutral-500: oklch(0.556 0 0);
+  --bb-neutral-600: oklch(0.439 0 0);
+  --bb-neutral-700: oklch(0.371 0 0);
+  --bb-neutral-800: oklch(0.269 0 0);
+  --bb-neutral-900: oklch(0.205 0 0);
+  --bb-neutral-950: oklch(0.145 0 0);
   /* BACKBOARD GOLD */
   --bb-gold-50: oklch(97.94% 0.02 103.14);
   --bb-gold-100: oklch(94.93% 0.05 101.86);
