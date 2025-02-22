@@ -100,21 +100,21 @@ model Post {
 }
 
 model Task {
-  id                 String     @id() @default(cuid())
-  created_at         DateTime   @default(now()) @db.Timestamptz()
-  created_by_id      String
-  created_by         User       @relation(fields: [created_by_id], references: [id])
-  topic_id           String
-  topic              Topic      @relation("topic_tasks", fields: [topic_id], references: [id])
-  current_for_topic  Topic?     @relation("topic_current_task")
-  title              String
-  target             TaskTarget @default(NO_TARGET)
-  target_last_set_at DateTime?  @db.Timestamptz()
-  size_minutes       Int?
-  is_done            Boolean    @default(false)
-  done_at            DateTime?  @db.Timestamptz()
-  doer_id            String?
-  doer               Person?    @relation(fields: [doer_id], references: [id])
+  id                String     @id() @default(cuid())
+  created_at        DateTime   @default(now()) @db.Timestamptz()
+  updated_at        DateTime   @updatedAt() @db.Timestamptz()
+  created_by_id     String
+  created_by        User       @relation(fields: [created_by_id], references: [id])
+  topic_id          String
+  topic             Topic      @relation("topic_tasks", fields: [topic_id], references: [id])
+  current_for_topic Topic?     @relation("topic_current_task")
+  title             String
+  target            TaskTarget @default(NO_TARGET)
+  size_minutes      Int?
+  is_done           Boolean    @default(false)
+  done_at           DateTime?  @db.Timestamptz()
+  doer_id           String?
+  doer              Person?    @relation(fields: [doer_id], references: [id])
 
   @@map("tasks")
 }

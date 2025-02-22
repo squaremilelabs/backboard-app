@@ -309,6 +309,10 @@ const metadata = {
                     name: "created_at",
                     type: "DateTime",
                     attributes: [{ "name": "@default", "args": [] }],
+                }, updated_at: {
+                    name: "updated_at",
+                    type: "DateTime",
+                    attributes: [{ "name": "@updatedAt", "args": [] }],
                 }, created_by_id: {
                     name: "created_by_id",
                     type: "String",
@@ -348,10 +352,6 @@ const metadata = {
                     name: "target",
                     type: "TaskTarget",
                     attributes: [{ "name": "@default", "args": [] }],
-                }, target_last_set_at: {
-                    name: "target_last_set_at",
-                    type: "DateTime",
-                    isOptional: true,
                 }, size_minutes: {
                     name: "size_minutes",
                     type: "Int",

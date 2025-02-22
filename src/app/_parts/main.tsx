@@ -62,19 +62,22 @@ export default function RootMain({
       <aside
         className={twMerge(
           "@container/panel",
-          "grid grid-cols-1 grid-rows-1 overflow-auto p-0 @md:p-4",
+          "grid grid-cols-1 grid-rows-1 overflow-auto p-0",
           isAsideOpen ? "" : "hidden"
         )}
       >
-        <div className="grid grid-cols-1 grid-rows-[auto_1fr] overflow-auto rounded @md/main:border">
+        <div className="grid grid-cols-1 grid-rows-[auto_1fr] overflow-auto @md/main:border-l">
           <div
             className={twMerge(
               "flex p-2",
               // responsive background color & border
-              "@md/main:bg-canvas @md/main:border-b @md/main:p-1 @md/main:dark:bg-neutral-100"
+              "@md/main:border-b @md/main:px-2"
             )}
           >
-            <Button onPress={closeAside} className="flex w-full items-center space-x-1">
+            <Button
+              onPress={closeAside}
+              className="flex w-full items-center space-x-1 text-neutral-600"
+            >
               {/* Show "Close" if displayed as an aside (desktop) */}
               <X className="hidden @md/main:block" size={16} />
               <span className="hidden text-sm @md/main:block">Close</span>

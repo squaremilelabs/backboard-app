@@ -1,4 +1,7 @@
+// E: This is too big of a component. Will refactor later.
+
 "use client"
+
 import { useFormik } from "formik"
 import { Task, TaskTarget } from "@prisma/client"
 import { TaskCreateScalarSchema, TaskUpdateScalarSchema } from "@zenstackhq/runtime/zod/models"
@@ -31,28 +34,30 @@ export default function TopicPanel({ id }: { id: string }) {
   return (
     <div className="flex flex-col gap-4 p-4">
       <div className="flex items-center">
-        <h1 className="text-xl">{topic?.title}</h1>
+        <h1 className="text-xl font-semibold">{topic?.title ?? "-"}</h1>
       </div>
       <div className="flex flex-col gap-4">
-        <TopicNextTaskForm topic={topic} />
-        {topic?._count_done_tasks ? (
-          <Collapsible
-            titleClassName="w-full py-2 pr-2"
-            titleContent={
-              <div className="flex w-full items-end gap-4">
-                <p className="font-medium">Done tasks</p>
-                <TopicDoneTasksBadge topic={topic} />
-              </div>
-            }
-            panelContent={
-              <div className="flex flex-col gap-2 pt-1">
-                {tasksQuery?.data?.map((task) => {
-                  return <DoneTaskListItem key={task.id} task={task} />
-                })}
-              </div>
-            }
-          />
-        ) : null}
+        <div className="flex flex-col gap-4">
+          <TopicNextTaskForm topic={topic} />
+          {topic?._count_done_tasks ? (
+            <Collapsible
+              titleClassName="w-full py-2 pr-2"
+              titleContent={
+                <div className="flex w-full items-end gap-4">
+                  <p className="font-medium">Done tasks</p>
+                  <TopicDoneTasksBadge topic={topic} />
+                </div>
+              }
+              panelContent={
+                <div className="flex flex-col gap-2 pt-1">
+                  {tasksQuery?.data?.map((task) => {
+                    return <DoneTaskListItem key={task.id} task={task} />
+                  })}
+                </div>
+              }
+            />
+          ) : null}
+        </div>
       </div>
     </div>
   )
@@ -104,7 +109,7 @@ function TopicNextTaskForm({ topic }: { topic: TopicListItemData | undefined }) 
         <div className="flex items-center gap-1 pr-1 @sm:items-end @sm:justify-between">
           <p className="font-medium">{topic._count_done_tasks === 0 ? "First" : "Next"} task</p>
           <p className="rounded pl-2 text-sm text-neutral-600">
-            Added {formatDate(currentTask.created_at, { withTime: true })}
+            Last updated: {formatDate(currentTask.updated_at, { withTime: true })}
           </p>
         </div>
       ) : null}
