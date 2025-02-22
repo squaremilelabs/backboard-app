@@ -134,8 +134,6 @@ model Task {
   @@map("tasks")
 
   @@validate(is_done == false || done_at != null, "done_at must be set if is_done is true")
-  // Used like a validation rule (bc we can't read relations in @@validate) – ensures that there are no mismatched topics
-  @@deny('update', future().current_for_topic != null && future().current_for_topic.id != topic_id)
   // The creator of any task can do anything with it
   @@allow('all', created_by_id == auth().id)
   // The creator of a tasks topic can do anything with the task

@@ -158,7 +158,19 @@ function TopicNextTaskForm({ topic }: { topic: TopicListItemData | undefined }) 
         {currentTask ? (
           <div className="flex items-start justify-between">
             <div className="flex justify-end gap-1">
-              <Button className="bg-canvas flex items-center gap-1 rounded border px-2 py-1 text-sm text-neutral-500">
+              <Button
+                className="bg-canvas flex items-center gap-1 rounded border px-2 py-1 text-sm text-neutral-500"
+                onPress={() =>
+                  updateMutation.mutate({
+                    where: { id: currentTask.id },
+                    data: {
+                      is_done: true,
+                      done_at: new Date(),
+                      current_for_topic: { disconnect: { id: topic.id } },
+                    },
+                  })
+                }
+              >
                 <Check size={16} />
                 Mark as done
               </Button>
