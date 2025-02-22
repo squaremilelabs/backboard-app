@@ -3,7 +3,7 @@ import { BookMarked } from "lucide-react"
 export default function TopicsLayout({ children }: { children: React.ReactNode }) {
   return (
     <div>
-      <div className="p-4">
+      <div className="px-4 py-4 @md:py-12">
         <div className="flex items-center gap-2">
           <BookMarked size={24} />
           <h1 className="text-xl font-semibold">Topics</h1>
