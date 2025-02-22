@@ -1,3 +1,0 @@
-{
-  "buildCommand": "zenstack generate && prisma db push --force-reset && prisma db seed && next build"
-}
