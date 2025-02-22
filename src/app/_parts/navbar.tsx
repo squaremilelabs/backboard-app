@@ -63,7 +63,10 @@ function NavItems() {
     <nav className={twMerge("flex items-stretch space-x-2")}>
       <Link
         href="/topics"
-        className={twMerge(navLinkClassName, segments[0] === "topics" && selectedNavLinkClassName)}
+        className={twMerge(
+          navLinkClassName,
+          segments.includes("topics") && selectedNavLinkClassName
+        )}
       >
         Topics
       </Link>

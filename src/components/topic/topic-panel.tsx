@@ -6,7 +6,7 @@ import { useFormik } from "formik"
 import { Task, TaskTarget } from "@prisma/client"
 import { TaskCreateScalarSchema, TaskUpdateScalarSchema } from "@zenstackhq/runtime/zod/models"
 import { toFormikValidate } from "zod-formik-adapter"
-import { ArrowRight, Check, Loader, Plus, Trash2 } from "lucide-react"
+import { ArrowRight, Bookmark, Check, Loader, Plus, Trash2 } from "lucide-react"
 import { twMerge } from "tailwind-merge"
 import { useState } from "react"
 import Collapsible from "../primitives/collapsible"
@@ -33,7 +33,8 @@ export default function TopicPanel({ id }: { id: string }) {
   const topic = topicQuery.itemData
   return (
     <div className="flex flex-col gap-4 p-4">
-      <div className="flex items-center">
+      <div className="flex items-center gap-2">
+        <Bookmark size={24} />
         <h1 className="text-xl font-semibold">{topic?.title ?? "-"}</h1>
       </div>
       <div className="flex flex-col gap-4">
@@ -119,9 +120,6 @@ function TopicNextTaskForm({ topic }: { topic: TopicListItemData | undefined }) 
         <form
           className={twMerge(
             "bg-canvas flex w-full items-center rounded border pr-1 pl-2",
-            !currentTask && !formik.values.title
-              ? "not-focus-within:w-[130px] not-focus-within:self-start hover:opacity-70"
-              : null,
             "ring-gold-600 focus-within:bg-canvas focus-within:ring-1"
           )}
           onSubmit={formik.handleSubmit}
@@ -134,11 +132,11 @@ function TopicNextTaskForm({ topic }: { topic: TopicListItemData | undefined }) 
           </div>
           <input
             {...formik.getFieldProps("title")}
-            className="grow p-2 !ring-0 !outline-0"
+            className="placeholder-gold-600/80 grow p-2 !ring-0 !outline-0"
             placeholder={
               currentTask
                 ? "Title required!"
-                : `Add ${topic?._count_done_tasks ? "next" : "first"} task`
+                : `${topic?._count_done_tasks ? "What's the next task?" : "What's the first task?"}`
             }
           />
           {formik.values.title ? (
@@ -243,7 +241,7 @@ function DoneTaskListItem({ task }: { task: Task }) {
   return (
     <div className="bg-canvas flex items-center rounded border px-2 pr-1">
       <div className="flex size-[20px] items-center justify-center">
-        <Check size={16} className="text-green-600" />
+        <Check size={16} />
       </div>
       <p className="grow p-2">{task.title}</p>
       {task.done_at ? (

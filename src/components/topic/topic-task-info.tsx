@@ -4,13 +4,23 @@ import { TopicListItemData } from "@/lib/topic-utils"
 import { TASK_TARGET_DISPLAY_MAP } from "@/lib/task-utils"
 import { formatDate } from "@/lib/utils"
 
-export function TopicNextTaskBadge({ topic }: { topic: TopicListItemData }) {
+export function TopicNextTaskBadge({
+  topic,
+  showEmptyDisplay,
+}: {
+  topic: TopicListItemData
+  showEmptyDisplay?: boolean
+}) {
   const nextTask = topic._next_task
 
   const baseClassName = "rounded py-0.5 text-sm min-w-fit"
 
   if (!nextTask) {
-    return <div className={twMerge(baseClassName, "text-neutral-400")}>No next task</div>
+    if (showEmptyDisplay) {
+      return <div className={twMerge(baseClassName, "text-neutral-400")}>No next task</div>
+    } else {
+      return null
+    }
   }
 
   const nextTaskDisplay = TASK_TARGET_DISPLAY_MAP[nextTask.target]
@@ -34,7 +44,7 @@ export function TopicDoneTasksBadge({ topic }: { topic: TopicListItemData }) {
     <div className="flex items-stretch gap-2">
       <div className={twMerge(baseClassName, countDoneTasks ? "" : "text-neutral-400")}>
         {countDoneTasks ? <Check size={12} className="mr-1" /> : null}
-        <span className="text-sm">{countDoneTasks ? countDoneTasks : "No tasks done"} </span>
+        <span className="text-sm">{countDoneTasks ? countDoneTasks : "No tasks"} </span>
       </div>
       {lastDoneDateLabel ? (
         <div className={twMerge(baseClassName, "ml-1")}>
