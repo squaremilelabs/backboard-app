@@ -123,14 +123,11 @@ function TopicNextTaskForm({ topic }: { topic: TopicListItemData | undefined }) 
           onSubmit={formik.handleSubmit}
         >
           <div className="flex size-[20px] items-center justify-center">
-            <Icon
-              size={16}
-              className={twMerge("text-gold-600", isPending ? "animate-spin" : null)}
-            />
+            <Icon size={16} className={twMerge(isPending ? "text-gold-600 animate-spin" : null)} />
           </div>
           <input
             {...formik.getFieldProps("title")}
-            className="placeholder-gold-600/80 grow p-2 !ring-0 !outline-0"
+            className="grow p-2 !ring-0 !outline-0"
             placeholder={
               currentTask
                 ? "Title required!"
