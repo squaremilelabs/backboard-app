@@ -47,9 +47,7 @@ export function TopicDoneTasksBadge({ topic }: { topic: TopicListItemData }) {
         <span className="text-sm">{countDoneTasks ? countDoneTasks : "No tasks"} </span>
       </div>
       {lastDoneDateLabel ? (
-        <div className={twMerge(baseClassName, "ml-1")}>
-          Last {"->"} {lastDoneDateLabel}
-        </div>
+        <div className={twMerge(baseClassName, "ml-1")}>Last: {lastDoneDateLabel}</div>
       ) : null}
     </div>
   )

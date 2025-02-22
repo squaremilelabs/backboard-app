@@ -8,7 +8,7 @@ export const size = {
 export const contentType = "image/png"
 
 export default function Icon() {
-  return new ImageResponse(<BackboardLogo size={32} color="#64748b" />, {
+  return new ImageResponse(<BackboardLogo size={32} color="#0a0a0a" />, {
     ...size,
   })
 }

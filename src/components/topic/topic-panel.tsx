@@ -1,7 +1,6 @@
 // E: This is too big of a component. Will refactor later.
 
 "use client"
-
 import { useFormik } from "formik"
 import { Task, TaskTarget } from "@prisma/client"
 import { TaskCreateScalarSchema, TaskUpdateScalarSchema } from "@zenstackhq/runtime/zod/models"
@@ -12,7 +11,6 @@ import { useState } from "react"
 import Collapsible from "../primitives/collapsible"
 import { Button } from "../primitives/button"
 import Popover from "../primitives/popover"
-import { TopicDoneTasksBadge } from "./topic-task-info"
 import {
   useCreateTask,
   useDeleteTask,
@@ -47,7 +45,7 @@ export default function TopicPanel({ id }: { id: string }) {
               titleContent={
                 <div className="flex w-full items-end gap-4">
                   <p className="font-medium">Done tasks</p>
-                  <TopicDoneTasksBadge topic={topic} />
+                  {/* <TopicDoneTasksBadge topic={topic} /> */}
                 </div>
               }
               panelContent={
@@ -239,7 +237,7 @@ function TaskTargetSelect({
 
 function DoneTaskListItem({ task }: { task: Task }) {
   return (
-    <div className="bg-canvas flex items-center rounded border px-2 pr-1">
+    <div className="flex items-center rounded border px-2 pr-1">
       <div className="flex size-[20px] items-center justify-center">
         <Check size={16} />
       </div>
