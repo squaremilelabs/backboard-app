@@ -1,10 +1,13 @@
 import { format } from "date-fns"
 
-export function formatDate(date: Date): string {
+export function formatDate(date: Date, options?: { withTime: boolean }): string {
   const currentYear = new Date().getFullYear()
   const inputYear = date.getFullYear()
-  if (inputYear !== currentYear) {
-    return format(date, "MMM d, yy")
+  let dateFormat = inputYear !== currentYear ? "MMM do, yy" : "MMM do"
+
+  if (options?.withTime) {
+    dateFormat += " h:mma"
   }
-  return format(date, "MMM d")
+
+  return format(date, dateFormat)
 }

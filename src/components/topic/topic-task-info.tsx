@@ -7,7 +7,7 @@ import { formatDate } from "@/lib/utils"
 export function TopicNextTaskBadge({ topic }: { topic: TopicListItemData }) {
   const nextTask = topic._next_task
 
-  const baseClassName = "rounded px-2 py-0.5 text-sm min-w-fit"
+  const baseClassName = "rounded py-0.5 text-sm min-w-fit"
 
   if (!nextTask) {
     return <div className={twMerge(baseClassName, "text-neutral-400")}>No next task</div>
@@ -16,7 +16,7 @@ export function TopicNextTaskBadge({ topic }: { topic: TopicListItemData }) {
   const nextTaskDisplay = TASK_TARGET_DISPLAY_MAP[nextTask.target]
 
   return (
-    <div className={twMerge(baseClassName, nextTaskDisplay.className)}>
+    <div className={twMerge(baseClassName, nextTaskDisplay.className, "px-2")}>
       Next {"->"} {nextTaskDisplay.label}
     </div>
   )
@@ -26,27 +26,18 @@ export function TopicDoneTasksBadge({ topic }: { topic: TopicListItemData }) {
   const lastDoneTask = topic._last_done_task
   const countDoneTasks = topic._count_done_tasks
 
-  const baseClassName = "rounded px-2 py-0.5 text-sm min-w-fit flex items-center"
-
-  // if (!countDoneTasks) {
-  //   return <div className={twMerge(baseClassName, "bg-neutral-50 text-neutral-500")}>None done</div>
-  // }
+  const baseClassName = "rounded text-sm min-w-fit py-0.5 flex items-center"
 
   const lastDoneDateLabel = lastDoneTask?.done_at ? formatDate(lastDoneTask.done_at) : null
 
   return (
-    <div className="flex items-stretch">
-      <div
-        className={twMerge(
-          baseClassName,
-          countDoneTasks ? "px-1 text-green-600" : "text-neutral-400"
-        )}
-      >
+    <div className="flex items-stretch gap-2">
+      <div className={twMerge(baseClassName, countDoneTasks ? "" : "text-neutral-400")}>
         {countDoneTasks ? <Check size={12} className="mr-1" /> : null}
         <span className="text-sm">{countDoneTasks ? countDoneTasks : "No tasks done"} </span>
       </div>
       {lastDoneDateLabel ? (
-        <div className={twMerge(baseClassName, "ml-1 bg-green-50 text-green-600")}>
+        <div className={twMerge(baseClassName, "ml-1")}>
           Last {"->"} {lastDoneDateLabel}
         </div>
       ) : null}

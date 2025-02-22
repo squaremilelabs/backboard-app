@@ -1,13 +1,239 @@
 "use client"
-
-import { useFindUniqueTopic } from "@/database/generated/hooks"
+import { useFormik } from "formik"
+import { Task, TaskTarget } from "@prisma/client"
+import { TaskCreateScalarSchema, TaskUpdateScalarSchema } from "@zenstackhq/runtime/zod/models"
+import { toFormikValidate } from "zod-formik-adapter"
+import { ArrowRight, Check, Loader, Plus, Trash2 } from "lucide-react"
+import { twMerge } from "tailwind-merge"
+import { useState } from "react"
+import Collapsible from "../primitives/collapsible"
+import { Button } from "../primitives/button"
+import Popover from "../primitives/popover"
+import { TopicDoneTasksBadge } from "./topic-task-info"
+import {
+  useCreateTask,
+  useDeleteTask,
+  useFindManyTask,
+  useUpdateTask,
+} from "@/database/generated/hooks"
+import { TopicListItemData, useTopicsListItem } from "@/lib/topic-utils"
+import { formatDate } from "@/lib/utils"
+import { ORDERED_TASK_TARGETS, TASK_TARGET_DISPLAY_MAP } from "@/lib/task-utils"
 
 export default function TopicPanel({ id }: { id: string }) {
-  const topicQuery = useFindUniqueTopic({ where: { id } })
+  const topicQuery = useTopicsListItem(id)
+  const tasksQuery = useFindManyTask({
+    where: { topic_id: id, is_done: true },
+    orderBy: { done_at: "desc" },
+  })
+
+  const topic = topicQuery.itemData
   return (
-    <div className="h-[1000px]">
-      <h1>{topicQuery?.data?.title}</h1>
-      <button>close</button>
+    <div className="flex flex-col gap-4 p-4">
+      <div className="flex items-center">
+        <h1 className="text-xl">{topic?.title}</h1>
+      </div>
+      <div className="flex flex-col gap-4">
+        <TopicNextTaskForm topic={topic} />
+        {topic?._count_done_tasks ? (
+          <Collapsible
+            titleClassName="w-full py-2 pr-2"
+            titleContent={
+              <div className="flex w-full items-end gap-4">
+                <p className="font-medium">Done tasks</p>
+                <TopicDoneTasksBadge topic={topic} />
+              </div>
+            }
+            panelContent={
+              <div className="flex flex-col gap-2 pt-1">
+                {tasksQuery?.data?.map((task) => {
+                  return <DoneTaskListItem key={task.id} task={task} />
+                })}
+              </div>
+            }
+          />
+        ) : null}
+      </div>
+    </div>
+  )
+}
+
+type NextTaskFormValues = Pick<Task, "title" | "target">
+
+function TopicNextTaskForm({ topic }: { topic: TopicListItemData | undefined }) {
+  const currentTask = topic?._next_task
+
+  const Schema = currentTask ? TaskUpdateScalarSchema : TaskCreateScalarSchema
+
+  const formik = useFormik<NextTaskFormValues>({
+    initialValues: {
+      title: currentTask?.title || "",
+      target: currentTask?.target || "NO_TARGET",
+    },
+    enableReinitialize: true,
+    validate: toFormikValidate(Schema),
+    onSubmit: (values) => {
+      if (currentTask) {
+        updateMutation.mutate({ where: { id: currentTask.id }, data: values })
+      } else {
+        if (!topic) return
+        createMutation.mutate({
+          data: {
+            title: values.title,
+            target: values.target,
+            topic_id: topic?.id,
+            current_for_topic: { connect: { id: topic.id } },
+          },
+        })
+      }
+    },
+  })
+
+  const updateMutation = useUpdateTask()
+  const createMutation = useCreateTask()
+  const deleteMutation = useDeleteTask()
+
+  const isPending = updateMutation.isPending || createMutation.isPending || deleteMutation.isPending
+
+  const Icon = isPending ? Loader : currentTask ? ArrowRight : Plus
+
+  return (
+    <div className="flex flex-col gap-1">
+      {/* header */}
+      {currentTask ? (
+        <div className="flex items-center gap-1 pr-1 @sm:items-end @sm:justify-between">
+          <p className="font-medium">{topic._count_done_tasks === 0 ? "First" : "Next"} task</p>
+          <p className="rounded pl-2 text-sm text-neutral-600">
+            Added {formatDate(currentTask.created_at, { withTime: true })}
+          </p>
+        </div>
+      ) : null}
+      {/* input form */}
+      <div className="flex flex-col gap-1">
+        <form
+          className={twMerge(
+            "flex w-full items-center rounded border pr-1 pl-2",
+            currentTask ? "bg-canvas" : "",
+            !currentTask && !formik.values.title
+              ? "not-focus-within:w-[130px] not-focus-within:self-start"
+              : null,
+            "ring-gold-600 focus-within:bg-canvas focus-within:ring-1",
+            "hover:bg-canvas",
+            "transition-all"
+          )}
+          onSubmit={formik.handleSubmit}
+        >
+          <div className="flex size-[20px] items-center justify-center">
+            <Icon
+              size={16}
+              className={twMerge("text-gold-600", isPending ? "animate-spin" : null)}
+            />
+          </div>
+          <input
+            {...formik.getFieldProps("title")}
+            className="grow p-2 !ring-0 !outline-0"
+            placeholder={
+              currentTask
+                ? "Title required!"
+                : `Add ${topic?._count_done_tasks ? "next" : "first"} task`
+            }
+          />
+          {formik.values.title ? (
+            <TaskTargetSelect
+              selected={formik.values.target}
+              onSelect={(target) => {
+                formik.setFieldTouched("target")
+                formik.setFieldValue("target", target)
+                formik.submitForm()
+              }}
+            />
+          ) : null}
+        </form>
+        {/* existing task actions */}
+        {currentTask ? (
+          <div className="flex items-start justify-between">
+            <div className="flex justify-end gap-1">
+              <Button className="bg-canvas flex items-center gap-1 rounded border px-2 py-1 text-sm text-neutral-500">
+                <Check size={16} />
+                Mark as done
+              </Button>
+              <Button
+                className="bg-canvas flex items-center gap-1 rounded border px-2 py-1 text-sm text-neutral-500"
+                onPress={() => deleteMutation.mutate({ where: { id: currentTask.id } })}
+              >
+                <Trash2 size={16} />
+                Delete task
+              </Button>
+            </div>
+          </div>
+        ) : null}
+      </div>
+    </div>
+  )
+}
+
+function TaskTargetSelect({
+  selected,
+  onSelect,
+}: {
+  selected: TaskTarget
+  onSelect: (target: TaskTarget) => void
+}) {
+  const [open, setOpen] = useState(false)
+
+  const buttonBaseClassName = "px-2 py-1 rounded @sm:px-8"
+
+  const selectedDisplay = TASK_TARGET_DISPLAY_MAP[selected]
+  const triggerContent = (
+    <div className={twMerge(buttonBaseClassName, selectedDisplay.className, "border")}>
+      {selectedDisplay.label}
+    </div>
+  )
+
+  const popoverClassName = twMerge("grid grid-cols-1 gap-1.5")
+  const popoverContent = ORDERED_TASK_TARGETS.map((target) => {
+    const display = TASK_TARGET_DISPLAY_MAP[target]
+    return (
+      <Button
+        key={target}
+        className={twMerge(
+          buttonBaseClassName,
+          display.className,
+          "px-8",
+          selected === target ? "border-2 border-neutral-500" : null
+        )}
+        onPress={() => {
+          onSelect(target)
+          setOpen(false)
+        }}
+      >
+        {display.label}
+      </Button>
+    )
+  })
+
+  return (
+    <Popover
+      open={open}
+      onOpenChange={setOpen}
+      triggerContent={triggerContent}
+      popoverContent={popoverContent}
+      popoverClassName={popoverClassName}
+      placement="bottom-end"
+    />
+  )
+}
+
+function DoneTaskListItem({ task }: { task: Task }) {
+  return (
+    <div className="bg-canvas flex items-center rounded border px-2 pr-1">
+      <div className="flex size-[20px] items-center justify-center">
+        <Check size={16} className="text-green-600" />
+      </div>
+      <p className="grow p-2">{task.title}</p>
+      {task.done_at ? (
+        <span className="p-2 text-sm text-neutral-600">{formatDate(task.done_at)}</span>
+      ) : null}
     </div>
   )
 }
