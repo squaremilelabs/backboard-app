@@ -8,7 +8,7 @@ import {
 } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 import { ArrowLeft, X } from "lucide-react"
-import { Button } from "@/components/primitives/button"
+import { Button } from "react-aria-components"
 
 export default function RootMain({
   children,
@@ -76,7 +76,7 @@ export default function RootMain({
           >
             <Button
               onPress={closeAside}
-              className="flex w-full items-center space-x-1 text-neutral-600"
+              className="flex w-full cursor-pointer items-center space-x-1 text-neutral-600 hover:text-neutral-800"
             >
               {/* Show "Close" if displayed as an aside (desktop) */}
               <X className="hidden @md/main:block" size={16} />

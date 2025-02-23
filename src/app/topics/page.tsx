@@ -1,5 +1,5 @@
-import ActiveTopicsGrid from "./_parts/active-topics-grid"
+import ActiveTopics from "./_parts/active-topcis"
 
 export default function Page() {
-  return <ActiveTopicsGrid />
+  return <ActiveTopics />
 }

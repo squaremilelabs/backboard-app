@@ -1,12 +1,13 @@
-import BackboardLogo from "@/components/common/backboard-logo"
-
-export default function Home() {
+export default function Page() {
   return (
-    <div className="p-4">
-      <div className="flex items-center gap-2">
-        <BackboardLogo size={24} />
-        <h1 className="text-xl font-semibold">Backboard</h1>
+    <div className="flex flex-col">
+      {/* Header */}
+      <div className="w-md max-w-full self-center px-5 py-4 @md:py-12">
+        <div className="flex items-center gap-2">
+          <h1 className="text-2xl font-medium">Backboard</h1>
+        </div>
       </div>
+      {/* Content */}
     </div>
   )
 }

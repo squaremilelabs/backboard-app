@@ -1,15 +1,14 @@
-import { BookMarked } from "lucide-react"
-
 export default function TopicsLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div>
-      <div className="px-4 py-4 @md:py-12">
+    <div className="flex flex-col">
+      {/* Header */}
+      <div className="w-md max-w-full self-center px-5 py-4 @md:py-12">
         <div className="flex items-center gap-2">
-          <BookMarked size={24} />
-          <h1 className="text-xl font-semibold">Topics</h1>
+          <h1 className="text-2xl font-medium">Topics</h1>
         </div>
       </div>
-      <div className="p-2 !pt-0 @md:p-4">{children}</div>
+      {/* Content */}
+      <div className="w-md max-w-full self-center p-4 pt-0">{children}</div>
     </div>
   )
 }
