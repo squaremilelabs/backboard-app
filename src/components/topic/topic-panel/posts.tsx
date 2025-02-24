@@ -35,16 +35,22 @@ export default function TopicPosts({ topic }: { topic: TopicItem }) {
         {selectedPostId ? null : (
           <div className="flex items-center gap-2">
             <Button
-              className="cursor-pointer text-xs text-neutral-500 hover:text-neutral-500 hover:underline"
+              className={twMerge(
+                `cursor-pointer rounded border px-2 py-1 text-xs text-neutral-500 hover:text-neutral-500
+                  hover:underline`,
+                showArchived ? "bg-canvas" : ""
+              )}
               onPress={() => setShowArchived((prev) => !prev)}
             >
               {showArchived ? "Hide Archive" : "Show Archive"}
             </Button>
-            <CreatePostButton topic={topic} />
+            {showArchived ? null : <CreatePostButton topic={topic} />}
           </div>
         )}
       </div>
-      {!posts.length ? null : selectedPostId ? (
+      {!posts.length ? (
+        <div className="text-sm text-neutral-500">None</div>
+      ) : selectedPostId ? (
         <PostForm id={selectedPostId} closePost={() => setSelectedPostId(null)} />
       ) : (
         <div className="grid grid-cols-1 gap-1 @sm:grid-cols-2">
@@ -153,7 +159,7 @@ function PostForm({ id, closePost }: { id: string; closePost: () => void }) {
           "bg-canvas resize-none rounded border p-4 !ring-0 !outline-0",
           contentChanged ? "text-blue-600" : ""
         )}
-        placeholder="Write something for this topic..."
+        placeholder="Write something..."
         minRows={3}
       />
       <div className="flex items-center justify-between gap-4 pl-2">
