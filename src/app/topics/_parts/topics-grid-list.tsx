@@ -66,7 +66,7 @@ function TopicsGridListItem({
   return (
     <div
       className={twMerge(
-        "flex cursor-pointer items-center gap-2 p-4 hover:bg-neutral-50",
+        "flex cursor-pointer items-center gap-2 p-4 hover:opacity-60",
         renderProps.isSelected ? "bg-canvas rounded" : ""
       )}
     >
@@ -74,7 +74,7 @@ function TopicsGridListItem({
       <div className="flex grow flex-col gap-1 truncate">
         {/* Icon + Title */}
         <div className="flex items-center gap-2 truncate">
-          <Bookmark size={20} className="text-neutral-400" />
+          <Bookmark size={20} className={twMerge("text-neutral-400")} />
           <p className={twMerge("grow truncate font-medium")}>{topic.title}</p>
         </div>
         {/* Owner information will go here */}

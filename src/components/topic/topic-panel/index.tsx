@@ -1,9 +1,9 @@
-// E: This is too big of a component. Will refactor later.
-
 "use client"
+
 import { Bookmark, Loader } from "lucide-react"
 import { useFormik } from "formik"
-import { Input } from "react-aria-components"
+import { Button, Input } from "react-aria-components"
+import { TopicStatus } from "@prisma/client"
 import DoneTasks from "./done-tasks"
 import TopicPosts from "./posts"
 import { useTopicItem } from "@/lib/topic/item-data"
@@ -46,6 +46,22 @@ export default function TopicPanel({ id }: { id: string }) {
         {topic ? <NextTask topic={topic} /> : null}
         {topic?._count_done_tasks ? <DoneTasks topic={topic} /> : null}
         {topic ? <TopicPosts topic={topic} /> : null}
+        {topic ? (
+          <Button
+            className={
+              "cursor-pointer self-start px-2 py-1 text-sm text-neutral-500 hover:underline"
+            }
+            onPress={() => {
+              const status: TopicStatus = topic.status === "CLOSED" ? "ACTIVE" : "CLOSED"
+              updateTopic.mutate({
+                where: { id },
+                data: { status: status },
+              })
+            }}
+          >
+            {topic.status === "CLOSED" ? "Reopen Topic" : "Close Topic"}
+          </Button>
+        ) : null}
       </div>
     </div>
   )
