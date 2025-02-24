@@ -9,7 +9,7 @@ import BackboardLogo from "@/components/common/backboard-logo"
 export default function RootNavbar() {
   return (
     <header className="bg-canvas flex items-center justify-between border-b p-2">
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center gap-2">
         <Brand />
         <NavItems />
       </div>
@@ -31,9 +31,9 @@ function Brand() {
   return (
     <Link
       href="/"
-      className="focus-visible:text-gold-600 h-[30px] w-[30px] rounded text-neutral-950 !ring-0 !outline-0"
+      className="focus-visible:text-gold-60 flex w-[40px] justify-center rounded text-neutral-950 !ring-0 !outline-0"
     >
-      <BackboardLogo size="100%" color="currentColor" />
+      <BackboardLogo size={24} color="currentColor" />
     </Link>
   )
 }
