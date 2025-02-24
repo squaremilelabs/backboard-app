@@ -1,4 +1,4 @@
-import { Check, CircleDashed, Loader, Trash2 } from "lucide-react"
+import { CircleDashed, Loader, Square } from "lucide-react"
 import {
   Button,
   Input,
@@ -12,9 +12,7 @@ import {
 import { twMerge } from "tailwind-merge"
 import { useState } from "react"
 import { useFormik } from "formik"
-import { TaskUpdateScalarSchema } from "@zenstackhq/runtime/zod/models"
-import { z } from "zod"
-import { toFormikValidate } from "zod-formik-adapter"
+import { TaskDoneTarget } from "@prisma/client"
 import { TopicItem } from "../../lib/topic/item-data"
 import { formatDate } from "../../lib/utils"
 import { ORDERED_TASK_DONE_TARGETS, TASK_DONE_TARGET_DISPLAY_MAP } from "../../lib/task/constants"
@@ -42,12 +40,12 @@ function CreateTask({ topic }: { topic: TopicItem }) {
   return (
     <div
       className={twMerge(
-        `focus-within:ring-gold-500 bg-canvas/50 focus-within:bg-canvas flex items-center gap-2 rounded
-        border p-4 focus-within:ring-1`
+        `focus-within:ring-gold-500 focus-within:bg-canvas flex items-center gap-2 rounded border
+        bg-neutral-100 p-4 focus-within:ring-1`
       )}
     >
       {create.isPending ? (
-        <Loader size={16} className="text-gold-500" />
+        <Loader size={16} className="text-gold-500 animate-spin" />
       ) : (
         <CircleDashed size={14} />
       )}
@@ -67,7 +65,7 @@ function CreateTask({ topic }: { topic: TopicItem }) {
   )
 }
 
-type EditTaskValues = z.infer<typeof TaskUpdateScalarSchema>
+type EditTaskValues = { title: string; done_target: TaskDoneTarget }
 
 function EditTask({ topic }: { topic: TopicItem }) {
   const updateTask = useUpdateTask()
@@ -75,18 +73,29 @@ function EditTask({ topic }: { topic: TopicItem }) {
 
   const formik = useFormik<EditTaskValues>({
     initialValues: {
-      title: topic._next_task?.title,
+      title: topic._next_task?.title ?? "",
       done_target: topic._next_task?.done_target ?? "NO_TARGET",
     },
     enableReinitialize: true,
-    validate: toFormikValidate(TaskUpdateScalarSchema),
     onSubmit: (values) => {
+      handleUpdateTask(values)
+    },
+  })
+
+  const handleUpdateTask = (values: EditTaskValues) => {
+    const prevTask = topic._next_task
+    if (!prevTask) return
+    if (values.title === prevTask.title && values.done_target === prevTask.done_target) return
+    if (!values.title) {
+      deleteTask.mutate({ where: { id: topic._next_task?.id } })
+      return
+    } else {
       updateTask.mutate({
         where: { id: topic._next_task?.id },
         data: values,
       })
-    },
-  })
+    }
+  }
 
   const handleCompleteTask = () => {
     if (!topic._next_task) return
@@ -103,24 +112,37 @@ function EditTask({ topic }: { topic: TopicItem }) {
   const targetDisplay = TASK_DONE_TARGET_DISPLAY_MAP[formik.values.done_target ?? "NO_TARGET"]
 
   return (
-    <div className={twMerge("bg-canvas/60 flex flex-col gap-4 rounded border p-4")}>
+    <div className={twMerge("flex flex-col gap-4 rounded border bg-neutral-100 p-4")}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-neutral-500">
           <CircleDashed size={14} />
           <p className="text-sm">Next Task</p>
         </div>
-        <p className="px-2 text-sm text-neutral-500">Last edited {formatDate(topic.updated_at)}</p>
+        <p className="px-2 text-sm text-neutral-500">
+          Last set {formatDate(topic.updated_at, { withTime: true })}
+        </p>
       </div>
       <form
         className={twMerge(
           "bg-canvas focus-within:border-gold-500 flex items-center gap-2 rounded border p-2"
         )}
         onSubmit={formik.handleSubmit}
+        onBlur={formik.handleSubmit}
       >
+        {isPending ? (
+          <Loader size={20} className="text-gold-500 animate-spin" />
+        ) : (
+          <Button
+            onPress={handleCompleteTask}
+            className={twMerge("cursor-pointer", "hover:text-gold-600")}
+          >
+            <Square size={20} className="text-neutral-500" />
+          </Button>
+        )}
         <Input
           {...formik.getFieldProps("title")}
           aria-label="Task Title"
-          className={twMerge("grow pl-2 !ring-0 !outline-0")}
+          className={twMerge("grow !ring-0 !outline-0")}
           placeholder="Add Next Task"
         />
         <Select
@@ -134,7 +156,7 @@ function EditTask({ topic }: { topic: TopicItem }) {
           <Button
             className={twMerge(
               targetDisplay.className,
-              "rounded-full px-3 py-0.5",
+              "rounded-full border px-3 py-0.5",
               "cursor-pointer hover:opacity-80 data-pressed:scale-95"
             )}
           >
@@ -163,35 +185,6 @@ function EditTask({ topic }: { topic: TopicItem }) {
           </Popover>
         </Select>
       </form>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Button
-            isDisabled={isPending}
-            onPress={handleCompleteTask}
-            className={twMerge(
-              "flex cursor-pointer items-center gap-2 rounded border bg-neutral-100 px-2 py-1",
-              "hover:bg-gold-50 hover:text-gold-600"
-            )}
-          >
-            <Check size={16} />
-            <span className="text-sm">Mark as Done</span>
-          </Button>
-          <Button
-            isDisabled={isPending}
-            onPress={() => {
-              deleteTask.mutate({ where: { id: topic._next_task?.id } })
-            }}
-            className={twMerge(
-              "flex cursor-pointer items-center gap-2 rounded border bg-neutral-100 px-2 py-1",
-              "hover:bg-red-50 hover:text-red-600"
-            )}
-          >
-            <Trash2 size={16} />
-            <span className="text-sm">Cancel Task</span>
-          </Button>
-        </div>
-        {isPending ? <Loader size={20} className="text-gold-500 animate-spin" /> : null}
-      </div>
     </div>
   )
 }

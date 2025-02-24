@@ -1,6 +1,6 @@
 import { Button, GridList, GridListItem } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
-import { CircleCheckBig, CircleFadingArrowUp, Loader } from "lucide-react"
+import { Check, Loader, SquareCheck } from "lucide-react"
 import { useFindManyTask, useUpdateTask } from "@/database/generated/hooks"
 import { TopicItem } from "@/lib/topic/item-data"
 import { formatDate } from "@/lib/utils"
@@ -22,13 +22,13 @@ export default function DoneTasks({ topic }: { topic: TopicItem }) {
     </div>
   )
 
-  const canUndo = !topic._next_task && tasks.length > 0
+  const canUndo = !topic._next_task
 
   const updateTask = useUpdateTask()
-  const handleUndo = () => {
+  const handleUndo = (taskId: string) => {
     if (!canUndo) return
     updateTask.mutate({
-      where: { id: tasks[0].id },
+      where: { id: taskId },
       data: {
         done_at: null,
         current_for_topic: { connect: { id: topic.id } },
@@ -37,30 +37,14 @@ export default function DoneTasks({ topic }: { topic: TopicItem }) {
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-4 rounded border bg-neutral-100 p-4">
       <div className="flex items-center justify-between gap-2">
-        {tasks.length ? (
-          <div className="flex items-center gap-1 self-start pl-1">
-            <CircleCheckBig size={14} />
-            <p className="text-sm font-medium">{topic._count_done_tasks} Done</p>
-          </div>
-        ) : (
-          <div className="px-2 text-sm text-neutral-500">No Tasks Done</div>
-        )}
-        {canUndo ? (
-          <Button
-            className="flex cursor-pointer items-center gap-2 px-2 text-sm text-neutral-500 hover:text-neutral-950"
-            onPress={handleUndo}
-            isDisabled={updateTask.isPending}
-          >
-            {updateTask.isPending ? (
-              <Loader size={14} className="text-gold-500 animate-spin" />
-            ) : (
-              <CircleFadingArrowUp size={14} />
-            )}
-            Undo Last Task
-          </Button>
-        ) : null}
+        <div className="flex items-center gap-1 self-start pl-1 text-neutral-500">
+          <Check size={14} />
+          <p className="text-sm font-medium">
+            {topic._count_done_tasks} Done Task{topic._count_done_tasks > 1 ? "s" : ""}
+          </p>
+        </div>
       </div>
       {tasks.length && !tasksQuery.isLoading ? (
         <GridList
@@ -69,11 +53,26 @@ export default function DoneTasks({ topic }: { topic: TopicItem }) {
           renderEmptyState={() => emptyContent}
           className={twMerge("divide-y rounded border")}
         >
-          {tasks.map((task) => {
+          {tasks.map((task, index) => {
             return (
               <GridListItem key={task.id} id={task.id} textValue={task.title}>
-                <div className="hover:bg-canvas flex items-center justify-between p-2 pl-3">
-                  <p>{task.title}</p>
+                <div className="bg-canvas flex items-center gap-2 p-2">
+                  <Button
+                    isDisabled={index !== 0 || !canUndo || updateTask.isPending}
+                    onPress={() => handleUndo(task.id)}
+                    className={twMerge(
+                      "cursor-pointer",
+                      "disabled:cursor-not-allowed",
+                      "not-disabled:hover:text-gold-600"
+                    )}
+                  >
+                    {updateTask.isPending ? (
+                      <Loader size={20} className="text-gold-600 animate-spin" />
+                    ) : (
+                      <SquareCheck size={20} className="text-neutral-500" />
+                    )}
+                  </Button>
+                  <p className="grow">{task.title}</p>
                   <span className="bg-canvas rounded-full border px-3 py-0.5 text-sm">
                     {task.done_at ? formatDate(task.done_at) : null}
                   </span>

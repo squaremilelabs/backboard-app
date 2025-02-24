@@ -2,7 +2,7 @@
 import { GridList, GridListItem, GridListItemRenderProps } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
 import { useParams, usePathname } from "next/navigation"
-import { ArrowRight, CircleCheckBig, CircleDashed } from "lucide-react"
+import { ArrowRight, Bookmark } from "lucide-react"
 import { TopicItem } from "@/lib/topic/item-data"
 import { formatDate } from "@/lib/utils"
 import { TASK_DONE_TARGET_DISPLAY_MAP } from "@/lib/task/constants"
@@ -67,22 +67,12 @@ function TopicsGridListItem({
     <div className={twMerge("flex cursor-pointer items-center gap-2 p-4 hover:bg-neutral-50")}>
       {/* Left section */}
       <div className="flex grow flex-col gap-1 truncate">
-        {/* Icon + Editable Title */}
-        <div className="flex items-center gap-1 truncate">
+        {/* Icon + Title */}
+        <div className="flex items-center gap-2 truncate">
+          <Bookmark size={20} className="text-neutral-500" />
           <p className={twMerge("grow truncate font-medium")}>{topic.title}</p>
         </div>
-        {/* Count of done */}
-        <div className="flex items-center gap-1">
-          <div
-            className={twMerge(
-              "flex items-center gap-1 self-start",
-              topic._count_done_tasks ? "text-neutral-500" : "text-neutral-400"
-            )}
-          >
-            {topic._count_done_tasks ? <CircleCheckBig size={14} /> : <CircleDashed size={14} />}
-            <p className="text-sm font-medium">{topic._count_done_tasks} Done</p>
-          </div>
-        </div>
+        {/* Owner information will go here */}
       </div>
       {/* Right Section */}
       <div className="flex min-w-fit items-center gap-1">
@@ -90,7 +80,7 @@ function TopicsGridListItem({
           <div
             className={twMerge(
               nextTaskDisplay?.className,
-              "min-w-fit rounded-full px-3 py-1 text-sm"
+              "min-w-fit rounded-full border px-3 py-1 text-sm"
             )}
           >
             {nextTaskDisplay?.label}

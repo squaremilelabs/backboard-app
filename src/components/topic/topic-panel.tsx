@@ -41,9 +41,9 @@ export default function TopicPanel({ id }: { id: string }) {
           placeholder="Topic"
         />
       </form>
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-4">
         {topic ? <NextTask topic={topic} /> : null}
-        {topic ? <DoneTasks topic={topic} /> : null}
+        {topic?._count_done_tasks ? <DoneTasks topic={topic} /> : null}
       </div>
     </div>
   )
