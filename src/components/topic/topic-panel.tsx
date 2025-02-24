@@ -33,7 +33,7 @@ export default function TopicPanel({ id }: { id: string }) {
         {updateTopic.isPending ? (
           <Loader size={24} className="text-gold-600 animate-spin" />
         ) : (
-          <Bookmark size={24} />
+          <Bookmark size={24} className="text-neutral-500" />
         )}
         <Input
           {...formik.getFieldProps("title")}

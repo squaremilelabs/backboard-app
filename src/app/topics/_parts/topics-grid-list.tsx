@@ -2,7 +2,7 @@
 import { GridList, GridListItem, GridListItemRenderProps } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
 import { useParams, usePathname } from "next/navigation"
-import { ArrowRight, Bookmark, Check, CircleDashed } from "lucide-react"
+import { ArrowRight, Bookmark, Check, SkipForward } from "lucide-react"
 import { TopicItem } from "@/lib/topic/item-data"
 import { formatDate } from "@/lib/utils"
 import { TASK_DONE_TARGET_DISPLAY_MAP } from "@/lib/task/constants"
@@ -27,7 +27,7 @@ export default function TopicsGridList({
       items={topics}
       renderEmptyState={() => emptyContent}
       dependencies={[selectedId]}
-      className={twMerge("bg-canvas divide-y rounded border")}
+      className={twMerge("divide-y rounded border", selectedId ? "bg-neutral-100" : "bg-canvas")}
       keyboardNavigationBehavior="tab"
     >
       {(topic) => {
@@ -64,12 +64,17 @@ function TopicsGridListItem({
     ? TASK_DONE_TARGET_DISPLAY_MAP[topic._next_task.done_target]
     : null
   return (
-    <div className={twMerge("flex cursor-pointer items-center gap-2 p-4 hover:bg-neutral-50")}>
+    <div
+      className={twMerge(
+        "flex cursor-pointer items-center gap-2 p-4 hover:bg-neutral-50",
+        renderProps.isSelected ? "bg-canvas rounded" : ""
+      )}
+    >
       {/* Left section */}
       <div className="flex grow flex-col gap-1 truncate">
         {/* Icon + Title */}
         <div className="flex items-center gap-2 truncate">
-          <Bookmark size={20} className="text-neutral-500" />
+          <Bookmark size={20} className="text-neutral-400" />
           <p className={twMerge("grow truncate font-medium")}>{topic.title}</p>
         </div>
         {/* Owner information will go here */}
@@ -83,7 +88,7 @@ function TopicsGridListItem({
               "flex min-w-fit items-center gap-1 rounded-full border px-3 py-1 text-sm"
             )}
           >
-            <CircleDashed size={14} />
+            <SkipForward size={14} />
             {nextTaskDisplay?.label}
           </div>
         ) : topic._last_done_task ? (

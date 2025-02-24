@@ -37,7 +37,7 @@ export default function DoneTasks({ topic }: { topic: TopicItem }) {
   }
 
   return (
-    <div className="flex flex-col gap-4 rounded border bg-neutral-100 p-4">
+    <div className="flex flex-col gap-2 rounded border bg-neutral-100 p-2 @sm:gap-4 @sm:p-4">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-1 self-start pl-1 text-neutral-500">
           <Check size={14} />
@@ -63,13 +63,14 @@ export default function DoneTasks({ topic }: { topic: TopicItem }) {
                     className={twMerge(
                       "cursor-pointer",
                       "disabled:cursor-not-allowed",
-                      "not-disabled:hover:text-gold-600"
+                      "text-neutral-400",
+                      "not-disabled:hover:opacity-60"
                     )}
                   >
                     {index == 0 && updateTask.isPending ? (
-                      <Loader size={20} className="text-gold-600 animate-spin" />
+                      <Loader size={20} className="animate-spin" />
                     ) : (
-                      <SquareCheck size={20} className="text-neutral-500" />
+                      <SquareCheck size={20} />
                     )}
                   </Button>
                   <p className="grow">{task.title}</p>

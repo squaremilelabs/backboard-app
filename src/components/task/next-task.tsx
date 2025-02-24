@@ -1,4 +1,4 @@
-import { CircleDashed, Loader, Square } from "lucide-react"
+import { Loader, SkipForward, Square } from "lucide-react"
 import {
   Button,
   Input,
@@ -41,13 +41,13 @@ function CreateTask({ topic }: { topic: TopicItem }) {
     <div
       className={twMerge(
         `focus-within:ring-gold-500 focus-within:bg-canvas flex items-center gap-2 rounded border
-        bg-neutral-100 p-4 focus-within:ring-1`
+        bg-neutral-100 p-2 focus-within:ring-1 @sm:p-4`
       )}
     >
       {create.isPending ? (
         <Loader size={16} className="text-gold-500 animate-spin" />
       ) : (
-        <CircleDashed size={14} />
+        <SkipForward size={14} className="text-neutral-500" />
       )}
       <TextField
         value={title}
@@ -112,10 +112,12 @@ function EditTask({ topic }: { topic: TopicItem }) {
   const targetDisplay = TASK_DONE_TARGET_DISPLAY_MAP[formik.values.done_target ?? "NO_TARGET"]
 
   return (
-    <div className={twMerge("flex flex-col gap-4 rounded border bg-neutral-100 p-4")}>
+    <div
+      className={twMerge("flex flex-col gap-2 rounded border bg-neutral-100 p-2 @sm:gap-4 @sm:p-4")}
+    >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-neutral-500">
-          <CircleDashed size={14} />
+          <SkipForward size={14} />
           <p className="text-sm">Next Task</p>
         </div>
         <p className="px-2 text-sm text-neutral-500">
@@ -134,9 +136,9 @@ function EditTask({ topic }: { topic: TopicItem }) {
         ) : (
           <Button
             onPress={handleCompleteTask}
-            className={twMerge("cursor-pointer", "hover:text-gold-600")}
+            className={twMerge("cursor-pointer", "text-neutral-400 hover:opacity-60")}
           >
-            <Square size={20} className="text-neutral-500" />
+            <Square size={20} />
           </Button>
         )}
         <Input
