@@ -2,7 +2,7 @@
 import { GridList, GridListItem, GridListItemRenderProps } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
 import { useParams, usePathname } from "next/navigation"
-import { ArrowRight, Bookmark } from "lucide-react"
+import { ArrowRight, Bookmark, Check, CircleDashed } from "lucide-react"
 import { TopicItem } from "@/lib/topic/item-data"
 import { formatDate } from "@/lib/utils"
 import { TASK_DONE_TARGET_DISPLAY_MAP } from "@/lib/task/constants"
@@ -80,9 +80,10 @@ function TopicsGridListItem({
           <div
             className={twMerge(
               nextTaskDisplay?.className,
-              "min-w-fit rounded-full border px-3 py-1 text-sm"
+              "flex min-w-fit items-center gap-1 rounded-full border px-3 py-1 text-sm"
             )}
           >
+            <CircleDashed size={14} />
             {nextTaskDisplay?.label}
           </div>
         ) : topic._last_done_task ? (
@@ -91,6 +92,7 @@ function TopicsGridListItem({
               "flex min-w-fit items-center gap-1 rounded-full border px-3 py-1 text-neutral-600"
             }
           >
+            <Check size={14} />
             <span className="text-sm">
               {topic._last_done_task.done_at ? formatDate(topic._last_done_task.done_at) : null}
             </span>

@@ -51,12 +51,12 @@ export default function DoneTasks({ topic }: { topic: TopicItem }) {
           aria-label="List of Completed Tasks"
           selectionMode="none"
           renderEmptyState={() => emptyContent}
-          className={twMerge("divide-y rounded border")}
+          className={twMerge("bg-canvas divide-y rounded border")}
         >
           {tasks.map((task, index) => {
             return (
               <GridListItem key={task.id} id={task.id} textValue={task.title}>
-                <div className="bg-canvas flex items-center gap-2 p-2">
+                <div className="flex items-start gap-2 p-2">
                   <Button
                     isDisabled={index !== 0 || !canUndo || updateTask.isPending}
                     onPress={() => handleUndo(task.id)}
@@ -66,14 +66,14 @@ export default function DoneTasks({ topic }: { topic: TopicItem }) {
                       "not-disabled:hover:text-gold-600"
                     )}
                   >
-                    {updateTask.isPending ? (
+                    {index == 0 && updateTask.isPending ? (
                       <Loader size={20} className="text-gold-600 animate-spin" />
                     ) : (
                       <SquareCheck size={20} className="text-neutral-500" />
                     )}
                   </Button>
                   <p className="grow">{task.title}</p>
-                  <span className="bg-canvas rounded-full border px-3 py-0.5 text-sm">
+                  <span className="bg-canvas min-w-fit rounded-full border px-3 py-0.5 text-sm">
                     {task.done_at ? formatDate(task.done_at) : null}
                   </span>
                 </div>

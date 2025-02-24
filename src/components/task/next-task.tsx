@@ -119,7 +119,7 @@ function EditTask({ topic }: { topic: TopicItem }) {
           <p className="text-sm">Next Task</p>
         </div>
         <p className="px-2 text-sm text-neutral-500">
-          Last set {formatDate(topic.updated_at, { withTime: true })}
+          Since {formatDate(topic.updated_at, { withTime: true })}
         </p>
       </div>
       <form
@@ -156,14 +156,14 @@ function EditTask({ topic }: { topic: TopicItem }) {
           <Button
             className={twMerge(
               targetDisplay.className,
-              "rounded-full border px-3 py-0.5",
+              "flex items-center rounded-full border px-3 py-0.5",
               "cursor-pointer hover:opacity-80 data-pressed:scale-95"
             )}
           >
             <SelectValue className="text-sm" />
           </Button>
           <Popover placement="bottom end">
-            <ListBox className="grid grid-cols-1 gap-2">
+            <ListBox className="bg-canvas grid grid-cols-1 gap-2 rounded-lg border p-2">
               {ORDERED_TASK_DONE_TARGETS.map((doneTarget) => {
                 const { label, className } = TASK_DONE_TARGET_DISPLAY_MAP[doneTarget]
                 return (
