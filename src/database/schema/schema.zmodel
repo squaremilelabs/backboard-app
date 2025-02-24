@@ -101,7 +101,7 @@ model Post {
   topic         Topic    @relation(fields: [topic_id], references: [id])
 
   title         String
-  content       String
+  content       String?
   is_pinned     Boolean  @default(false)
   is_archived   Boolean  @default(false)
 

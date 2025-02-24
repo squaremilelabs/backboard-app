@@ -1,6 +1,10 @@
 import { format } from "date-fns"
 
-export function formatDate(date: Date, options?: { withTime: boolean }): string {
+export function formatDate(
+  date: Date | null | undefined,
+  options?: { withTime?: boolean; customNoneLabel?: string }
+): string {
+  if (!date) return "-"
   const currentYear = new Date().getFullYear()
   const inputYear = date.getFullYear()
   let dateFormat = inputYear !== currentYear ? "MMM do, yy" : "MMM do"

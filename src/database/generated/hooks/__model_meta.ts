@@ -295,6 +295,7 @@ const metadata = {
                 }, content: {
                     name: "content",
                     type: "String",
+                    isOptional: true,
                 }, is_pinned: {
                     name: "is_pinned",
                     type: "Boolean",

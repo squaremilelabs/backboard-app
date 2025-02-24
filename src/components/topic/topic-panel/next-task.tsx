@@ -13,12 +13,12 @@ import { twMerge } from "tailwind-merge"
 import { useState } from "react"
 import { useFormik } from "formik"
 import { TaskDoneTarget } from "@prisma/client"
-import { TopicItem } from "../../lib/topic/item-data"
-import { formatDate } from "../../lib/utils"
-import { ORDERED_TASK_DONE_TARGETS, TASK_DONE_TARGET_DISPLAY_MAP } from "../../lib/task/constants"
+import { TopicItem } from "@/lib/topic/item-data"
+import { formatDate } from "@/lib/utils"
+import { ORDERED_TASK_DONE_TARGETS, TASK_DONE_TARGET_DISPLAY_MAP } from "@/lib/task/constants"
 import { useCreateTask, useDeleteTask, useUpdateTask } from "@/database/generated/hooks"
 
-export default function NextTask({ topic }: { topic: TopicItem }) {
+export default function TopicNextTask({ topic }: { topic: TopicItem }) {
   if (!topic._next_task) {
     return <CreateTask topic={topic} />
   }

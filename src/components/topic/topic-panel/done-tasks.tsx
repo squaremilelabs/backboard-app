@@ -5,7 +5,7 @@ import { useFindManyTask, useUpdateTask } from "@/database/generated/hooks"
 import { TopicItem } from "@/lib/topic/item-data"
 import { formatDate } from "@/lib/utils"
 
-export default function DoneTasks({ topic }: { topic: TopicItem }) {
+export default function TopicDoneTasks({ topic }: { topic: TopicItem }) {
   const tasksQuery = useFindManyTask({
     where: { topic_id: topic.id, done_at: { not: null } },
     orderBy: { done_at: "desc" },
@@ -39,9 +39,9 @@ export default function DoneTasks({ topic }: { topic: TopicItem }) {
   return (
     <div className="flex flex-col gap-2 rounded border bg-neutral-100 p-2 @sm:gap-4 @sm:p-4">
       <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-1 self-start pl-1 text-neutral-500">
+        <div className="flex items-center gap-2 self-start text-neutral-500">
           <Check size={14} />
-          <p className="text-sm font-medium">
+          <p className="text-sm">
             {topic._count_done_tasks} Done Task{topic._count_done_tasks > 1 ? "s" : ""}
           </p>
         </div>

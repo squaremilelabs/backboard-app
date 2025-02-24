@@ -4,9 +4,10 @@
 import { Bookmark, Loader } from "lucide-react"
 import { useFormik } from "formik"
 import { Input } from "react-aria-components"
-import DoneTasks from "../task/done-tasks"
+import DoneTasks from "./done-tasks"
+import TopicPosts from "./posts"
 import { useTopicItem } from "@/lib/topic/item-data"
-import NextTask from "@/components/task/next-task"
+import NextTask from "@/components/topic/topic-panel/next-task"
 import { useUpdateTopic } from "@/database/generated/hooks"
 
 export default function TopicPanel({ id }: { id: string }) {
@@ -38,12 +39,13 @@ export default function TopicPanel({ id }: { id: string }) {
         <Input
           {...formik.getFieldProps("title")}
           className="focus:bg-canvas w-full text-xl font-medium focus:p-2"
-          placeholder="Topic"
+          placeholder={topicQuery.isLoading ? "Loading Topic..." : "Topic"}
         />
       </form>
       <div className="flex flex-col gap-4">
         {topic ? <NextTask topic={topic} /> : null}
         {topic?._count_done_tasks ? <DoneTasks topic={topic} /> : null}
+        {topic ? <TopicPosts topic={topic} /> : null}
       </div>
     </div>
   )
