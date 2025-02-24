@@ -19,7 +19,9 @@ export default function TopicsGridList({
   const selectedId = pathname.startsWith("/topic/") ? params.id : null
 
   // TODO: Replace with loading and empty UIs
-  const emptyContent = <div className="p-2">{isLoading ? "Loading..." : "No topics"}</div>
+  const emptyContent = (
+    <div className="bg-neutral-50 p-4">{isLoading ? "Loading..." : "No topics"}</div>
+  )
 
   return (
     <GridList

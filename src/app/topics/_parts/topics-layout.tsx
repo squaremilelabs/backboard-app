@@ -16,10 +16,13 @@ export default function TopicsLayout({ children }: { children: React.ReactNode }
       </div>
       {/* Content */}
       <div className="w-md max-w-full self-center p-4 pt-0">{children}</div>
-      <div className="mt-4 flex w-md max-w-full items-center justify-end self-center p-4 pt-0">
+      <div className="flex w-md max-w-full flex-col self-center p-4 pt-0">
+        <div className="mb-4 h-[1px] bg-neutral-200" />
         <Link
           href={isOnClosed ? "/topics" : "/topics/closed"}
-          className={twMerge("mr-2 cursor-pointer text-sm text-neutral-500 hover:underline")}
+          className={twMerge(
+            "mr-2 cursor-pointer self-end text-sm text-neutral-500 hover:underline"
+          )}
         >
           {isOnClosed ? "View Active Topics" : "View Closed Topics"}
         </Link>
