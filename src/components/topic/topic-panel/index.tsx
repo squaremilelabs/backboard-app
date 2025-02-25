@@ -21,6 +21,7 @@ export default function TopicPanel({ id }: { id: string }) {
     },
     enableReinitialize: true,
     onSubmit: (values) => {
+      if (values.title === topic?.title) return
       updateTopic.mutate({
         where: { id },
         data: { title: values.title },
@@ -30,7 +31,11 @@ export default function TopicPanel({ id }: { id: string }) {
 
   return (
     <div className="flex w-md max-w-full flex-col gap-4 justify-self-center p-4">
-      <form className="flex items-center gap-2 py-4" onSubmit={formik.handleSubmit}>
+      <form
+        className="flex items-center gap-2 py-4"
+        onSubmit={formik.handleSubmit}
+        onBlur={formik.submitForm}
+      >
         {updateTopic.isPending ? (
           <Loader size={24} className="text-gold-600 animate-spin" />
         ) : (

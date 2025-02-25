@@ -53,15 +53,15 @@ export default function TopicPosts({ topic }: { topic: TopicItem }) {
       ) : selectedPostId ? (
         <PostForm id={selectedPostId} closePost={() => setSelectedPostId(null)} />
       ) : (
-        <div className="grid grid-cols-1 gap-1 @sm:grid-cols-2">
+        <div className="flex flex-wrap gap-2">
           {posts.map((post) => {
             return (
               <Button
                 key={post.id}
                 onPress={() => setSelectedPostId(post.id)}
                 className={twMerge(
-                  `bg-canvas hover:bg-canvas/80 flex cursor-pointer items-center justify-between gap-2 rounded border
-                    p-2`
+                  `bg-canvas/50 hover:bg-canvas/80 flex cursor-pointer items-center justify-between gap-4 rounded
+                    border p-2`
                 )}
               >
                 <div className="flex grow items-center gap-2 truncate">
@@ -156,7 +156,7 @@ function PostForm({ id, closePost }: { id: string; closePost: () => void }) {
         {...formik.getFieldProps("content")}
         spellCheck={false}
         className={twMerge(
-          "bg-canvas resize-none rounded border p-4 !ring-0 !outline-0",
+          "focus-within:bg-canvas resize-none rounded p-4 !ring-0 !outline-0 focus-within:border",
           contentChanged ? "text-blue-600" : ""
         )}
         placeholder="Write something..."
@@ -181,6 +181,7 @@ function PostForm({ id, closePost }: { id: string; closePost: () => void }) {
             <Button
               className="cursor-pointer rounded border bg-neutral-100 px-4 py-1 text-sm text-blue-600 hover:opacity-60"
               type="reset"
+              onPress={() => formik.resetForm()}
             >
               Clear changes
             </Button>
@@ -188,6 +189,7 @@ function PostForm({ id, closePost }: { id: string; closePost: () => void }) {
               className="cursor-pointer rounded border border-blue-200 bg-blue-100 px-4 py-1 text-sm text-blue-600
                 hover:opacity-60"
               type="submit"
+              onPress={() => formik.submitForm()}
             >
               Save changes
             </Button>

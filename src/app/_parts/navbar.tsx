@@ -1,9 +1,11 @@
 "use client"
-
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs"
 import { useSelectedLayoutSegments } from "next/navigation"
 import Link from "next/link"
 import { twMerge } from "tailwind-merge"
+import { useTheme } from "next-themes"
+import { Button } from "react-aria-components"
+import { Moon, SunDim } from "lucide-react"
 import BackboardLogo from "@/components/common/backboard-logo"
 
 export default function RootNavbar() {
@@ -13,7 +15,8 @@ export default function RootNavbar() {
         <Brand />
         <NavItems />
       </div>
-      <div className="flex items-center">
+      <div className="flex items-center gap-2">
+        <ThemeSelect />
         <SignedIn>
           <UserButton />
         </SignedIn>
@@ -83,5 +86,20 @@ function NavItems() {
         People
       </Link>
     </nav>
+  )
+}
+
+function ThemeSelect() {
+  const { setTheme, resolvedTheme } = useTheme()
+
+  const Icon = resolvedTheme === "dark" ? Moon : SunDim
+
+  return (
+    <Button
+      className="cursor-pointer text-neutral-500 !outline-0 hover:opacity-60"
+      onPress={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+    >
+      <Icon size={20} />
+    </Button>
   )
 }
