@@ -193,6 +193,7 @@ const metadata = {
                 }, content: {
                     name: "content",
                     type: "String",
+                    isOptional: true,
                 }, archived_at: {
                     name: "archived_at",
                     type: "DateTime",

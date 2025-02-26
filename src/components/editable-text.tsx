@@ -6,13 +6,16 @@ import { ClassNameValue, twMerge } from "tailwind-merge"
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- to allow for any `useCreate` hook to be provided
 type GenericUseMutationResult = UseMutationResult<any, any, any, any>
 
-export default function EditableTitle<T extends GenericUseMutationResult>({
+export default function EditableText<T extends GenericUseMutationResult>({
   record,
+  updateField = "title",
   updateMutation,
   placeholder = "Title",
   className,
 }: {
-  record: { id: string; title: string }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- to allow for any record to be passed
+  record: { id: string } & any
+  updateField?: string
   updateMutation: T
   placeholder?: string
   className?: ClassNameValue
@@ -20,14 +23,16 @@ export default function EditableTitle<T extends GenericUseMutationResult>({
   const [input, setInput] = useState("")
   const inputRef = useRef<HTMLTextAreaElement>(null)
   useEffect(() => {
-    setInput(record.title)
-  }, [record.title])
+    if (record && record[updateField] && !updateMutation.isPending) {
+      setInput(record[updateField])
+    }
+  }, [record, updateField, updateMutation.isPending])
 
   const handleSubmit = () => {
-    if (input && input !== record.title) {
+    if (input && input !== record[updateField]) {
       updateMutation.mutate({
         where: { id: record.id },
-        data: { title: input },
+        data: { [updateField]: input },
       })
     }
   }
@@ -38,7 +43,7 @@ export default function EditableTitle<T extends GenericUseMutationResult>({
       handleSubmit()
     }
     if (e.key === "Escape") {
-      setInput(record.title)
+      setInput(record[updateField] ?? "")
       updateMutation.reset()
       inputRef.current?.blur()
     }

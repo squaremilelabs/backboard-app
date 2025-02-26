@@ -10,17 +10,28 @@ import {
   SelectValue,
 } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
-import { RelativeTarget } from "@prisma/client"
-import { ChevronDown } from "lucide-react"
-import { useState } from "react"
+import { RelativeTarget, Task } from "@prisma/client"
+import { ChevronDown, Loader, Square, SquareCheck } from "lucide-react"
+import { useEffect, useMemo, useState } from "react"
+import { useUser } from "@clerk/nextjs"
 import CreateByTitleForm from "@/components/create-by-title-form"
-import { useCreateTasklist, useUpdateTasklist } from "@/database/generated/hooks"
+import {
+  useCreateTask,
+  useCreateTasklist,
+  useFindManyTask,
+  useUpdateTask,
+  useUpdateTasklist,
+} from "@/database/generated/hooks"
 import { RELATIVE_TARGETS_UI_ENUM } from "@/lib/constants"
 import { TasklistData, useTaskslistsData } from "@/lib/data/tasklist"
-import EditableTitle from "@/components/editable-title"
+import EditableText from "@/components/editable-text"
+import { formatDate } from "@/lib/utils"
 
 export default function TopicTasklists({ topicId }: { topicId: string }) {
-  const { data: tasklists } = useTaskslistsData({ where: { topic_id: topicId, archived_at: null } })
+  const { data: tasklists } = useTaskslistsData({
+    where: { topic_id: topicId, archived_at: null },
+    orderBy: [{ target: "asc" }, { created_at: "desc" }],
+  })
   const createTasklist = useCreateTasklist()
   return (
     <div className="flex flex-col gap-2">
@@ -46,7 +57,7 @@ function Tasklist({ tasklist }: { tasklist: TasklistData }) {
       <Heading className="flex items-start gap-2 p-2">
         <div className="flex grow flex-col gap-2 @sm:flex-row @sm:items-start">
           <TasklistTargetSelect tasklist={tasklist} />
-          <EditableTitle record={tasklist} updateMutation={updateTasklist} />
+          <EditableText record={tasklist} updateMutation={updateTasklist} />
         </div>
         <div className="flex items-center gap-2">
           <div
@@ -65,7 +76,7 @@ function Tasklist({ tasklist }: { tasklist: TasklistData }) {
         </div>
       </Heading>
       <DisclosurePanel>
-        <TasklistTasks />
+        <TasklistTasks tasklist={tasklist} />
       </DisclosurePanel>
     </Disclosure>
   )
@@ -129,6 +140,129 @@ function TasklistTargetSelect({ tasklist }: { tasklist: TasklistData }) {
   )
 }
 
-function TasklistTasks() {
-  return <div className="bg-canvas rounded-lg border p-8">tasks</div>
+function TasklistTasks({ tasklist }: { tasklist: TasklistData }) {
+  const { user } = useUser()
+  const createTask = useCreateTask()
+  const [showDoneTasks, setShowDoneTasks] = useState(false)
+
+  useEffect(() => {
+    if (!tasklist._computed.done_task_count) {
+      setShowDoneTasks(false)
+    }
+  }, [tasklist._computed.done_task_count])
+
+  const sortedUndoneTasks = useMemo(
+    () =>
+      [...tasklist._computed.undone_tasks].sort((a, b) => {
+        const aOrder = tasklist.task_order.indexOf(a.id)
+        const bOrder = tasklist.task_order.indexOf(b.id)
+        if (aOrder !== bOrder) return aOrder - bOrder
+        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      }),
+    [tasklist]
+  )
+
+  const hasTasks =
+    tasklist._computed.undone_task_count > 0 || tasklist._computed.done_task_count > 0
+
+  return (
+    <div className="bg-canvas flex flex-col gap-2 rounded-lg border p-4">
+      <div className="flex flex-col">
+        {sortedUndoneTasks.map((task) => {
+          return <TasklistTask key={task.id} task={task} />
+        })}
+        <CreateByTitleForm
+          createMutation={createTask}
+          additionalData={{
+            topic: { connect: { id: tasklist.topic_id } },
+            tasklist: { connect: { id: tasklist.id, topic_id: tasklist.topic_id } },
+            created_by: { connect: { id: user?.id } },
+          }}
+          placeholder={hasTasks ? "New Task" : "Add First Task"}
+        />
+      </div>
+      {tasklist._computed.done_task_count ? (
+        <div className="flex flex-col gap-2">
+          <Button
+            isDisabled={!tasklist._computed.done_task_count}
+            onPress={() => setShowDoneTasks((prev) => !prev)}
+            className={twMerge(
+              "flex items-center gap-1 rounded-lg px-2 py-1",
+              "focus-visible:text-gold-500 !outline-0",
+              showDoneTasks
+                ? "mt-2 rounded-b-none border-b pb-2 font-semibold text-neutral-950"
+                : "self-start border text-neutral-500"
+            )}
+          >
+            {tasklist._computed.done_task_count ? (
+              <ChevronDown
+                size={16}
+                className={twMerge(showDoneTasks ? "rotate-0" : "-rotate-90")}
+              />
+            ) : null}
+            <p className="text-sm">{tasklist._computed.done_task_count} done</p>
+          </Button>
+          {showDoneTasks ? <TasklistDoneTasks tasklist={tasklist} /> : null}
+        </div>
+      ) : null}
+    </div>
+  )
+}
+
+function TasklistDoneTasks({ tasklist }: { tasklist: TasklistData }) {
+  const doneTasksQuery = useFindManyTask({
+    where: { tasklist_id: tasklist.id, done_at: { not: null } },
+    orderBy: { done_at: "desc" },
+  })
+
+  if (doneTasksQuery.isLoading) {
+    return <span className="text-sm text-neutral-500">Loading...</span>
+  }
+
+  const doneTasks = doneTasksQuery.data || []
+
+  if (doneTasks.length === 0) {
+    return <span className="text-sm text-neutral-500">None</span>
+  }
+
+  return (
+    <div className="flex flex-col">
+      {doneTasks.map((task) => (
+        <TasklistTask key={task.id} task={task} />
+      ))}
+    </div>
+  )
+}
+
+function TasklistTask({ task }: { task: Task }) {
+  const updateTask = useUpdateTask()
+
+  const CheckboxIcon = task.done_at ? SquareCheck : Square
+
+  const handleCheck = () => {
+    updateTask.mutate({
+      where: { id: task.id },
+      data: { done_at: task.done_at ? null : new Date() },
+    })
+  }
+
+  return (
+    <div className="flex items-start gap-2 rounded-lg p-2 outline-neutral-200 hover:outline-2">
+      {updateTask.isPending ? (
+        <Loader size={20} className="text-gold-500 animate-spin" />
+      ) : (
+        <Button onPress={handleCheck} className={twMerge("text-neutral-500")}>
+          <CheckboxIcon size={20} />
+        </Button>
+      )}
+      <EditableText record={task} updateMutation={updateTask} updateField="title" />
+      <div className="min-w-fit">
+        {task.done_at ? (
+          <p className="bg-neutral-100 px-2 py-0.5 text-xs text-neutral-600">
+            {formatDate(task.done_at, { withTime: true })}
+          </p>
+        ) : null}
+      </div>
+    </div>
+  )
 }

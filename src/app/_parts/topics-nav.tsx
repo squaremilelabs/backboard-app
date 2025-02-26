@@ -97,9 +97,12 @@ function TopicsNavList() {
           >
             <p className="grow truncate group-hover:font-semibold">{topic.title}</p>
             {nextTasklistUI ? (
-              <div
-                className={twMerge("size-[16px] rounded-full border-2", nextTasklistUI.className)}
-              ></div>
+              <span
+                className={twMerge(
+                  "size-[16px] min-w-[16px] rounded-full border-2",
+                  nextTasklistUI.className
+                )}
+              />
             ) : null}
           </GridListItem>
         )

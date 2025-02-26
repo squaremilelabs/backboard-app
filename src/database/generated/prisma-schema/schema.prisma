@@ -66,7 +66,7 @@ model Resource {
   topic         Topic     @relation(fields: [topic_id], references: [id])
   is_private    Boolean   @default(true)
   title         String
-  content       String
+  content       String?
   archived_at   DateTime? @db.Timestamptz()
 
   @@map("resources")
