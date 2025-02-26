@@ -14,5 +14,8 @@ async function seed() {
 }
 
 seed()
-  .then(() => console.log("seeded"))
-  .catch((e) => console.error(e))
+  .then(() => console.log("SEEDED DATABASE"))
+  .catch((e) => {
+    console.error("ERROR SEEDING DATABASE")
+    console.error(e)
+  })

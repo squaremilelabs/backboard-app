@@ -45,7 +45,10 @@ html {
   * {
     @apply text-base;
     @apply relative;
-    @apply outline-gold-500 ring-gold-400;
+    @apply outline-gold-500 ring-gold-500;
+  }
+  button {
+    @apply cursor-pointer hover:opacity-60;
   }
   /*  As of Tailwind V4, border-color defaulted to currentColor. Modified here. */
   *, ::after, ::before, ::backdrop, ::file-selector-button {

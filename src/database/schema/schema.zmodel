@@ -20,160 +20,132 @@ plugin hooks {
 }
 
 model User {
-  id                    String   @id @deny('update', true) // Should match clerk auth ID
-  created_at            DateTime @default(now()) @db.Timestamptz @deny('update', true)
-  updated_at            DateTime @updatedAt @db.Timestamptz
+  id           String     @id @deny('update', true) // Should match clerk auth ID
+  created_at   DateTime   @default(now()) @db.Timestamptz @deny('update', true)
+  updated_at   DateTime   @updatedAt @db.Timestamptz
 
-  display_name          String   @trim @length(min: 1, max: 50, "name must be between 1 and 50 characters")
-  email                 String   @email @unique
+  display_name String     @trim @length(min: 1, max: 50, "name must be between 1 and 50 characters")
+  email        String     @email @unique
+  image_href   String?    @url
 
-  associated_as_persons Person[] @relation('associated_as_persons')
-  persons               Person[] @relation('created_persons')
-  topics                Topic[]
-  posts                 Post[]
-  tasks                 Task[]
+  topics       Topic[]
+  resources    Resource[]
+  tasklists    Tasklist[]
+  tasks        Task[]
 
   @@auth
+  @@map("users")
   @@allow("create,read", true)
   @@allow("update", auth().id == id)
-  @@map("users")
-}
-
-model Person {
-  id                  String   @id @default(cuid())
-  created_at          DateTime @default(now()) @db.Timestamptz
-  updated_at          DateTime @updatedAt @db.Timestamptz
-  created_by_id       String   @default(auth().id)
-  created_by          User     @relation('created_persons', fields: [created_by_id], references: [id])
-
-  name                String   @trim @length(min: 1, max: 50, "name must be between 1 and 50 characters")
-  contributing_topics Topic[]  @relation("topic_contributors")
-  viewing_topics      Topic[]  @relation("topic_viewers")
-  tasks               Task[]
-
-  // The user who is later associated with this person
-  associated_user_id  String?
-  associated_user     User?    @relation('associated_as_persons', fields: [associated_user_id], references: [id])
-
-  @@map("persons")
-
-  @@allow('all', created_by_id == auth().id)
-  @@unique([created_by_id, name])
 }
 
 model Topic {
-  id              String      @id @default(cuid())
-  created_at      DateTime    @default(now()) @db.Timestamptz
-  updated_at      DateTime    @updatedAt @db.Timestamptz
-  created_by_id   String      @default(auth().id)
-  created_by      User        @relation(fields: [created_by_id], references: [id])
+  id            String     @id @default(cuid())
+  created_at    DateTime   @default(now()) @db.Timestamptz
+  updated_at    DateTime   @updatedAt @db.Timestamptz
+  created_by_id String     @default(auth().id)
+  created_by    User       @relation(fields: [created_by_id], references: [id])
 
-  title           String      @trim @length(min: 1, max: 300, "title must be between 1 and 300 characters")
-  description     String?
+  title         String     @trim @length(min: 1, max: 300, "title must be between 1 and 300 characters")
+  description   String?    @trim
 
-  contributors    Person[]    @relation("topic_contributors")
-  viewers         Person[]    @relation("topic_viewers")
-  is_public       Boolean     @default(false)
+  tasklists     Tasklist[]
+  tasks         Task[]
+  resources     Resource[]
 
-  status          TopicStatus @default(ACTIVE)
-  posts           Post[]
-  tasks           Task[]      @relation("topic_tasks")
+  is_public     Boolean    @default(false)
 
-  current_task_id String?     @unique
-  current_task    Task?       @relation("topic_current_task", fields: [current_task_id], references: [id])
-
-  @@unique([id, current_task_id])
+  archived_at   DateTime?  @db.Timestamptz
 
   @@map("topics")
   @@allow("all", created_by_id == auth().id)
-  @@allow("read", contributors?[associated_user_id == auth().id && associated_user_id != null])
-  @@allow("read", viewers?[associated_user_id == auth().id && associated_user_id != null])
+  @@allow("read", is_public == true)
 }
 
-model Post {
-  id            String   @id @default(cuid())
-  created_at    DateTime @default(now()) @db.Timestamptz
-  updated_at    DateTime @updatedAt @db.Timestamptz
-  created_by_id String   @default(auth().id)
-  created_by    User     @relation(fields: [created_by_id], references: [id])
+model Resource {
+  id            String    @id @default(cuid())
+  created_at    DateTime  @default(now()) @db.Timestamptz
+  updated_at    DateTime  @updatedAt @db.Timestamptz
+  created_by_id String    @default(auth().id)
+  created_by    User      @relation(fields: [created_by_id], references: [id])
 
   topic_id      String
-  topic         Topic    @relation(fields: [topic_id], references: [id])
+  topic         Topic     @relation(fields: [topic_id], references: [id])
 
-  title         String
-  content       String?
-  is_pinned     Boolean  @default(false)
-  is_archived   Boolean  @default(false)
+  is_private    Boolean   @default(true)
 
-  @@map("posts")
+  title         String    @trim @length(min: 1, max: 300, "title must be between 1 and 300 characters")
+  content       String    @trim
 
-  // The author of any post can do anything with it
-  @@allow("all", created_by_id == auth().id || topic.created_by_id == auth().id)
-  // Contributors of the topic can create posts on the topic (thereafter, they are the creator so they can edit based on the above rule)
-  @@allow("create,read", topic.contributors?[associated_user_id == auth().id && associated_user_id != null])
-  // Viewers of the topic can read posts on the topic
-  @@allow("read", topic.viewers?[associated_user_id == auth().id && associated_user_id != null])
+  archived_at   DateTime? @db.Timestamptz
+
+  @@map("resources")
+  @@allow("all", created_by_id == auth().id)
+  @@allow("read", topic.is_public == true && is_private != true)
+}
+
+model Tasklist {
+  id            String         @id @default(cuid())
+  created_at    DateTime       @default(now()) @db.Timestamptz
+  updated_at    DateTime       @updatedAt @db.Timestamptz
+  created_by_id String         @default(auth().id)
+  created_by    User           @relation(fields: [created_by_id], references: [id])
+
+  topic_id      String
+  topic         Topic          @relation(fields: [topic_id], references: [id])
+  @@unique([id, topic_id])
+
+  is_private    Boolean        @default(true)
+
+  title         String         @trim @length(min: 1, max: 300, "title must be between 1 and 300 characters")
+  description   String?        @trim
+  target        RelativeTarget @default(NONE)
+
+  tasks         Task[]
+  task_order    String[]
+
+  archived_at   DateTime?      @db.Timestamptz
+
+  @@map("tasklists")
+  @@allow("all", created_by_id == auth().id)
+  @@allow("read", topic.is_public == true && is_private != true)
 }
 
 model Task {
-  id                String         @id @default(cuid())
-  created_at        DateTime       @default(now()) @db.Timestamptz
-  updated_at        DateTime       @updatedAt @db.Timestamptz
-  created_by_id     String         @default(auth().id)
-  created_by        User           @relation(fields: [created_by_id], references: [id])
+  id                String    @id @default(cuid())
+  created_at        DateTime  @default(now()) @db.Timestamptz
+  updated_at        DateTime  @updatedAt @db.Timestamptz
+  created_by_id     String    @default(auth().id)
+  created_by        User      @relation(fields: [created_by_id], references: [id])
 
   topic_id          String
-  topic             Topic          @relation("topic_tasks", fields: [topic_id], references: [id])
+  topic             Topic     @relation(fields: [topic_id], references: [id]) // must be the same as the tasklist's topic
 
-  current_for_topic Topic?         @relation("topic_current_task")
+  tasklist_id       String
+  tasklist_topic_id String
+  tasklist          Tasklist  @relation(fields: [tasklist_id, tasklist_topic_id], references: [id, topic_id])
 
-  title             String         @trim @length(min: 1, max: 300, "title must be between 1 and 300 characters")
-  description       String?
+  title             String    @trim @length(min: 1, max: 300, "title must be between 1 and 300 characters")
+  description       String?   @trim
+  size_minutes      Int?
+  done_at           DateTime? @db.Timestamptz
 
-  done_target       TaskDoneTarget @default(NO_TARGET)
-  done_at           DateTime?      @db.Timestamptz
+  archived_at       DateTime? @db.Timestamptz
 
-  doer_id           String?
-  doer              Person?        @relation(fields: [doer_id], references: [id])
 
   @@map("tasks")
-
-  // The creator of any task can do anything with it
-  @@allow('all', created_by_id == auth().id)
-  // The creator of a tasks topic can do anything with the task
-  @@allow("all", topic.created_by_id == auth().id)
-  // The assigned task doer can update the task, if they are also a contributor to the topic.
-  // (Doers should always be topic contributors regardless but that cannot be enforced at the schema level)
-  @@allow("read,update", 
-    topic.contributors?[associated_user_id == auth().id && associated_user_id != null] 
-    && doer.associated_user_id == auth().id
-    && doer.associated_user_id != null
-  )
-  // Contributors of the parent topic can create tasks on the topic (thereafter, they are the creator so they can edit based on the above rule)
-  @@allow("create,read", topic.contributors?[associated_user_id == auth().id && associated_user_id != null])
-  // Viewers of the parent topic can read tasks on the topic
-  @@allow("read", topic.viewers?[associated_user_id == auth().id && associated_user_id != null])
+  @@validate(topic_id == tasklist_topic_id, "topic_id must match tasklist_topic_id")
+  @@allow("all", created_by_id == auth().id)
+  @@allow("read", topic.is_public == true && tasklist.is_private != false)
 }
 
-
-enum TopicStatus {
-  ACTIVE
-  CLOSED
-  CANCELED
-  MERGED
-  FORKED
-
-  @@map("TOPIC_STATUS")
-}
-
-enum TaskDoneTarget {
+enum RelativeTarget {
   TODAY
   THIS_WEEK
   NEXT_WEEK
   THIS_MONTH
   NEXT_MONTH
   SOMEDAY
-  NO_TARGET
-
-  @@map("TASK_DONE_TARGET")
+  NONE
+  @@map("RELATIVE_TARGET")
 }

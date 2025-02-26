@@ -27,27 +27,25 @@ const metadata = {
                 }, email: {
                     name: "email",
                     type: "String",
-                }, associated_as_persons: {
-                    name: "associated_as_persons",
-                    type: "Person",
-                    isDataModel: true,
-                    isArray: true,
-                    backLink: 'associated_user',
-                }, persons: {
-                    name: "persons",
-                    type: "Person",
-                    isDataModel: true,
-                    isArray: true,
-                    backLink: 'created_by',
+                }, image_href: {
+                    name: "image_href",
+                    type: "String",
+                    isOptional: true,
                 }, topics: {
                     name: "topics",
                     type: "Topic",
                     isDataModel: true,
                     isArray: true,
                     backLink: 'created_by',
-                }, posts: {
-                    name: "posts",
-                    type: "Post",
+                }, resources: {
+                    name: "resources",
+                    type: "Resource",
+                    isDataModel: true,
+                    isArray: true,
+                    backLink: 'created_by',
+                }, tasklists: {
+                    name: "tasklists",
+                    type: "Tasklist",
                     isDataModel: true,
                     isArray: true,
                     backLink: 'created_by',
@@ -66,84 +64,6 @@ const metadata = {
                 }, email: {
                     name: "email",
                     fields: ["email"]
-                },
-            }
-            ,
-        }
-        ,
-        person: {
-            name: 'Person', fields: {
-                id: {
-                    name: "id",
-                    type: "String",
-                    isId: true,
-                    attributes: [{ "name": "@default", "args": [] }],
-                }, created_at: {
-                    name: "created_at",
-                    type: "DateTime",
-                    attributes: [{ "name": "@default", "args": [] }],
-                }, updated_at: {
-                    name: "updated_at",
-                    type: "DateTime",
-                    attributes: [{ "name": "@updatedAt", "args": [] }],
-                }, created_by_id: {
-                    name: "created_by_id",
-                    type: "String",
-                    attributes: [{ "name": "@default", "args": [] }],
-                    defaultValueProvider: $default$Person$created_by_id,
-                    isForeignKey: true,
-                    relationField: 'created_by',
-                }, created_by: {
-                    name: "created_by",
-                    type: "User",
-                    isDataModel: true,
-                    backLink: 'persons',
-                    isRelationOwner: true,
-                    foreignKeyMapping: { "id": "created_by_id" },
-                }, name: {
-                    name: "name",
-                    type: "String",
-                }, contributing_topics: {
-                    name: "contributing_topics",
-                    type: "Topic",
-                    isDataModel: true,
-                    isArray: true,
-                    backLink: 'contributors',
-                }, viewing_topics: {
-                    name: "viewing_topics",
-                    type: "Topic",
-                    isDataModel: true,
-                    isArray: true,
-                    backLink: 'viewers',
-                }, tasks: {
-                    name: "tasks",
-                    type: "Task",
-                    isDataModel: true,
-                    isArray: true,
-                    backLink: 'doer',
-                }, associated_user_id: {
-                    name: "associated_user_id",
-                    type: "String",
-                    isOptional: true,
-                    isForeignKey: true,
-                    relationField: 'associated_user',
-                }, associated_user: {
-                    name: "associated_user",
-                    type: "User",
-                    isDataModel: true,
-                    isOptional: true,
-                    backLink: 'associated_as_persons',
-                    isRelationOwner: true,
-                    foreignKeyMapping: { "id": "associated_user_id" },
-                },
-            }
-            , uniqueConstraints: {
-                id: {
-                    name: "id",
-                    fields: ["id"]
-                }, created_by_id_name: {
-                    name: "created_by_id_name",
-                    fields: ["created_by_id", "name"]
                 },
             }
             ,
@@ -185,29 +105,9 @@ const metadata = {
                     name: "description",
                     type: "String",
                     isOptional: true,
-                }, contributors: {
-                    name: "contributors",
-                    type: "Person",
-                    isDataModel: true,
-                    isArray: true,
-                    backLink: 'contributing_topics',
-                }, viewers: {
-                    name: "viewers",
-                    type: "Person",
-                    isDataModel: true,
-                    isArray: true,
-                    backLink: 'viewing_topics',
-                }, is_public: {
-                    name: "is_public",
-                    type: "Boolean",
-                    attributes: [{ "name": "@default", "args": [{ "value": false }] }],
-                }, status: {
-                    name: "status",
-                    type: "TopicStatus",
-                    attributes: [{ "name": "@default", "args": [] }],
-                }, posts: {
-                    name: "posts",
-                    type: "Post",
+                }, tasklists: {
+                    name: "tasklists",
+                    type: "Tasklist",
                     isDataModel: true,
                     isArray: true,
                     backLink: 'topic',
@@ -217,39 +117,33 @@ const metadata = {
                     isDataModel: true,
                     isArray: true,
                     backLink: 'topic',
-                }, current_task_id: {
-                    name: "current_task_id",
-                    type: "String",
-                    isOptional: true,
-                    isForeignKey: true,
-                    relationField: 'current_task',
-                }, current_task: {
-                    name: "current_task",
-                    type: "Task",
+                }, resources: {
+                    name: "resources",
+                    type: "Resource",
                     isDataModel: true,
+                    isArray: true,
+                    backLink: 'topic',
+                }, is_public: {
+                    name: "is_public",
+                    type: "Boolean",
+                    attributes: [{ "name": "@default", "args": [{ "value": false }] }],
+                }, archived_at: {
+                    name: "archived_at",
+                    type: "DateTime",
                     isOptional: true,
-                    backLink: 'current_for_topic',
-                    isRelationOwner: true,
-                    foreignKeyMapping: { "id": "current_task_id" },
                 },
             }
             , uniqueConstraints: {
                 id: {
                     name: "id",
                     fields: ["id"]
-                }, current_task_id: {
-                    name: "current_task_id",
-                    fields: ["current_task_id"]
-                }, id_current_task_id: {
-                    name: "id_current_task_id",
-                    fields: ["id", "current_task_id"]
                 },
             }
             ,
         }
         ,
-        post: {
-            name: 'Post', fields: {
+        resource: {
+            name: 'Resource', fields: {
                 id: {
                     name: "id",
                     type: "String",
@@ -267,14 +161,14 @@ const metadata = {
                     name: "created_by_id",
                     type: "String",
                     attributes: [{ "name": "@default", "args": [] }],
-                    defaultValueProvider: $default$Post$created_by_id,
+                    defaultValueProvider: $default$Resource$created_by_id,
                     isForeignKey: true,
                     relationField: 'created_by',
                 }, created_by: {
                     name: "created_by",
                     type: "User",
                     isDataModel: true,
-                    backLink: 'posts',
+                    backLink: 'resources',
                     isRelationOwner: true,
                     foreignKeyMapping: { "id": "created_by_id" },
                 }, topic_id: {
@@ -286,30 +180,113 @@ const metadata = {
                     name: "topic",
                     type: "Topic",
                     isDataModel: true,
-                    backLink: 'posts',
+                    backLink: 'resources',
                     isRelationOwner: true,
                     foreignKeyMapping: { "id": "topic_id" },
+                }, is_private: {
+                    name: "is_private",
+                    type: "Boolean",
+                    attributes: [{ "name": "@default", "args": [{ "value": true }] }],
                 }, title: {
                     name: "title",
                     type: "String",
                 }, content: {
                     name: "content",
                     type: "String",
+                }, archived_at: {
+                    name: "archived_at",
+                    type: "DateTime",
                     isOptional: true,
-                }, is_pinned: {
-                    name: "is_pinned",
-                    type: "Boolean",
-                    attributes: [{ "name": "@default", "args": [{ "value": false }] }],
-                }, is_archived: {
-                    name: "is_archived",
-                    type: "Boolean",
-                    attributes: [{ "name": "@default", "args": [{ "value": false }] }],
                 },
             }
             , uniqueConstraints: {
                 id: {
                     name: "id",
                     fields: ["id"]
+                },
+            }
+            ,
+        }
+        ,
+        tasklist: {
+            name: 'Tasklist', fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    isId: true,
+                    attributes: [{ "name": "@default", "args": [] }],
+                }, created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ "name": "@default", "args": [] }],
+                }, updated_at: {
+                    name: "updated_at",
+                    type: "DateTime",
+                    attributes: [{ "name": "@updatedAt", "args": [] }],
+                }, created_by_id: {
+                    name: "created_by_id",
+                    type: "String",
+                    attributes: [{ "name": "@default", "args": [] }],
+                    defaultValueProvider: $default$Tasklist$created_by_id,
+                    isForeignKey: true,
+                    relationField: 'created_by',
+                }, created_by: {
+                    name: "created_by",
+                    type: "User",
+                    isDataModel: true,
+                    backLink: 'tasklists',
+                    isRelationOwner: true,
+                    foreignKeyMapping: { "id": "created_by_id" },
+                }, topic_id: {
+                    name: "topic_id",
+                    type: "String",
+                    isForeignKey: true,
+                    relationField: 'topic',
+                }, topic: {
+                    name: "topic",
+                    type: "Topic",
+                    isDataModel: true,
+                    backLink: 'tasklists',
+                    isRelationOwner: true,
+                    foreignKeyMapping: { "id": "topic_id" },
+                }, is_private: {
+                    name: "is_private",
+                    type: "Boolean",
+                    attributes: [{ "name": "@default", "args": [{ "value": true }] }],
+                }, title: {
+                    name: "title",
+                    type: "String",
+                }, description: {
+                    name: "description",
+                    type: "String",
+                    isOptional: true,
+                }, target: {
+                    name: "target",
+                    type: "RelativeTarget",
+                    attributes: [{ "name": "@default", "args": [] }],
+                }, tasks: {
+                    name: "tasks",
+                    type: "Task",
+                    isDataModel: true,
+                    isArray: true,
+                    backLink: 'tasklist',
+                }, task_order: {
+                    name: "task_order",
+                    type: "String",
+                    isArray: true,
+                }, archived_at: {
+                    name: "archived_at",
+                    type: "DateTime",
+                    isOptional: true,
+                },
+            }
+            , uniqueConstraints: {
+                id: {
+                    name: "id",
+                    fields: ["id"]
+                }, id_topic_id: {
+                    name: "id_topic_id",
+                    fields: ["id", "topic_id"]
                 },
             }
             ,
@@ -356,12 +333,23 @@ const metadata = {
                     backLink: 'tasks',
                     isRelationOwner: true,
                     foreignKeyMapping: { "id": "topic_id" },
-                }, current_for_topic: {
-                    name: "current_for_topic",
-                    type: "Topic",
+                }, tasklist_id: {
+                    name: "tasklist_id",
+                    type: "String",
+                    isForeignKey: true,
+                    relationField: 'tasklist',
+                }, tasklist_topic_id: {
+                    name: "tasklist_topic_id",
+                    type: "String",
+                    isForeignKey: true,
+                    relationField: 'tasklist',
+                }, tasklist: {
+                    name: "tasklist",
+                    type: "Tasklist",
                     isDataModel: true,
-                    isOptional: true,
-                    backLink: 'current_task',
+                    backLink: 'tasks',
+                    isRelationOwner: true,
+                    foreignKeyMapping: { "id": "tasklist_id", "topic_id": "tasklist_topic_id" },
                 }, title: {
                     name: "title",
                     type: "String",
@@ -369,28 +357,18 @@ const metadata = {
                     name: "description",
                     type: "String",
                     isOptional: true,
-                }, done_target: {
-                    name: "done_target",
-                    type: "TaskDoneTarget",
-                    attributes: [{ "name": "@default", "args": [] }],
+                }, size_minutes: {
+                    name: "size_minutes",
+                    type: "Int",
+                    isOptional: true,
                 }, done_at: {
                     name: "done_at",
                     type: "DateTime",
                     isOptional: true,
-                }, doer_id: {
-                    name: "doer_id",
-                    type: "String",
+                }, archived_at: {
+                    name: "archived_at",
+                    type: "DateTime",
                     isOptional: true,
-                    isForeignKey: true,
-                    relationField: 'doer',
-                }, doer: {
-                    name: "doer",
-                    type: "Person",
-                    isDataModel: true,
-                    isOptional: true,
-                    backLink: 'tasks',
-                    isRelationOwner: true,
-                    foreignKeyMapping: { "id": "doer_id" },
                 },
             }
             , uniqueConstraints: {
@@ -409,15 +387,15 @@ const metadata = {
     ,
     authModel: 'User'
 };
-function $default$Person$created_by_id(user: any): unknown {
-    return user?.id;
-}
-
 function $default$Topic$created_by_id(user: any): unknown {
     return user?.id;
 }
 
-function $default$Post$created_by_id(user: any): unknown {
+function $default$Resource$created_by_id(user: any): unknown {
+    return user?.id;
+}
+
+function $default$Tasklist$created_by_id(user: any): unknown {
     return user?.id;
 }
 

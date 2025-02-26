@@ -6,9 +6,9 @@
 // @ts-nocheck
 
 export * from './user';
-export * from './person';
 export * from './topic';
-export * from './post';
+export * from './resource';
+export * from './tasklist';
 export * from './task';
 export { getQueryKey } from '@zenstackhq/tanstack-query/runtime-v5';
 export { Provider } from '@zenstackhq/tanstack-query/runtime-v5/react';

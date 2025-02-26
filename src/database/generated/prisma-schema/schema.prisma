@@ -12,112 +12,102 @@ generator client {
   provider = "prisma-client-js"
 }
 
-enum TopicStatus {
-  ACTIVE
-  CLOSED
-  CANCELED
-  MERGED
-  FORKED
-
-  @@map("TOPIC_STATUS")
-}
-
-enum TaskDoneTarget {
+enum RelativeTarget {
   TODAY
   THIS_WEEK
   NEXT_WEEK
   THIS_MONTH
   NEXT_MONTH
   SOMEDAY
-  NO_TARGET
+  NONE
 
-  @@map("TASK_DONE_TARGET")
+  @@map("RELATIVE_TARGET")
 }
 
 model User {
-  id                    String   @id()
-  created_at            DateTime @default(now()) @db.Timestamptz()
-  updated_at            DateTime @updatedAt() @db.Timestamptz()
-  display_name          String
-  email                 String   @unique()
-  associated_as_persons Person[] @relation("associated_as_persons")
-  persons               Person[] @relation("created_persons")
-  topics                Topic[]
-  posts                 Post[]
-  tasks                 Task[]
+  id           String     @id()
+  created_at   DateTime   @default(now()) @db.Timestamptz()
+  updated_at   DateTime   @updatedAt() @db.Timestamptz()
+  display_name String
+  email        String     @unique()
+  image_href   String?
+  topics       Topic[]
+  resources    Resource[]
+  tasklists    Tasklist[]
+  tasks        Task[]
 
   @@map("users")
 }
 
-model Person {
-  id                  String   @id() @default(cuid())
-  created_at          DateTime @default(now()) @db.Timestamptz()
-  updated_at          DateTime @updatedAt() @db.Timestamptz()
-  created_by_id       String
-  created_by          User     @relation("created_persons", fields: [created_by_id], references: [id])
-  name                String
-  contributing_topics Topic[]  @relation("topic_contributors")
-  viewing_topics      Topic[]  @relation("topic_viewers")
-  tasks               Task[]
-  associated_user_id  String?
-  associated_user     User?    @relation("associated_as_persons", fields: [associated_user_id], references: [id])
-
-  @@unique([created_by_id, name])
-  @@map("persons")
-}
-
 model Topic {
-  id              String      @id() @default(cuid())
-  created_at      DateTime    @default(now()) @db.Timestamptz()
-  updated_at      DateTime    @updatedAt() @db.Timestamptz()
-  created_by_id   String
-  created_by      User        @relation(fields: [created_by_id], references: [id])
-  title           String
-  description     String?
-  contributors    Person[]    @relation("topic_contributors")
-  viewers         Person[]    @relation("topic_viewers")
-  is_public       Boolean     @default(false)
-  status          TopicStatus @default(ACTIVE)
-  posts           Post[]
-  tasks           Task[]      @relation("topic_tasks")
-  current_task_id String?     @unique()
-  current_task    Task?       @relation("topic_current_task", fields: [current_task_id], references: [id])
+  id            String     @id() @default(cuid())
+  created_at    DateTime   @default(now()) @db.Timestamptz()
+  updated_at    DateTime   @updatedAt() @db.Timestamptz()
+  created_by_id String
+  created_by    User       @relation(fields: [created_by_id], references: [id])
+  title         String
+  description   String?
+  tasklists     Tasklist[]
+  tasks         Task[]
+  resources     Resource[]
+  is_public     Boolean    @default(false)
+  archived_at   DateTime?  @db.Timestamptz()
 
-  @@unique([id, current_task_id])
   @@map("topics")
 }
 
-model Post {
-  id            String   @id() @default(cuid())
-  created_at    DateTime @default(now()) @db.Timestamptz()
-  updated_at    DateTime @updatedAt() @db.Timestamptz()
+model Resource {
+  id            String    @id() @default(cuid())
+  created_at    DateTime  @default(now()) @db.Timestamptz()
+  updated_at    DateTime  @updatedAt() @db.Timestamptz()
   created_by_id String
-  created_by    User     @relation(fields: [created_by_id], references: [id])
+  created_by    User      @relation(fields: [created_by_id], references: [id])
   topic_id      String
-  topic         Topic    @relation(fields: [topic_id], references: [id])
+  topic         Topic     @relation(fields: [topic_id], references: [id])
+  is_private    Boolean   @default(true)
   title         String
-  content       String?
-  is_pinned     Boolean  @default(false)
-  is_archived   Boolean  @default(false)
+  content       String
+  archived_at   DateTime? @db.Timestamptz()
 
-  @@map("posts")
+  @@map("resources")
+}
+
+model Tasklist {
+  id            String         @id() @default(cuid())
+  created_at    DateTime       @default(now()) @db.Timestamptz()
+  updated_at    DateTime       @updatedAt() @db.Timestamptz()
+  created_by_id String
+  created_by    User           @relation(fields: [created_by_id], references: [id])
+  topic_id      String
+  topic         Topic          @relation(fields: [topic_id], references: [id])
+  is_private    Boolean        @default(true)
+  title         String
+  description   String?
+  target        RelativeTarget @default(NONE)
+  tasks         Task[]
+  task_order    String[]
+  archived_at   DateTime?      @db.Timestamptz()
+
+  @@unique([id, topic_id])
+  @@map("tasklists")
 }
 
 model Task {
-  id                String         @id() @default(cuid())
-  created_at        DateTime       @default(now()) @db.Timestamptz()
-  updated_at        DateTime       @updatedAt() @db.Timestamptz()
+  id                String    @id() @default(cuid())
+  created_at        DateTime  @default(now()) @db.Timestamptz()
+  updated_at        DateTime  @updatedAt() @db.Timestamptz()
   created_by_id     String
-  created_by        User           @relation(fields: [created_by_id], references: [id])
+  created_by        User      @relation(fields: [created_by_id], references: [id])
   topic_id          String
-  topic             Topic          @relation("topic_tasks", fields: [topic_id], references: [id])
-  current_for_topic Topic?         @relation("topic_current_task")
+  topic             Topic     @relation(fields: [topic_id], references: [id])
+  tasklist_id       String
+  tasklist_topic_id String
+  tasklist          Tasklist  @relation(fields: [tasklist_id, tasklist_topic_id], references: [id, topic_id])
   title             String
   description       String?
-  done_target       TaskDoneTarget @default(NO_TARGET)
-  done_at           DateTime?      @db.Timestamptz()
-  doer_id           String?
-  doer              Person?        @relation(fields: [doer_id], references: [id])
+  size_minutes      Int?
+  done_at           DateTime? @db.Timestamptz()
+  archived_at       DateTime? @db.Timestamptz()
 
   @@map("tasks")
 }

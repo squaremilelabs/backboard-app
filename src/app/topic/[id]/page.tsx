@@ -1,6 +1,6 @@
-import TopicPanel from "@/components/topic/topic-panel"
+import TopicPage from "./_parts/page"
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  return <TopicPanel id={id} />
+  return <TopicPage id={id} />
 }
