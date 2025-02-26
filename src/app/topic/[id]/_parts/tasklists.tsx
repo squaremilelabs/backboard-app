@@ -26,26 +26,30 @@ import { RELATIVE_TARGETS_UI_ENUM } from "@/lib/constants"
 import { TasklistData, useTaskslistsData } from "@/lib/data/tasklist"
 import EditableText from "@/components/editable-text"
 import { formatDate } from "@/lib/utils"
+import { TopicData } from "@/lib/data/topic"
+import MetadataPopover from "@/components/metadata-popover"
 
-export default function TopicTasklists({ topicId }: { topicId: string }) {
+export default function TopicTasklists({ topic }: { topic: TopicData }) {
   const { data: tasklists } = useTaskslistsData({
-    where: { topic_id: topicId, archived_at: null },
+    where: { topic_id: topic.id, archived_at: null },
     orderBy: [{ target: "asc" }, { created_at: "desc" }],
   })
   const createTasklist = useCreateTasklist()
   return (
     <div className="flex flex-col gap-2">
-      {tasklists?.map((tasklist) => <Tasklist key={tasklist.id} tasklist={tasklist} />)}
+      {tasklists?.map((tasklist) => (
+        <Tasklist key={tasklist.id} tasklist={tasklist} topic={topic} />
+      ))}
       <CreateByTitleForm
         createMutation={createTasklist}
-        additionalData={{ topic_id: topicId }}
+        additionalData={{ topic_id: topic.id, is_public: topic.is_public }}
         placeholder="New Tasklist"
       />
     </div>
   )
 }
 
-function Tasklist({ tasklist }: { tasklist: TasklistData }) {
+function Tasklist({ tasklist, topic }: { tasklist: TasklistData; topic: TopicData }) {
   const [isExpanded, setIsExpanded] = useState(false)
   const updateTasklist = useUpdateTasklist()
   return (
@@ -60,6 +64,15 @@ function Tasklist({ tasklist }: { tasklist: TasklistData }) {
           <EditableText record={tasklist} updateMutation={updateTasklist} />
         </div>
         <div className="flex items-center gap-2">
+          <div className="gap flex h-[20px] items-center">
+            <MetadataPopover
+              recordType="Tasklist"
+              record={tasklist}
+              updateMutation={updateTasklist}
+              parentIsPublic={topic.is_public}
+              iconSize={16}
+            />
+          </div>
           <div
             className={
               "flex h-[20px] items-center justify-center rounded-lg bg-neutral-200 px-2 text-sm"
@@ -169,7 +182,7 @@ function TasklistTasks({ tasklist }: { tasklist: TasklistData }) {
     <div className="bg-canvas flex flex-col gap-2 rounded-lg border p-4">
       <div className="flex flex-col">
         {sortedUndoneTasks.map((task) => {
-          return <TasklistTask key={task.id} task={task} />
+          return <TasklistTask key={task.id} task={task} tasklist={tasklist} />
         })}
         <CreateByTitleForm
           createMutation={createTask}
@@ -228,13 +241,13 @@ function TasklistDoneTasks({ tasklist }: { tasklist: TasklistData }) {
   return (
     <div className="flex flex-col">
       {doneTasks.map((task) => (
-        <TasklistTask key={task.id} task={task} />
+        <TasklistTask key={task.id} task={task} tasklist={tasklist} />
       ))}
     </div>
   )
 }
 
-function TasklistTask({ task }: { task: Task }) {
+function TasklistTask({ task, tasklist }: { task: Task; tasklist: TasklistData }) {
   const updateTask = useUpdateTask()
 
   const CheckboxIcon = task.done_at ? SquareCheck : Square
@@ -256,12 +269,21 @@ function TasklistTask({ task }: { task: Task }) {
         </Button>
       )}
       <EditableText record={task} updateMutation={updateTask} updateField="title" />
-      <div className="min-w-fit">
+      <div className="flex min-w-fit items-center gap-2">
         {task.done_at ? (
           <p className="bg-neutral-100 px-2 py-0.5 text-xs text-neutral-600">
             {formatDate(task.done_at, { withTime: true })}
           </p>
         ) : null}
+        <div className="flex h-[20px] items-center">
+          <MetadataPopover
+            record={task}
+            recordType={"Task"}
+            updateMutation={updateTask}
+            parentIsPublic={tasklist.is_public}
+            iconSize={16}
+          />
+        </div>
       </div>
     </div>
   )

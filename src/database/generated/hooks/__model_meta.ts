@@ -183,10 +183,10 @@ const metadata = {
                     backLink: 'resources',
                     isRelationOwner: true,
                     foreignKeyMapping: { "id": "topic_id" },
-                }, is_private: {
-                    name: "is_private",
+                }, is_public: {
+                    name: "is_public",
                     type: "Boolean",
-                    attributes: [{ "name": "@default", "args": [{ "value": true }] }],
+                    attributes: [{ "name": "@default", "args": [{ "value": false }] }],
                 }, title: {
                     name: "title",
                     type: "String",
@@ -250,10 +250,10 @@ const metadata = {
                     backLink: 'tasklists',
                     isRelationOwner: true,
                     foreignKeyMapping: { "id": "topic_id" },
-                }, is_private: {
-                    name: "is_private",
+                }, is_public: {
+                    name: "is_public",
                     type: "Boolean",
-                    attributes: [{ "name": "@default", "args": [{ "value": true }] }],
+                    attributes: [{ "name": "@default", "args": [{ "value": false }] }],
                 }, title: {
                     name: "title",
                     type: "String",

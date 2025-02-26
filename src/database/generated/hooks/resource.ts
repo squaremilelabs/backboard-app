@@ -328,7 +328,7 @@ export function useSuspenseCountResource<TArgs extends Prisma.ResourceCountArgs,
     return useSuspenseModelQuery<TQueryFnData, TData, TError>('Resource', `${endpoint}/resource/count`, args, options, fetch);
 }
 
-export function useCheckResource<TError = DefaultError>(args: { operation: PolicyCrudKind; where?: { id?: string; created_by_id?: string; topic_id?: string; is_private?: boolean; title?: string; content?: string }; }, options?: (Omit<UseQueryOptions<boolean, TError, boolean>, 'queryKey'> & ExtraQueryOptions)) {
+export function useCheckResource<TError = DefaultError>(args: { operation: PolicyCrudKind; where?: { id?: string; created_by_id?: string; topic_id?: string; is_public?: boolean; title?: string; content?: string }; }, options?: (Omit<UseQueryOptions<boolean, TError, boolean>, 'queryKey'> & ExtraQueryOptions)) {
     const { endpoint, fetch } = getHooksContext();
     return useModelQuery<boolean, boolean, TError>('Resource', `${endpoint}/resource/check`, args, options, fetch);
 }

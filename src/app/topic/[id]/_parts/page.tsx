@@ -6,6 +6,7 @@ import TopicResources from "./resources"
 import EditableText from "@/components/editable-text"
 import { useUpdateTopic } from "@/database/generated/hooks"
 import { useTopicData } from "@/lib/data/topic"
+import MetadataPopover from "@/components/metadata-popover"
 
 export default function TopicPage({ id }: { id: string }) {
   const { data: topic } = useTopicData(id)
@@ -16,12 +17,23 @@ export default function TopicPage({ id }: { id: string }) {
       {/* Title & Description */}
       <div className="flex flex-col gap-2">
         <div className="flex items-start gap-2">
-          <div className="flex h-[30px] items-center text-neutral-500">
+          <div className="flex h-[30px] items-center gap-2 text-neutral-500">
             <Bookmark size={24} />
           </div>
-          {topic ? (
-            <EditableText record={topic} updateMutation={updateTopic} className="grow text-xl" />
-          ) : null}
+          <div className="flex grow">
+            {topic ? (
+              <EditableText record={topic} updateMutation={updateTopic} className="grow text-xl" />
+            ) : null}
+          </div>
+          <div className="flex h-[30px] items-center">
+            <MetadataPopover
+              recordType="Topic"
+              record={topic}
+              iconSize={20}
+              parentIsPublic={false}
+              updateMutation={updateTopic}
+            />
+          </div>
         </div>
         <div className="flex items-start gap-2">
           <div className="flex h-[20px] w-[24px] items-center justify-center text-neutral-500">
@@ -37,15 +49,11 @@ export default function TopicPage({ id }: { id: string }) {
       </div>
       <div>
         <SectionTitle Icon={Library} title="Resources" />
-        <div className="">
-          <TopicResources topicId={id} />
-        </div>
+        {topic ? <TopicResources topic={topic} /> : null}
       </div>
       <div>
         <SectionTitle Icon={ListTodo} title="Tasks" />
-        <div className="">
-          <TopicTasklists topicId={id} />
-        </div>
+        {topic ? <TopicTasklists topic={topic} /> : null}
       </div>
     </div>
   )

@@ -64,7 +64,7 @@ model Resource {
   created_by    User      @relation(fields: [created_by_id], references: [id])
   topic_id      String
   topic         Topic     @relation(fields: [topic_id], references: [id])
-  is_private    Boolean   @default(true)
+  is_public     Boolean   @default(false)
   title         String
   content       String?
   archived_at   DateTime? @db.Timestamptz()
@@ -80,7 +80,7 @@ model Tasklist {
   created_by    User           @relation(fields: [created_by_id], references: [id])
   topic_id      String
   topic         Topic          @relation(fields: [topic_id], references: [id])
-  is_private    Boolean        @default(true)
+  is_public     Boolean        @default(false)
   title         String
   description   String?
   target        RelativeTarget @default(NONE)

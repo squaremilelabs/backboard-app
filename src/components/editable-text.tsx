@@ -13,8 +13,8 @@ export default function EditableText<T extends GenericUseMutationResult>({
   placeholder = "Title",
   className,
 }: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- to allow for any record to be passed
-  record: { id: string } & any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- to allow for any record type to be passed
+  record: ({ id: string } & Record<string, any>) | null
   updateField?: string
   updateMutation: T
   placeholder?: string
@@ -22,18 +22,21 @@ export default function EditableText<T extends GenericUseMutationResult>({
 }) {
   const [input, setInput] = useState("")
   const inputRef = useRef<HTMLTextAreaElement>(null)
+  const recordField = record ? (record[updateField] as string | null) : null
   useEffect(() => {
-    if (record && record[updateField] && !updateMutation.isPending) {
-      setInput(record[updateField])
+    if (recordField && !updateMutation.isPending) {
+      setInput(recordField)
     }
-  }, [record, updateField, updateMutation.isPending])
+  }, [recordField, updateField, updateMutation.isPending])
 
   const handleSubmit = () => {
-    if (input && input !== record[updateField]) {
-      updateMutation.mutate({
-        where: { id: record.id },
-        data: { [updateField]: input },
-      })
+    if (input && input !== recordField) {
+      if (record) {
+        updateMutation.mutate({
+          where: { id: record.id },
+          data: { [updateField]: input },
+        })
+      }
     }
   }
 
@@ -43,7 +46,7 @@ export default function EditableText<T extends GenericUseMutationResult>({
       handleSubmit()
     }
     if (e.key === "Escape") {
-      setInput(record[updateField] ?? "")
+      setInput(recordField ?? "")
       updateMutation.reset()
       inputRef.current?.blur()
     }

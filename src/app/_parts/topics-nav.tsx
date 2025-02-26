@@ -44,9 +44,13 @@ export default function TopicsNav() {
             />
           </Button>
           <Popover isOpen={isOpen} onOpenChange={setIsOpen}>
-            <Dialog className="bg-canvas/50 flex w-xs flex-col gap-1 rounded-lg backdrop-blur-xl">
+            <Dialog className="bg-canvas/50 flex w-xs flex-col gap-1 rounded-lg !outline-0 backdrop-blur-xl">
               <TopicsNavList />
-              <CreateByTitleForm createMutation={createTopic} placeholder="New Topic" />
+              <CreateByTitleForm
+                createMutation={createTopic}
+                placeholder="New Topic"
+                className="border"
+              />
             </Dialog>
           </Popover>
         </DialogTrigger>

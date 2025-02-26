@@ -12,10 +12,12 @@ import {
 import EditableText from "@/components/editable-text"
 import CreateByTitleForm from "@/components/create-by-title-form"
 import { formatDate } from "@/lib/utils"
+import { TopicData } from "@/lib/data/topic"
+import MetadataPopover from "@/components/metadata-popover"
 
-export default function TopicResources({ topicId }: { topicId: string }) {
+export default function TopicResources({ topic }: { topic: TopicData }) {
   const resourcesQuery = useFindManyResource({
-    where: { topic_id: topicId, archived_at: null },
+    where: { topic_id: topic.id, archived_at: null },
     orderBy: { updated_at: "desc" },
   })
   const createResource = useCreateResource()
@@ -23,12 +25,14 @@ export default function TopicResources({ topicId }: { topicId: string }) {
   return (
     <div className="flex flex-col gap-2">
       <div className="grid grid-cols-1 gap-2 @sm:grid-cols-2">
-        {resources?.map((resource) => <Resource key={resource.id} resource={resource} />)}
+        {resources?.map((resource) => (
+          <Resource key={resource.id} resource={resource} topic={topic} />
+        ))}
       </div>
       <div className="grid grid-cols-1 gap-2 @sm:grid-cols-2">
         <CreateByTitleForm
           createMutation={createResource}
-          additionalData={{ topic_id: topicId }}
+          additionalData={{ topic_id: topic.id, is_public: topic.is_public }}
           placeholder="New Resource"
         />
       </div>
@@ -36,7 +40,7 @@ export default function TopicResources({ topicId }: { topicId: string }) {
   )
 }
 
-function Resource({ resource }: { resource: TResource }) {
+function Resource({ resource, topic }: { resource: TResource; topic: TopicData }) {
   const [isExpanded, setIsExpanded] = useState(false)
   const updateResource = useUpdateResource()
 
@@ -87,6 +91,15 @@ function Resource({ resource }: { resource: TResource }) {
         </Button>
         <div className="flex items-start gap-2">
           <EditableText record={resource} updateMutation={updateResource} />
+          <div className="flex h-[20px] items-center">
+            <MetadataPopover
+              recordType="Resource"
+              record={resource}
+              parentIsPublic={topic.is_public}
+              updateMutation={updateResource}
+              iconSize={16}
+            />
+          </div>
         </div>
       </Heading>
       <DisclosurePanel className="flex flex-col gap-1">
