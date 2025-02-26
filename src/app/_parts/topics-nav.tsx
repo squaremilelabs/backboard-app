@@ -15,6 +15,7 @@ import { useState } from "react"
 import { useTopicsData } from "@/lib/data/topic"
 import CreateByTitleForm from "@/components/create-by-title-form"
 import { useCreateTopic } from "@/database/generated/hooks"
+import { RELATIVE_TARGETS_UI_ENUM } from "@/lib/constants"
 
 export default function TopicsNav() {
   const [isExpanded, setIsExpanded] = useState(false)
@@ -74,12 +75,14 @@ function TopicsNavList() {
       )}
       className={twMerge(
         "w-full divide-y rounded-lg border-2",
-        selectedId ? "bg-neutral-100" : "bg-canvas"
+        selectedId ? "bg-neutral-100" : "bg-transparent"
       )}
     >
       {(topic) => {
         const noneSelected = selectedId === null
         const isSelected = selectedId === topic.id
+        const nextTasklist = topic._computed.next_tasklist
+        const nextTasklistUI = nextTasklist ? RELATIVE_TARGETS_UI_ENUM[nextTasklist.target] : null
         return (
           <GridListItem
             textValue={topic.title}
@@ -93,6 +96,11 @@ function TopicsNavList() {
             )}
           >
             <p className="grow truncate group-hover:font-semibold">{topic.title}</p>
+            {nextTasklistUI ? (
+              <div
+                className={twMerge("size-[16px] rounded-full border-2", nextTasklistUI.className)}
+              ></div>
+            ) : null}
           </GridListItem>
         )
       }}
