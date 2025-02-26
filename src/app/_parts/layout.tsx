@@ -4,6 +4,7 @@ import { Moon, SunDim } from "lucide-react"
 import { Button, Link } from "react-aria-components"
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs"
 import { useTheme } from "next-themes"
+import { useEffect, useState } from "react"
 import TopicsNav from "./topics-nav"
 import BackboardLogo from "@/components/backboard-logo"
 
@@ -20,17 +21,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       >
         <SignedIn>
           <nav
-            className={twMerge("@container/nav", "sticky top-0 p-2 pb-0", "md:w-xs md:p-4 md:pr-0")}
+            className={twMerge(
+              "@container/nav",
+              "sticky top-0 z-10 p-2 pb-0",
+              "md:w-xs md:p-4 md:pr-0"
+            )}
           >
             <TopicsNav />
           </nav>
         </SignedIn>
         <main
-          className={twMerge(
-            "@container/main",
-            "p-2 pt-0",
-            "max-w-md md:grow md:p-4 md:pt-4 md:pl-0"
-          )}
+          className={twMerge("@container/main", "p-2", "max-w-md md:grow md:p-4 md:pt-4 md:pl-2")}
         >
           {children}
         </main>
@@ -53,8 +54,8 @@ function Header() {
         </Link>
       </div>
       <div className="flex items-center gap-2">
-        <ThemeButton />
         <SignedIn>
+          <ThemeButton />
           <UserButton />
         </SignedIn>
         <SignedOut>
@@ -69,11 +70,20 @@ function Header() {
 
 function ThemeButton() {
   const { setTheme, resolvedTheme } = useTheme()
-  const Icon = resolvedTheme === "dark" ? Moon : SunDim
+  const [selected, setSelected] = useState<string | null>(null)
+  useEffect(() => {
+    if (resolvedTheme) {
+      setSelected(resolvedTheme)
+    }
+  }, [resolvedTheme])
+
+  if (!selected) return null
+
+  const Icon = selected === "dark" ? Moon : SunDim
   return (
     <Button
       className="cursor-pointer text-neutral-500 !outline-0 hover:opacity-60"
-      onPress={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+      onPress={() => setTheme(selected === "dark" ? "light" : "dark")}
     >
       <Icon size={20} />
     </Button>

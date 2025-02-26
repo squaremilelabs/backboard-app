@@ -23,14 +23,14 @@ export default function TopicResources({ topicId }: { topicId: string }) {
   return (
     <div className="flex flex-col gap-2">
       <div className="grid grid-cols-1 gap-2 @sm:grid-cols-2">
+        {resources?.map((resource) => <Resource key={resource.id} resource={resource} />)}
+      </div>
+      <div className="grid grid-cols-1 gap-2 @sm:grid-cols-2">
         <CreateByTitleForm
           createMutation={createResource}
           additionalData={{ topic_id: topicId }}
           placeholder="New Resource"
         />
-      </div>
-      <div className="grid grid-cols-1 gap-2 @sm:grid-cols-2">
-        {resources?.map((resource) => <Resource key={resource.id} resource={resource} />)}
       </div>
     </div>
   )
@@ -102,6 +102,7 @@ function Resource({ resource }: { resource: TResource }) {
             onChange={(e) => setContentValue(e.target.value)}
             spellCheck={false}
             className="resize-none !ring-0 !outline-0"
+            placeholder="Write something..."
           />
           {isUnsaved ? (
             <div className="flex items-center justify-end gap-4">

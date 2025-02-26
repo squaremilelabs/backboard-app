@@ -3,52 +3,53 @@
 import { useParams, usePathname } from "next/navigation"
 import {
   Button,
-  Disclosure,
-  DisclosurePanel,
+  Dialog,
+  DialogTrigger,
   GridList,
   GridListItem,
-  Heading,
+  Popover,
 } from "react-aria-components"
 import { ClassNameValue, twMerge } from "tailwind-merge"
 import { BookMarked, ChevronDown } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useTopicsData } from "@/lib/data/topic"
 import CreateByTitleForm from "@/components/create-by-title-form"
 import { useCreateTopic } from "@/database/generated/hooks"
 import { RELATIVE_TARGETS_UI_ENUM } from "@/lib/constants"
 
 export default function TopicsNav() {
-  const [isExpanded, setIsExpanded] = useState(false)
+  const pathname = usePathname()
+  const [isOpen, setIsOpen] = useState(false)
   const createTopic = useCreateTopic()
+
+  useEffect(() => {
+    setIsOpen(false)
+  }, [pathname])
 
   return (
     <div className="flex w-full flex-col">
-      <div className="flex w-full flex-col md:hidden">
-        <Disclosure
-          className="flex flex-col data-expanded:gap-1"
-          isExpanded={isExpanded}
-          onExpandedChange={setIsExpanded}
-        >
-          <Heading>
-            <Button
-              slot="trigger"
-              className={twMerge(
-                "flex items-center justify-between gap-2 !outline-0",
-                isExpanded ? "font-medium" : ""
-              )}
-            >
-              <TopicsNavTitle />
-              <ChevronDown
-                size={14}
-                className={twMerge("transition-transform", isExpanded ? "rotate-180" : "rotate-0")}
-              />
-            </Button>
-          </Heading>
-          <DisclosurePanel className="flex flex-col gap-1">
-            <TopicsNavList />
-            <CreateByTitleForm createMutation={createTopic} placeholder="New Topic" />
-          </DisclosurePanel>
-        </Disclosure>
+      <div className="flex w-fit flex-col md:hidden">
+        <DialogTrigger>
+          <Button
+            onPress={() => setIsOpen((prev) => !prev)}
+            className={twMerge(
+              "flex items-center justify-between gap-2 rounded-lg border bg-neutral-100 px-2 py-1 !outline-0",
+              isOpen ? "font-medium" : ""
+            )}
+          >
+            <TopicsNavTitle />
+            <ChevronDown
+              size={14}
+              className={twMerge("transition-transform", isOpen ? "rotate-180" : "rotate-0")}
+            />
+          </Button>
+          <Popover isOpen={isOpen} onOpenChange={setIsOpen}>
+            <Dialog className="bg-canvas/50 flex w-xs flex-col gap-1 rounded-lg backdrop-blur-xl">
+              <TopicsNavList />
+              <CreateByTitleForm createMutation={createTopic} placeholder="New Topic" />
+            </Dialog>
+          </Popover>
+        </DialogTrigger>
       </div>
       <div className="hidden w-full flex-col gap-2 md:flex">
         <TopicsNavTitle className="px-2" />
@@ -63,7 +64,10 @@ function TopicsNavList() {
   const pathname = usePathname()
   const params = useParams<{ id: string }>()
   const selectedId = pathname.startsWith("/topic/") ? params.id : null
-  const { data, isLoading } = useTopicsData({ where: { archived_at: null } })
+  const { data, isLoading } = useTopicsData({
+    where: { archived_at: null },
+    orderBy: { title: "asc" },
+  })
 
   return (
     <GridList

@@ -9,9 +9,9 @@ export const RELATIVE_TARGETS_UI_ENUM: Record<
   NEXT_WEEK: { label: "Next week", className: "bg-blue-200 text-blue-700 border-blue-200" },
   THIS_MONTH: { label: "This month", className: "bg-blue-100 text-blue-700 border-blue-200" },
   NEXT_MONTH: { label: "Next month", className: "bg-blue-100 text-blue-700 border-blue-200" },
-  SOMEDAY: { label: "Someday", className: "bg-neutral-100 text-blue-700 border-neutral-200" },
+  SOMEDAY: { label: "Someday", className: "bg-neutral-200 text-blue-700 border-blue-200" },
   NONE: {
     label: "No target",
-    className: "bg-neutral-100 text-neutral-600 border-neutral-200",
+    className: "bg-neutral-200 text-neutral-600 border-neutral-200",
   },
 }
