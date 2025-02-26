@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og"
-import BackboardLogo from "@/components/common/backboard-logo"
+import BackboardLogo from "@/components/backboard-logo"
 
 export const size = {
   width: 32,

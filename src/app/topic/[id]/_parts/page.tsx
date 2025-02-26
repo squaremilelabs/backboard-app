@@ -1,7 +1,7 @@
 "use client"
 
 import { Bookmark } from "lucide-react"
-import EditableTitle from "@/components/primitives/editable-title"
+import EditableTitle from "@/components/editable-title"
 import { useUpdateTopic } from "@/database/generated/hooks"
 import { useTopicData } from "@/lib/data/topic"
 

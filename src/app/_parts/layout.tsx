@@ -5,7 +5,7 @@ import { Button, Link } from "react-aria-components"
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs"
 import { useTheme } from "next-themes"
 import TopicsNav from "./topics-nav"
-import BackboardLogo from "@/components/common/backboard-logo"
+import BackboardLogo from "@/components/backboard-logo"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

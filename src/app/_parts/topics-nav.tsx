@@ -13,7 +13,7 @@ import { ClassNameValue, twMerge } from "tailwind-merge"
 import { BookMarked, ChevronDown } from "lucide-react"
 import { useState } from "react"
 import { useTopicsData } from "@/lib/data/topic"
-import CreateByTitleForm from "@/components/primitives/create-by-title-form"
+import CreateByTitleForm from "@/components/create-by-title-form"
 import { useCreateTopic } from "@/database/generated/hooks"
 
 export default function TopicsNav() {
