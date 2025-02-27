@@ -25,9 +25,8 @@ export default function HomePage() {
         <p>
           Checkout E&apos;s public{" "}
           <Link
-            // TODO: Update to real link
-            href="https://squaremilelabs.com"
-            target="_blank"
+            // THIS IS THE PRODUCTION LINK
+            href="/topic/cm7mokhx80000k4031bej9t4m"
             className="text-gold-600 hover:opacity-60"
           >
             Topic
