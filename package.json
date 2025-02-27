@@ -7,11 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "vercel-build": "pnpm db:generate && pnpm db:push-hard && next build",
-    "db:generate": "npx zenstack generate",
-    "db:push": "npx prisma db push --skip-generate",
-    "db:push-hard": "npx prisma db push --skip-generate --accept-data-loss",
-    "db:reset": "npx prisma db push --skip-generate --force-reset && npx prisma db seed"
+    "vercel-build": "npx zenstack generate && npx prisma migrate deploy && next build"
   },
   "prisma": {
     "schema": "src/database/generated/prisma-schema/schema.prisma",
