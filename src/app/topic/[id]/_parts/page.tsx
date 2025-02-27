@@ -22,7 +22,11 @@ export default function TopicPage({ id }: { id: string }) {
           </div>
           <div className="flex grow">
             {topic ? (
-              <EditableText record={topic} updateMutation={updateTopic} className="grow text-xl" />
+              <EditableText
+                record={topic}
+                updateMutation={updateTopic}
+                className="grow text-xl font-medium"
+              />
             ) : null}
           </div>
           <div className="flex h-[30px] items-center">
