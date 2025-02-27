@@ -30,9 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <TopicsNav />
           </nav>
         </SignedIn>
-        <main
-          className={twMerge("@container/main", "p-2", "max-w-md md:grow md:p-4 md:pt-4 md:pl-2")}
-        >
+        <main className={twMerge("@container/main", "p-2 pt-4", "max-w-md md:grow md:p-4 md:pl-2")}>
           {children}
         </main>
       </div>
