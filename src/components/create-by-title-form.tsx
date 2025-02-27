@@ -1,5 +1,6 @@
 "use client"
 
+import { useUser } from "@clerk/nextjs"
 import { UseMutationResult } from "@tanstack/react-query"
 import { CircleX, Loader, Plus } from "lucide-react"
 import React, { useRef, useState } from "react"
@@ -22,6 +23,7 @@ export default function CreateByTitleForm<T extends GenericUseMutationResult>({
   endContent?: React.ReactNode
   className?: ClassNameValue
 }) {
+  const { isSignedIn } = useUser()
   const [input, setInput] = useState("")
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
@@ -49,6 +51,8 @@ export default function CreateByTitleForm<T extends GenericUseMutationResult>({
   const errorMessage = createMutation.isError ? createMutation.error.info?.message : null
 
   const Icon = createMutation.isPending ? Loader : createMutation.isError ? CircleX : Plus
+  if (!isSignedIn) return null
+
   return (
     <div className="flex flex-col gap-1">
       <div

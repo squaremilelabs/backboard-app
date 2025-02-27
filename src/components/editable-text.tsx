@@ -1,3 +1,6 @@
+"use client"
+
+import { useUser } from "@clerk/nextjs"
 import { UseMutationResult } from "@tanstack/react-query"
 import { useEffect, useRef, useState } from "react"
 import TextareaAutosize from "react-textarea-autosize"
@@ -20,6 +23,7 @@ export default function EditableText<T extends GenericUseMutationResult>({
   placeholder?: string
   className?: ClassNameValue
 }) {
+  const { isSignedIn } = useUser()
   const [input, setInput] = useState("")
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const recordField = record ? (record[updateField] as string | null) : null
@@ -54,6 +58,7 @@ export default function EditableText<T extends GenericUseMutationResult>({
 
   return (
     <TextareaAutosize
+      disabled={!isSignedIn}
       ref={inputRef}
       placeholder={placeholder}
       value={input}

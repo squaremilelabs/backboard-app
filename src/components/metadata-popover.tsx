@@ -1,8 +1,11 @@
+"use client"
+
 import { useState } from "react"
 import { Button, Dialog, DialogTrigger, Popover } from "react-aria-components"
 import { Archive, EllipsisVertical, Share2, Loader, Lock } from "lucide-react"
 import { twMerge } from "tailwind-merge"
 import { UseMutationResult } from "@tanstack/react-query"
+import { useUser } from "@clerk/nextjs"
 import { formatDate } from "@/lib/utils"
 
 interface RecordMetadata {
@@ -32,6 +35,7 @@ export default function MetadataPopover<T extends GenericUseMutationResult>({
   parentIsPublic: boolean
   iconSize?: number
 }) {
+  const { isSignedIn } = useUser()
   const [isOpen, setIsOpen] = useState(false)
 
   const handleArchiveToggle = () => {
@@ -63,6 +67,8 @@ export default function MetadataPopover<T extends GenericUseMutationResult>({
 
   const showVisibilityToggle =
     (recordType === "Topic" || parentIsPublic) && record?.is_public !== undefined
+
+  if (!isSignedIn) return null
 
   return (
     <DialogTrigger>
