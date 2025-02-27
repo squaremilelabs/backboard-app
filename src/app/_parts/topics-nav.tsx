@@ -104,7 +104,7 @@ function TopicsNavList() {
             )}
           >
             <p className="grow truncate group-hover:font-semibold">{topic.title}</p>
-            {topic.is_public ? <Share2 size={14} className="text-blue-600" /> : null}
+            {topic.is_public ? <Share2 size={14} className="text-neutral-500" /> : null}
             {nextTasklistUI ? (
               <span
                 className={twMerge(
