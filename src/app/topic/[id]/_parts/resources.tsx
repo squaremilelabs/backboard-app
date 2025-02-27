@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { Button, Disclosure, DisclosurePanel, Heading } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
 import TextareaAutosize from "react-textarea-autosize"
+import { useUser } from "@clerk/nextjs"
 import {
   useCreateResource,
   useFindManyResource,
@@ -41,6 +42,7 @@ export default function TopicResources({ topic }: { topic: TopicData }) {
 }
 
 function Resource({ resource, topic }: { resource: TResource; topic: TopicData }) {
+  const { isSignedIn } = useUser()
   const [isExpanded, setIsExpanded] = useState(false)
   const updateResource = useUpdateResource()
 
@@ -111,6 +113,7 @@ function Resource({ resource, topic }: { resource: TResource; topic: TopicData }
           )}
         >
           <TextareaAutosize
+            disabled={!isSignedIn}
             value={contentValue}
             onChange={(e) => setContentValue(e.target.value)}
             spellCheck={false}
