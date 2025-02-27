@@ -52,12 +52,12 @@ export default function TopicPage({ id }: { id: string }) {
         </div>
       </div>
       <div>
-        <SectionTitle Icon={Notebook} title="Notes" />
-        {topic ? <TopicResources topic={topic} /> : null}
-      </div>
-      <div>
         <SectionTitle Icon={ListTodo} title="Tasks" />
         {topic ? <TopicTasklists topic={topic} /> : null}
+      </div>
+      <div>
+        <SectionTitle Icon={Notebook} title="Notes" />
+        {topic ? <TopicResources topic={topic} /> : null}
       </div>
     </div>
   )
