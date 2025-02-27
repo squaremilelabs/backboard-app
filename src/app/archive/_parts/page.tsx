@@ -42,7 +42,7 @@ export default function ArchivePage() {
 
   const sections = [
     { title: "Archived Topics", query: topicsQuery, update: updateTopic },
-    { title: "Archived Resources", query: resourcesQuery, update: updateResource },
+    { title: "Archived Notes", query: resourcesQuery, update: updateResource },
     { title: "Archived Tasklists", query: tasklistsQuery, update: updateTasklist },
     { title: "Archived Tasks", query: tasksQuery, update: updateTask },
   ]

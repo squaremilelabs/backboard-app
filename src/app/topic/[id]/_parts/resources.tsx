@@ -33,7 +33,7 @@ export default function TopicResources({ topic }: { topic: TopicData }) {
         <CreateByTitleForm
           createMutation={createResource}
           additionalData={{ topic_id: topic.id, is_public: topic.is_public }}
-          placeholder="New Resource"
+          placeholder="New Note"
         />
       </div>
     </div>

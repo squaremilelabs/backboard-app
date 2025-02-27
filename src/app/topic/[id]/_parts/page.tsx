@@ -1,6 +1,6 @@
 "use client"
 
-import { Bookmark, Library, ListTodo, LucideIcon, Text } from "lucide-react"
+import { Bookmark, ListTodo, LucideIcon, Notebook, Text } from "lucide-react"
 import TopicTasklists from "./tasklists"
 import TopicResources from "./resources"
 import EditableText from "@/components/editable-text"
@@ -52,7 +52,7 @@ export default function TopicPage({ id }: { id: string }) {
         </div>
       </div>
       <div>
-        <SectionTitle Icon={Library} title="Resources" />
+        <SectionTitle Icon={Notebook} title="Notes" />
         {topic ? <TopicResources topic={topic} /> : null}
       </div>
       <div>
