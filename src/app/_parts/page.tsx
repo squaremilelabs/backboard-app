@@ -5,7 +5,7 @@ import BackboardLogo from "@/components/backboard-logo"
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-8 rounded-lg border bg-neutral-100 p-8">
       <div className="flex items-center gap-2">
         <BackboardLogo size={24} />
         <h1 className="text-2xl font-medium">Backboard</h1>
