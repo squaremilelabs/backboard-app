@@ -12,6 +12,7 @@ import {
 import { ClassNameValue, twMerge } from "tailwind-merge"
 import { BookMarked, ChevronDown, Share2 } from "lucide-react"
 import { useEffect, useState } from "react"
+import { useUser } from "@clerk/nextjs"
 import { useTopicsData } from "@/lib/data/topic"
 import CreateByTitleForm from "@/components/create-by-title-form"
 import { useCreateTopic } from "@/database/generated/hooks"
@@ -68,8 +69,9 @@ function TopicsNavList() {
   const pathname = usePathname()
   const params = useParams<{ id: string }>()
   const selectedId = pathname.startsWith("/topic/") ? params.id : null
+  const { user } = useUser()
   const { data, isLoading } = useTopicsData({
-    where: { archived_at: null },
+    where: { archived_at: null, created_by_id: user?.id ?? null },
     orderBy: { title: "asc" },
   })
 
