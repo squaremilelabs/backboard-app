@@ -10,7 +10,7 @@ import {
   Popover,
 } from "react-aria-components"
 import { ClassNameValue, twMerge } from "tailwind-merge"
-import { BookMarked, ChevronDown, Globe } from "lucide-react"
+import { BookMarked, ChevronDown } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useTopicsData } from "@/lib/data/topic"
 import CreateByTitleForm from "@/components/create-by-title-form"
@@ -103,7 +103,6 @@ function TopicsNavList() {
               isSelected ? "bg-canvas text-neutral-950" : ""
             )}
           >
-            {topic.is_public ? <Globe size={14} /> : null}
             <p className="grow truncate group-hover:font-semibold">{topic.title}</p>
             {nextTasklistUI ? (
               <span

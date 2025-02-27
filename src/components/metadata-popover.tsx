@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Button, Dialog, DialogTrigger, Popover } from "react-aria-components"
-import { Archive, EllipsisVertical, Globe, Loader, Lock } from "lucide-react"
+import { Archive, EllipsisVertical, Share2, Loader, Lock } from "lucide-react"
 import { twMerge } from "tailwind-merge"
 import { UseMutationResult } from "@tanstack/react-query"
 import { formatDate } from "@/lib/utils"
@@ -74,7 +74,7 @@ export default function MetadataPopover<T extends GenericUseMutationResult>({
         {record?.archived_at ? (
           <Archive size={iconSize} className="text-neutral-500" />
         ) : displayedVisibility === "public" ? (
-          <Globe size={iconSize} className="text-blue-600" />
+          <Share2 size={iconSize} className="text-blue-600" />
         ) : displayedVisibility === "private" ? (
           <Lock size={iconSize} className="text-blue-700" />
         ) : null}
@@ -96,8 +96,8 @@ export default function MetadataPopover<T extends GenericUseMutationResult>({
               >
                 {record?.is_public ? (
                   <>
-                    <Globe size={16} />
-                    Public
+                    <Share2 size={16} />
+                    Shareable
                   </>
                 ) : (
                   <>
@@ -113,7 +113,7 @@ export default function MetadataPopover<T extends GenericUseMutationResult>({
                   record?.is_public ? "" : "text-blue-600"
                 )}
               >
-                {record?.is_public ? "Make private" : "Make public"}
+                {record?.is_public ? "Make private" : "Make shareable"}
               </Button>
             </div>
           ) : null}

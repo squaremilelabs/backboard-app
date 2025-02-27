@@ -17,7 +17,7 @@ export default function TopicPage({ id }: { id: string }) {
       {/* Title & Description */}
       <div className="flex flex-col gap-2">
         <div className="flex items-start gap-2">
-          <div className="flex h-[30px] items-center gap-2 text-neutral-500">
+          <div className="flex h-[30px] items-center gap-2">
             <Bookmark size={24} />
           </div>
           <div className="flex grow">
@@ -65,9 +65,9 @@ export default function TopicPage({ id }: { id: string }) {
 
 function SectionTitle({ Icon, title }: { Icon: LucideIcon; title: string }) {
   return (
-    <div className="mb-4 flex items-center gap-2 border-b px-2 py-4 font-medium">
-      <Icon size={24} />
-      <h1 className="text-lg">{title}</h1>
+    <div className="mb-4 flex items-center gap-2 border-b px-2 py-4 font-medium text-neutral-500">
+      <Icon size={16} />
+      <h1 className="text-base">{title}</h1>
     </div>
   )
 }
