@@ -10,7 +10,7 @@ import {
   Popover,
 } from "react-aria-components"
 import { ClassNameValue, twMerge } from "tailwind-merge"
-import { BookMarked, ChevronDown } from "lucide-react"
+import { BookMarked, ChevronDown, Share2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useTopicsData } from "@/lib/data/topic"
 import CreateByTitleForm from "@/components/create-by-title-form"
@@ -104,6 +104,7 @@ function TopicsNavList() {
             )}
           >
             <p className="grow truncate group-hover:font-semibold">{topic.title}</p>
+            {topic.is_public ? <Share2 size={14} className="text-blue-600" /> : null}
             {nextTasklistUI ? (
               <span
                 className={twMerge(
