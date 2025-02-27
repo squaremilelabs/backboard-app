@@ -7,7 +7,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "vercel-build": "npx zenstack generate && npx prisma migrate deploy && next build"
+    "vercel-build": "pnpm db:generate && pnpm db:migrate-deploy && next build",
+    "db:generate": "npx zenstack generate",
+    "db:migrate-deploy": "npx prisma migrate deploy",
+    "db:dev:seed": "npx prisma db seed",
+    "db:dev:migrate-dev": "npx prisma migrate dev --skip-generate --skip-seed",
+    "db:dev:migrate-reset": "npx prisma migrate reset --skip-generate --skip-seed"
   },
   "prisma": {
     "schema": "src/database/generated/prisma-schema/schema.prisma",
