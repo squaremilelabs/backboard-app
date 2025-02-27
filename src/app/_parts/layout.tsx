@@ -1,6 +1,6 @@
 "use client"
 import { twMerge } from "tailwind-merge"
-import { Moon, SunDim } from "lucide-react"
+import { Archive, Moon, SunDim } from "lucide-react"
 import { Button, Link } from "react-aria-components"
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs"
 import { useTheme } from "next-themes"
@@ -55,6 +55,9 @@ function Header() {
       </div>
       <div className="flex items-center gap-2">
         <SignedIn>
+          <Link href="/archive">
+            <Archive size={16} className="cursor-pointer text-neutral-500 hover:opacity-60" />
+          </Link>
           <ThemeButton />
           <UserButton />
         </SignedIn>

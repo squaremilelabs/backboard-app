@@ -10,7 +10,7 @@ import {
   Popover,
 } from "react-aria-components"
 import { ClassNameValue, twMerge } from "tailwind-merge"
-import { BookMarked, ChevronDown } from "lucide-react"
+import { BookMarked, ChevronDown, Globe } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useTopicsData } from "@/lib/data/topic"
 import CreateByTitleForm from "@/components/create-by-title-form"
@@ -97,12 +97,13 @@ function TopicsNavList() {
             id={topic.id}
             href={`/topic/${topic.id}`}
             className={twMerge(
-              "group flex cursor-pointer items-center gap-2 truncate p-2",
+              "group flex cursor-pointer items-center gap-1 truncate p-2",
               "first:rounded-t-lg last:rounded-b-lg",
               noneSelected ? "text-neutral-950" : "text-neutral-500",
               isSelected ? "bg-canvas text-neutral-950" : ""
             )}
           >
+            {topic.is_public ? <Globe size={14} /> : null}
             <p className="grow truncate group-hover:font-semibold">{topic.title}</p>
             {nextTasklistUI ? (
               <span
