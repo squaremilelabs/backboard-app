@@ -22,7 +22,7 @@ import {
   useUpdateTask,
   useUpdateTasklist,
 } from "@/database/generated/hooks"
-import { RELATIVE_TARGETS_UI_ENUM } from "@/lib/constants"
+import { RELATIVE_TARGETS_ORDER, RELATIVE_TARGETS_UI_ENUM } from "@/lib/constants"
 import { TasklistData, useTaskslistsData } from "@/lib/data/tasklist"
 import EditableText from "@/components/editable-text"
 import { formatDate } from "@/lib/utils"
@@ -74,9 +74,13 @@ function Tasklist({ tasklist, topic }: { tasklist: TasklistData; topic: TopicDat
             />
           </div>
           <div
-            className={
-              "flex h-[20px] items-center justify-center rounded-lg bg-neutral-200 px-2 text-sm"
-            }
+            className={twMerge(
+              "flex h-[20px] items-center justify-center rounded-lg px-2 text-sm",
+              RELATIVE_TARGETS_ORDER.indexOf(tasklist.target) < 2 &&
+                tasklist._computed.undone_task_count > 0
+                ? "bg-red-50 text-red-600"
+                : "bg-neutral-200"
+            )}
           >
             {tasklist._computed.undone_task_count}
           </div>
