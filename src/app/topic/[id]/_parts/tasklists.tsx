@@ -179,7 +179,11 @@ function TasklistTasks({ tasklist }: { tasklist: TasklistData }) {
       [...tasklist._computed.undone_tasks].sort((a, b) => {
         const aOrder = tasklist.task_order.indexOf(a.id)
         const bOrder = tasklist.task_order.indexOf(b.id)
-        if (aOrder !== bOrder) return aOrder - bOrder
+        if (aOrder > -1 && bOrder === -1) return -1
+        if (aOrder === -1 && bOrder > -1) return 1
+        if (aOrder > -1 && bOrder > -1) {
+          return aOrder - bOrder
+        }
         return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
       }),
     [tasklist]
