@@ -8,7 +8,7 @@ import { fontsClassName } from "@/styles/fonts"
 
 export const metadata: Metadata = {
   title: "Backboard",
-  description: "Primitive productivity",
+  description: "A home for bigger picture work",
   icons: {
     icon: [
       { rel: "apple-touch-icon", sizes: "57x57", url: "/icons/apple-icon-57x57.png" },
