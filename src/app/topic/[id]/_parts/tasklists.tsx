@@ -76,9 +76,10 @@ function Tasklist({ tasklist, topic }: { tasklist: TasklistData; topic: TopicDat
           <div
             className={twMerge(
               "flex h-[20px] items-center justify-center rounded-lg px-2 text-sm",
-              RELATIVE_TARGETS_ORDER.indexOf(tasklist.target) < 2 &&
-                tasklist._computed.undone_task_count > 0
-                ? "bg-red-50 text-red-600"
+              RELATIVE_TARGETS_ORDER.indexOf(tasklist.target) < 2
+                ? tasklist._computed.undone_task_count === 0
+                  ? "border-red-200 bg-red-50 text-red-600"
+                  : "border-gold-200 bg-gold-50 text-gold-600"
                 : "bg-neutral-200"
             )}
           >
