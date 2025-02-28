@@ -11,7 +11,7 @@ import {
 } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
 import { RelativeTarget, Task } from "@prisma/client"
-import { ChevronDown, Loader, Square, SquareCheck } from "lucide-react"
+import { ChevronDown, ListTodo, Loader, Square, SquareCheck } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { useUser } from "@clerk/nextjs"
 import CreateByTitleForm from "@/components/create-by-title-form"
@@ -22,7 +22,7 @@ import {
   useUpdateTask,
   useUpdateTasklist,
 } from "@/database/generated/hooks"
-import { RELATIVE_TARGETS_ORDER, RELATIVE_TARGETS_UI_ENUM } from "@/lib/constants"
+import { RELATIVE_TARGETS_UI_ENUM } from "@/lib/constants"
 import { TasklistData, useTaskslistsData } from "@/lib/data/tasklist"
 import EditableText from "@/components/editable-text"
 import { formatDate } from "@/lib/utils"
@@ -59,9 +59,14 @@ function Tasklist({ tasklist, topic }: { tasklist: TasklistData; topic: TopicDat
       onExpandedChange={setIsExpanded}
     >
       <Heading className="flex items-start gap-2 p-2">
-        <div className="flex grow flex-col gap-2 @sm:flex-row @sm:items-start">
+        <div className="flex grow flex-col-reverse gap-2 @sm:flex-row @sm:items-start">
+          <div className="flex grow items-start gap-2">
+            <div className="flex h-[20px] items-center text-neutral-500">
+              <ListTodo size={16} />
+            </div>
+            <EditableText record={tasklist} updateMutation={updateTasklist} />
+          </div>
           <TasklistTargetSelect tasklist={tasklist} />
-          <EditableText record={tasklist} updateMutation={updateTasklist} />
         </div>
         <div className="flex items-center gap-2">
           <div className="gap flex h-[20px] items-center">
@@ -75,12 +80,12 @@ function Tasklist({ tasklist, topic }: { tasklist: TasklistData; topic: TopicDat
           </div>
           <div
             className={twMerge(
-              "flex h-[20px] items-center justify-center rounded-lg px-2 text-sm",
-              RELATIVE_TARGETS_ORDER.indexOf(tasklist.target) < 2
+              "flex h-[20px] items-center justify-center rounded-lg bg-neutral-200 px-2 text-sm",
+              tasklist.target == "TODAY" || tasklist.target === "THIS_WEEK"
                 ? tasklist._computed.undone_task_count === 0
                   ? "border border-red-200 bg-red-50 text-red-600"
                   : "border-gold-200 bg-gold-50 text-gold-600 border"
-                : "bg-neutral-200"
+                : ""
             )}
           >
             {tasklist._computed.undone_task_count}
@@ -112,7 +117,7 @@ function TasklistTargetSelect({ tasklist }: { tasklist: TasklistData }) {
   }
 
   const baseClassName = twMerge(
-    "border text-sm rounded-full w-[90px] h-[20px] flex items-center justify-center outline-neutral-500"
+    "border text-sm rounded-full h-[20px] min-w-[60px] px-2 flex items-center justify-center outline-neutral-500"
   )
   const selectedClassName = RELATIVE_TARGETS_UI_ENUM[tasklist.target].className
 
@@ -133,7 +138,7 @@ function TasklistTargetSelect({ tasklist }: { tasklist: TasklistData }) {
         <div className="flex items-center gap-1 text-sm text-neutral-500">
           Next time in focus...
         </div>
-        <ListBox className="grid grid-cols-2 gap-1">
+        <ListBox className="grid grid-cols-2 gap-2">
           {options.map((option) => {
             const isSelected = tasklist.target === option.id
             return (
@@ -144,8 +149,8 @@ function TasklistTargetSelect({ tasklist }: { tasklist: TasklistData }) {
                   baseClassName,
                   option.className,
                   "h-fit cursor-pointer border py-1 hover:opacity-60",
-                  isSelected ? "ring-2 ring-neutral-300 ring-offset-1" : null,
-                  option.id === "NONE" ? "col-span-2" : null
+                  isSelected ? "ring-2 ring-neutral-300 ring-offset-1" : null
+                  // option.id === "NONE" ? "col-span-2" : null
                 )}
               >
                 {option.label}

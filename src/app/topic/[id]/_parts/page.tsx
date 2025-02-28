@@ -1,6 +1,6 @@
 "use client"
 
-import { Bookmark, ListTodo, LucideIcon, Notebook, Text } from "lucide-react"
+import { Bookmark, Text } from "lucide-react"
 import TopicTasklists from "./tasklists"
 import TopicResources from "./resources"
 import EditableText from "@/components/editable-text"
@@ -52,21 +52,20 @@ export default function TopicPage({ id }: { id: string }) {
         </div>
       </div>
       <div>
-        <SectionTitle Icon={ListTodo} title="Tasks" />
+        <SectionTitle title="Tasklists" />
         {topic ? <TopicTasklists topic={topic} /> : null}
       </div>
       <div>
-        <SectionTitle Icon={Notebook} title="Notes" />
+        <SectionTitle title="Notes" />
         {topic ? <TopicResources topic={topic} /> : null}
       </div>
     </div>
   )
 }
 
-function SectionTitle({ Icon, title }: { Icon: LucideIcon; title: string }) {
+function SectionTitle({ title }: { title: string }) {
   return (
     <div className="mb-4 flex items-center gap-2 border-b px-2 py-4 font-medium text-neutral-500">
-      <Icon size={16} />
       <h1 className="text-base">{title}</h1>
     </div>
   )
