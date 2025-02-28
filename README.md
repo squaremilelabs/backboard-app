@@ -1,3 +1,3 @@
-**Hey devs!** I'll be recruiting a founding team for Backboard soon. Keeping this repo public for now for potential co-founders / founding-team engineers.
+### hey devs!
 
-#letsbuildtogether
+i'm seeking a co-founder + founding team for backboard.
