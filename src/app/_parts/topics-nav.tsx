@@ -126,7 +126,7 @@ function TopicsNavTitle({ className }: { className?: ClassNameValue }) {
   return (
     <div className={twMerge("flex items-center gap-1 text-sm", className)}>
       <BookMarked size={14} />
-      Topics
+      My Topics
     </div>
   )
 }
