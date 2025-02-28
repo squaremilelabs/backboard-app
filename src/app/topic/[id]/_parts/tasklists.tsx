@@ -11,7 +11,7 @@ import {
 } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
 import { RelativeTarget, Task } from "@prisma/client"
-import { ArrowUp, ChevronDown, ListTodo, Loader, Square, SquareCheck } from "lucide-react"
+import { ArrowUpToLine, ChevronDown, ListTodo, Loader, Square, SquareCheck } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { useUser } from "@clerk/nextjs"
 import CreateByTitleForm from "@/components/create-by-title-form"
@@ -308,7 +308,7 @@ function TasklistTask({ task, tasklist }: { task: Task; tasklist: TasklistData }
         {!task.done_at ? (
           <div className="hidden h-[20px] items-center group-focus-within:flex group-hover:flex">
             <Button onPress={handleMoveToTop} className="text-gold-500">
-              <ArrowUp size={16} />
+              <ArrowUpToLine size={16} />
             </Button>
           </div>
         ) : null}
