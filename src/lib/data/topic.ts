@@ -1,6 +1,7 @@
 "use client"
 
 import { Prisma, Tasklist, Topic } from "@prisma/client"
+import { RELATIVE_TARGETS_ORDER } from "../constants"
 import { useFindManyTopic, useFindUniqueTopic } from "@/database/generated/hooks"
 
 export interface TopicRawResult extends Topic {
@@ -52,6 +53,32 @@ function transformTopicData(topicResult: TopicRawResult): TopicData {
   }
 }
 
+export function sortTopics(topics: TopicData[]) {
+  return [...topics].sort((a, b) => {
+    // Has tasklist
+    const aTasklist = a._computed.next_tasklist
+    const bTasklist = b._computed.next_tasklist
+    if (aTasklist && !bTasklist) return -1
+    if (!aTasklist && bTasklist) return 1
+    // Tasklist with earlier target
+    if (aTasklist && bTasklist) {
+      const aTasklistTargetIndex = RELATIVE_TARGETS_ORDER.indexOf(aTasklist.target)
+      const bTasklistTargetIndex = RELATIVE_TARGETS_ORDER.indexOf(bTasklist.target)
+      if (aTasklistTargetIndex < bTasklistTargetIndex) return -1
+      if (aTasklistTargetIndex > bTasklistTargetIndex) return 1
+    }
+    // Undone task count
+    const aUndoneTaskCount = a._computed.undone_task_count
+    const bUndoneTaskCount = b._computed.undone_task_count
+    if (aUndoneTaskCount > bUndoneTaskCount) return -1
+    if (aUndoneTaskCount < bUndoneTaskCount) return 1
+    // Created at
+    if (a.created_at < b.created_at) return -1
+    if (a.created_at > b.created_at) return 1
+    return 0
+  })
+}
+
 export type UseTopicsDataParam = Omit<Parameters<typeof useFindManyTopic>[0], "include">
 
 export function useTopicsData(params: UseTopicsDataParam = {}) {
@@ -60,10 +87,12 @@ export function useTopicsData(params: UseTopicsDataParam = {}) {
     include: topicDataIncludeParam,
   })
 
-  const data: TopicData[] =
+  let data: TopicData[] =
     topicsQuery.data?.map((topic) => {
       return transformTopicData(topic)
     }) || []
+
+  data = sortTopics(data)
 
   return {
     ...topicsQuery,

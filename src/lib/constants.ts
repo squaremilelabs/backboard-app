@@ -1,5 +1,15 @@
 import { RelativeTarget } from "@prisma/client"
 
+export const RELATIVE_TARGETS_ORDER: RelativeTarget[] = [
+  "TODAY",
+  "THIS_WEEK",
+  "NEXT_WEEK",
+  "THIS_MONTH",
+  "NEXT_MONTH",
+  "SOMEDAY",
+  "NONE",
+]
+
 export const RELATIVE_TARGETS_UI_ENUM: Record<
   RelativeTarget,
   { label: string; className: string }
