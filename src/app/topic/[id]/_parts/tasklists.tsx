@@ -11,7 +11,7 @@ import {
 } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
 import { RelativeTarget, Task } from "@prisma/client"
-import { ChevronDown, ListTodo, Loader, Square, SquareCheck } from "lucide-react"
+import { ArrowUp, ChevronDown, ListTodo, Loader, Square, SquareCheck } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { useUser } from "@clerk/nextjs"
 import CreateByTitleForm from "@/components/create-by-title-form"
@@ -259,8 +259,7 @@ function TasklistDoneTasks({ tasklist }: { tasklist: TasklistData }) {
 
 function TasklistTask({ task, tasklist }: { task: Task; tasklist: TasklistData }) {
   const updateTask = useUpdateTask()
-
-  const CheckboxIcon = task.done_at ? SquareCheck : Square
+  const updateTasklist = useUpdateTasklist()
 
   const handleCheck = () => {
     updateTask.mutate({
@@ -269,9 +268,31 @@ function TasklistTask({ task, tasklist }: { task: Task; tasklist: TasklistData }
     })
   }
 
+  const handleMoveToTop = () => {
+    const currentTaskOrder = tasklist.task_order
+    let updatedTaskOrder = [...currentTaskOrder]
+
+    // if task.id is not in currentTaskOrder, add to front of array
+    if (!updatedTaskOrder.includes(task.id)) {
+      updatedTaskOrder.unshift(task.id)
+    } else {
+      // if task.id is in currentTaskOrder – move to front of array
+      updatedTaskOrder = updatedTaskOrder.filter((id) => id !== task.id)
+      updatedTaskOrder.unshift(task.id)
+    }
+
+    updateTasklist.mutate({
+      where: { id: tasklist.id },
+      data: { task_order: updatedTaskOrder },
+    })
+  }
+
+  const isPending = updateTask.isPending || updateTasklist.isPending
+  const CheckboxIcon = task.done_at ? SquareCheck : Square
+
   return (
-    <div className="flex items-start gap-2 rounded-lg p-2 outline-neutral-200 hover:outline-2">
-      {updateTask.isPending ? (
+    <div className="group flex items-start gap-2 rounded-lg p-2 outline-neutral-200 hover:outline-2">
+      {isPending ? (
         <Loader size={20} className="text-gold-500 animate-spin" />
       ) : (
         <Button onPress={handleCheck} className={twMerge("text-neutral-500")}>
@@ -280,6 +301,13 @@ function TasklistTask({ task, tasklist }: { task: Task; tasklist: TasklistData }
       )}
       <EditableText record={task} updateMutation={updateTask} updateField="title" />
       <div className="flex min-w-fit items-center gap-2">
+        {!task.done_at ? (
+          <div className="hidden h-[20px] items-center group-focus-within:flex group-hover:flex">
+            <Button onPress={handleMoveToTop} className="text-gold-500">
+              <ArrowUp size={16} />
+            </Button>
+          </div>
+        ) : null}
         {task.done_at ? (
           <p className="bg-neutral-100 px-2 py-0.5 text-xs text-neutral-600">
             {formatDate(task.done_at, { withTime: true })}

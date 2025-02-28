@@ -40,7 +40,7 @@ export default function HomePage() {
             <p className="text-medium mt-8 font-medium">Thanks for joining the Beta! 🤝</p>
           </>
         ) : (
-          <p>
+          <p className="mt-8">
             Reach out to <span className="text-gold-600">e@squaremilelabs.com</span> for an account
           </p>
         )}
