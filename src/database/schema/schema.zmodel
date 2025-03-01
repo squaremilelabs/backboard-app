@@ -35,7 +35,7 @@ model User {
 
   @@auth
   @@map("users")
-  @@allow("create,read", true)
+  @@allow("read", true)
   @@allow("update", auth().id == id)
 }
 
