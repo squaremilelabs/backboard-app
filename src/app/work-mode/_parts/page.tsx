@@ -84,15 +84,15 @@ export default function WorkModePage() {
 }
 
 const undoneTaskSorter = (a: TaskData, b: TaskData) => {
-  const aOrder = a._computed.order_in_tasklist
-  const bOrder = b._computed.order_in_tasklist
-  if (aOrder === null && bOrder === null) return 0
-  if (aOrder !== null && bOrder === null) return -1
-  if (aOrder === null && bOrder !== null) return 1
-  if (aOrder !== null && bOrder !== null) return aOrder - bOrder
   const aParent = a.topic.title + a.tasklist.title
   const bParent = b.topic.title + b.tasklist.title
   if (aParent === bParent) {
+    const aOrder = a._computed.order_in_tasklist
+    const bOrder = b._computed.order_in_tasklist
+    if (aOrder === null && bOrder === null) return 0
+    if (aOrder !== null && bOrder === null) return -1
+    if (aOrder === null && bOrder !== null) return 1
+    if (aOrder !== null && bOrder !== null) return aOrder - bOrder
     if (a.created_at < b.created_at) return -1
     if (a.created_at > b.created_at) return 1
   }
