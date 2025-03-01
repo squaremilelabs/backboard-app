@@ -70,11 +70,13 @@ export async function POST(req: Request) {
         update: {
           email: primaryEmail?.email_address ?? undefined,
           display_name: displayName,
+          image_href: user.image_url,
         },
         create: {
           id: user.id,
           email: primaryEmail?.email_address ?? "NO_RESULT",
           display_name: displayName,
+          image_href: user.image_url,
         },
       })
       console.log(`User ${user.id} upserted into database`)
