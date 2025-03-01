@@ -92,8 +92,8 @@ const undoneTaskSorter = (a: TaskData, b: TaskData) => {
   const aParent = a.topic.title + a.tasklist.title
   const bParent = b.topic.title + b.tasklist.title
   if (aParent === bParent) {
-    if (a.created_at > b.created_at) return -1
-    if (a.created_at < b.created_at) return 1
+    if (a.created_at < b.created_at) return -1
+    if (a.created_at > b.created_at) return 1
   }
   return aParent.localeCompare(bParent)
 }
@@ -137,7 +137,7 @@ function TaskRow({ task }: { task: TaskData }) {
         )}
         <p className="grow">{task.title}</p>
         {task.done_at ? (
-          <p className="bg-neutral-100 px-2 py-0.5 text-xs text-neutral-600">
+          <p className="bg-gold-50 text-gold-600 min-w-fit px-2 py-0.5 text-xs">
             {formatDate(task.done_at, { withTime: true })}
           </p>
         ) : null}
