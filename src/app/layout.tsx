@@ -7,8 +7,11 @@ import RootProviders from "@/app/_parts/providers"
 import { fontsClassName } from "@/styles/fonts"
 
 export const metadata: Metadata = {
-  title: "Backboard",
-  description: "A home for bigger picture work",
+  title: {
+    template: "%s | Backboard",
+    default: "Backboard",
+  },
+  description: "Topical, Primitive, Personal Work",
   icons: {
     icon: [
       { url: "/icons/favicon-32x32.png", sizes: "32x32", type: "image/png" },

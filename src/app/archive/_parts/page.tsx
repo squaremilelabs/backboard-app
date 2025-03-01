@@ -52,9 +52,9 @@ export default function ArchivePage() {
       <div className="flex flex-col gap-2">
         <div className="text-neutral flex items-center gap-2 text-neutral-500">
           <Archive size={24} />
-          <h1 className="text-xl font-medium">Archive</h1>
+          <h1 className="text-xl font-medium">Your Archive</h1>
         </div>
-        <p className="text-neutral-500">Items archived in the past 14 days</p>
+        <p className="text-neutral-500">Things you&apos;ve archived in the past 14 days</p>
       </div>
       {sections.map((section) => {
         return (
