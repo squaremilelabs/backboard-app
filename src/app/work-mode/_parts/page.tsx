@@ -89,6 +89,7 @@ const undoneTaskSorter = (a: TaskData, b: TaskData) => {
   if (aOrder === null && bOrder === null) return 0
   if (aOrder !== null && bOrder === null) return -1
   if (aOrder === null && bOrder !== null) return 1
+  if (aOrder !== null && bOrder !== null) return aOrder - bOrder
   const aParent = a.topic.title + a.tasklist.title
   const bParent = b.topic.title + b.tasklist.title
   if (aParent === bParent) {
