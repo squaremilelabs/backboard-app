@@ -39,10 +39,7 @@ export function getWorkModeTasksWhereParam(
   const today = startOfDay(new Date())
   return {
     created_by_id: userId ?? "NO_RESULTS",
-    OR: [
-      { done_at: null, tasklist: { target: { in: ["TODAY", "THIS_WEEK"] } } },
-      { done_at: { gte: today } },
-    ],
+    OR: [{ done_at: null, tasklist: { target: { in: ["TODAY"] } } }, { done_at: { gte: today } }],
     topic: { archived_at: null },
     tasklist: { archived_at: null },
     archived_at: null,

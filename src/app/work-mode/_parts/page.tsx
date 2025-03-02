@@ -60,14 +60,6 @@ export default function WorkModePage() {
           <p className="px-2 text-sm text-neutral-500">None</p>
         )}
       </div>
-      <div className={taskSectionClassName(thisWeekTasks.length)}>
-        <TargetSectionTitle target="THIS_WEEK" />
-        {thisWeekTasks.length ? (
-          thisWeekTasks.map((task) => <TaskRow key={task.id} task={task} />)
-        ) : (
-          <p className="px-2 text-sm text-neutral-500">None</p>
-        )}
-      </div>
       <div className={twMerge(taskSectionClassName(doneTasks.length))}>
         <div className="text-gold-600 flex items-center gap-1 pb-1 font-medium @sm:pb-2">
           <Check size={20} />
