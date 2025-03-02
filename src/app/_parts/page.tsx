@@ -95,10 +95,10 @@ function UserContent() {
 function VisitorContent() {
   return (
     <div
-      className="flex h-[50dvh] flex-col items-center justify-center rounded-lg border bg-neutral-100 p-2
+      className="flex h-[50dvh] flex-col items-center justify-center gap-4 rounded-lg border bg-neutral-100 p-4
         md:h-[90dvh]"
     >
-      <div className="flex flex-col items-center gap-2 md:hidden">
+      <div className="mb-4 flex flex-col items-center gap-2 md:hidden">
         <div className="flex items-center gap-1 hover:opacity-70">
           <Link
             href={BACKBOARD_INTRO_PAGE_LINK}
@@ -121,6 +121,12 @@ function VisitorContent() {
         height="100%"
         allowFullScreen
       />
+      <div className="flex w-7/12 flex-col items-center gap-1">
+        <p className="text-center">Still waiting on your invite?</p>
+        <p className="text-center text-sm text-neutral-500">
+          You might want to check your spam or &quot;promotions&quot; folder.
+        </p>
+      </div>
     </div>
   )
 }
