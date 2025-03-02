@@ -35,7 +35,7 @@ export default function TopicsNav() {
             onPress={() => setIsOpen((prev) => !prev)}
             className={twMerge(
               "flex items-center justify-between gap-2 rounded-lg border bg-neutral-100 px-2 py-1 !outline-0",
-              isOpen ? "font-medium" : ""
+              isOpen ? "border-2 border-neutral-300 font-medium" : ""
             )}
           >
             <TopicsNavTitle />
@@ -45,12 +45,15 @@ export default function TopicsNav() {
             />
           </Button>
           <Popover isOpen={isOpen} onOpenChange={setIsOpen}>
-            <Dialog className="bg-canvas/50 flex w-xs flex-col gap-1 rounded-lg !outline-0 backdrop-blur-xl">
+            <Dialog
+              className="flex w-[80dvw] max-w-[360px] flex-col gap-1 rounded-lg border-2 border-neutral-300 bg-neutral-100/50
+                p-1 !outline-0 backdrop-blur-xl"
+            >
               <TopicsNavList />
               <CreateByTitleForm
                 createMutation={createTopic}
                 placeholder="New Topic"
-                className="border"
+                className="border-2"
               />
             </Dialog>
           </Popover>
