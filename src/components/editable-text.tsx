@@ -52,9 +52,10 @@ export default function EditableText<T extends GenericUseMutationResult>({
     if (e.key === "Escape") {
       setInput(recordField ?? "")
       updateMutation.reset()
-      inputRef.current?.blur()
     }
   }
+
+  const hasChanges = input && recordField !== input
 
   return (
     <TextareaAutosize
@@ -63,10 +64,12 @@ export default function EditableText<T extends GenericUseMutationResult>({
       placeholder={placeholder}
       value={input}
       onChange={(e) => setInput(e.target.value)}
+      onBlur={handleSubmit}
       spellCheck={false}
       className={twMerge(
-        "focus:text-gold-600 grow resize-none !ring-0 !outline-0",
+        "grow resize-none !ring-0 !outline-0",
         "hover:text-neutral-500",
+        hasChanges ? "!text-gold-600" : null,
         updateMutation.isPending ? "animate-pulse" : null,
         className
       )}
