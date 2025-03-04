@@ -82,8 +82,8 @@ export default function MetadataPopover<T extends GenericUseMutationResult>({
         ) : displayedVisibility === "public" ? (
           <Share2 size={iconSize} className="text-blue-600" />
         ) : displayedVisibility === "private" ? (
-          <div className="flex items-center justify-center rounded-lg border bg-blue-800 p-1">
-            <Lock size={iconSize - 2} className="text-blue-50" />
+          <div className="flex items-center justify-center rounded-full border bg-neutral-600 p-1">
+            <Lock size={iconSize - 2} className="text-neutral-50" />
           </div>
         ) : null}
       </Button>
