@@ -74,7 +74,7 @@ export default function MetadataPopover<T extends GenericUseMutationResult>({
     <DialogTrigger>
       <Button
         onPress={() => setIsOpen((prev) => !prev)}
-        className="focus-visible:!text-gold-500 flex items-center !outline-0 data-pressed:scale-95"
+        className="focus-visible:!text-gold-500 flex items-center !outline-0"
       >
         <EllipsisVertical size={iconSize} className="text-neutral-500" />
         {record?.archived_at ? (
@@ -82,7 +82,9 @@ export default function MetadataPopover<T extends GenericUseMutationResult>({
         ) : displayedVisibility === "public" ? (
           <Share2 size={iconSize} className="text-blue-600" />
         ) : displayedVisibility === "private" ? (
-          <Lock size={iconSize} className="text-blue-700" />
+          <div className="flex items-center justify-center rounded-lg border bg-blue-800 p-1">
+            <Lock size={iconSize - 2} className="text-blue-50" />
+          </div>
         ) : null}
       </Button>
       <Popover isOpen={isOpen} onOpenChange={setIsOpen} placement="bottom right">
