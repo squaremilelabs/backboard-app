@@ -19,9 +19,6 @@ export default function WorkModePage() {
   const nowTasks = tasks
     .filter((task) => !task.done_at && task.tasklist.target === "TODAY")
     .sort(undoneTaskSorter)
-  const thisWeekTasks = tasks
-    .filter((task) => !task.done_at && task.tasklist.target === "THIS_WEEK")
-    .sort(undoneTaskSorter)
   const doneTasks = tasks
     .filter((task) => task.done_at)
     .sort((a, b) => ((a?.done_at ?? 0) > (b?.done_at ?? 0) ? -1 : 1))
@@ -32,7 +29,7 @@ export default function WorkModePage() {
       taskCount ? "opacity-100" : "opacity-70 bg-transparent"
     )
 
-  const hasTasks = nowTasks.length + thisWeekTasks.length > 0
+  const hasTasks = nowTasks.length > 0
 
   const Icon = hasTasks ? Zap : ZapOff
 
