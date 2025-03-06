@@ -10,24 +10,23 @@ import {
   SelectValue,
 } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
-import { RelativeTarget, Task } from "@prisma/client"
-import { ArrowUpToLine, ChevronDown, ListTodo, Loader, Square, SquareCheck } from "lucide-react"
+import { RelativeTarget } from "@prisma/client"
+import { ChevronDown, ListTodo } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { useUser } from "@clerk/nextjs"
-import CreateByTitleForm from "@/components/create-by-title-form"
+import CreateByTitleForm from "@/components/abstract/create-by-title-form"
 import {
   useCreateTask,
   useCreateTasklist,
   useFindManyTask,
-  useUpdateTask,
   useUpdateTasklist,
 } from "@/database/generated/hooks"
 import { RELATIVE_TARGETS_UI_ENUM } from "@/lib/constants"
 import { TasklistData, useTaskslistsData } from "@/lib/data/tasklist"
-import EditableText from "@/components/editable-text"
-import { formatDate } from "@/lib/utils"
+import EditableText from "@/components/abstract/editable-text"
 import { TopicData } from "@/lib/data/topic"
-import MetadataPopover from "@/components/metadata-popover"
+import MetadataPopover from "@/components/abstract/metadata-popover"
+import Task from "@/components/concrete/task"
 
 export default function TopicTasklists({ topic }: { topic: TopicData }) {
   const { data: tasklists } = useTaskslistsData({
@@ -196,7 +195,7 @@ function TasklistTasks({ tasklist }: { tasklist: TasklistData }) {
     <div className="bg-canvas flex flex-col gap-2 rounded-lg border p-4">
       <div className="flex flex-col">
         {sortedUndoneTasks.map((task) => {
-          return <TasklistTask key={task.id} task={task} tasklist={tasklist} />
+          return <Task key={task.id} task={task} tasklist={tasklist} />
         })}
         <CreateByTitleForm
           createMutation={createTask}
@@ -255,78 +254,8 @@ function TasklistDoneTasks({ tasklist }: { tasklist: TasklistData }) {
   return (
     <div className="flex flex-col">
       {doneTasks.map((task) => (
-        <TasklistTask key={task.id} task={task} tasklist={tasklist} />
+        <Task key={task.id} task={task} tasklist={tasklist} />
       ))}
-    </div>
-  )
-}
-
-function TasklistTask({ task, tasklist }: { task: Task; tasklist: TasklistData }) {
-  const updateTask = useUpdateTask()
-  const updateTasklist = useUpdateTasklist()
-
-  const handleCheck = () => {
-    updateTask.mutate({
-      where: { id: task.id },
-      data: { done_at: task.done_at ? null : new Date() },
-    })
-  }
-
-  const handleMoveToTop = () => {
-    const currentTaskOrder = tasklist.task_order
-    let updatedTaskOrder = [...currentTaskOrder]
-
-    // if task.id is not in currentTaskOrder, add to front of array
-    if (!updatedTaskOrder.includes(task.id)) {
-      updatedTaskOrder.unshift(task.id)
-    } else {
-      // if task.id is in currentTaskOrder – move to front of array
-      updatedTaskOrder = updatedTaskOrder.filter((id) => id !== task.id)
-      updatedTaskOrder.unshift(task.id)
-    }
-
-    updateTasklist.mutate({
-      where: { id: tasklist.id },
-      data: { task_order: updatedTaskOrder },
-    })
-  }
-
-  const isPending = updateTask.isPending || updateTasklist.isPending
-  const CheckboxIcon = task.done_at ? SquareCheck : Square
-
-  return (
-    <div className="group flex items-start gap-2 rounded-lg p-2 outline-neutral-200 hover:outline-2">
-      {isPending ? (
-        <Loader size={20} className="text-gold-500 animate-spin" />
-      ) : (
-        <Button onPress={handleCheck} className={twMerge("text-neutral-500")}>
-          <CheckboxIcon size={20} />
-        </Button>
-      )}
-      <EditableText record={task} updateMutation={updateTask} updateField="title" />
-      <div className="flex min-w-fit items-center gap-2">
-        {!task.done_at ? (
-          <div className="hidden h-[20px] items-center group-focus-within:flex group-hover:flex">
-            <Button onPress={handleMoveToTop} className="text-gold-500">
-              <ArrowUpToLine size={16} />
-            </Button>
-          </div>
-        ) : null}
-        {task.done_at ? (
-          <p className="bg-neutral-100 px-2 py-0.5 text-xs text-neutral-600">
-            {formatDate(task.done_at, { withTime: true })}
-          </p>
-        ) : null}
-        <div className="flex h-[20px] items-center">
-          <MetadataPopover
-            record={task}
-            recordType={"Task"}
-            updateMutation={updateTask}
-            parentIsPublic={tasklist.is_public}
-            iconSize={16}
-          />
-        </div>
-      </div>
     </div>
   )
 }

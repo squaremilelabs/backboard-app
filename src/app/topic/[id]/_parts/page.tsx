@@ -3,10 +3,10 @@
 import { Bookmark, Text } from "lucide-react"
 import TopicTasklists from "./tasklists"
 import TopicResources from "./resources"
-import EditableText from "@/components/editable-text"
+import EditableText from "@/components/abstract/editable-text"
 import { useUpdateTopic } from "@/database/generated/hooks"
 import { useTopicData } from "@/lib/data/topic"
-import MetadataPopover from "@/components/metadata-popover"
+import MetadataPopover from "@/components/abstract/metadata-popover"
 
 export default function TopicPage({ id }: { id: string }) {
   const { data: topic } = useTopicData(id)

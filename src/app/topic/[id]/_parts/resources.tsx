@@ -10,11 +10,11 @@ import {
   useFindManyResource,
   useUpdateResource,
 } from "@/database/generated/hooks"
-import EditableText from "@/components/editable-text"
-import CreateByTitleForm from "@/components/create-by-title-form"
+import EditableText from "@/components/abstract/editable-text"
+import CreateByTitleForm from "@/components/abstract/create-by-title-form"
 import { formatDate } from "@/lib/utils"
 import { TopicData } from "@/lib/data/topic"
-import MetadataPopover from "@/components/metadata-popover"
+import MetadataPopover from "@/components/abstract/metadata-popover"
 
 export default function TopicResources({ topic }: { topic: TopicData }) {
   const resourcesQuery = useFindManyResource({
