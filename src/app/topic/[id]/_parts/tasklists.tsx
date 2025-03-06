@@ -79,7 +79,7 @@ function Tasklist({ tasklist, topic }: { tasklist: TasklistData; topic: TopicDat
           </div>
           <div
             className={twMerge(
-              "flex h-[20px] items-center justify-center rounded-lg bg-neutral-200 px-2 text-sm",
+              "flex h-[20px] w-[30px] items-center justify-center rounded-lg bg-neutral-200 px-2 text-sm",
               tasklist.target == "TODAY" || tasklist.target === "THIS_WEEK"
                 ? tasklist._computed.undone_task_count === 0
                   ? "border border-red-200 bg-red-50 text-red-600"
