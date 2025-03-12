@@ -51,6 +51,7 @@ export default function TopicTasklists({ topic }: { topic: TopicData }) {
 function Tasklist({ tasklist, topic }: { tasklist: TasklistData; topic: TopicData }) {
   const [isExpanded, setIsExpanded] = useState(false)
   const updateTasklist = useUpdateTasklist()
+
   return (
     <Disclosure
       className="rounded-lg border bg-neutral-100 p-1"
