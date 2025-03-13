@@ -27,6 +27,7 @@ export default function EditableText<T extends GenericUseMutationResult>({
   const [input, setInput] = useState("")
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const recordField = record ? (record[updateField] as string | null) : null
+
   useEffect(() => {
     if (recordField && !updateMutation.isPending) {
       setInput(recordField)

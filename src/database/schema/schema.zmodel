@@ -39,85 +39,52 @@ model User {
   @@allow("update", auth().id == id)
 }
 
-model Topic {
-  id            String     @id @default(cuid())
-  created_at    DateTime   @default(now()) @db.Timestamptz
-  updated_at    DateTime   @updatedAt @db.Timestamptz
-  created_by_id String     @default(auth().id)
-  created_by    User       @relation(fields: [created_by_id], references: [id])
+abstract model BaseRecord {
+  id            String    @id @default(cuid())
+  created_at    DateTime  @default(now()) @db.Timestamptz
+  updated_at    DateTime  @updatedAt @db.Timestamptz
+  created_by_id String    @default(auth().id)
+  created_by    User      @relation(fields: [created_by_id], references: [id])
+  title         String    @trim @length(min: 1, max: 300, "title must be between 1 and 300 characters")
+  description   String?   @trim
+  is_public     Boolean   @default(false)
+  archived_at   DateTime? @db.Timestamptz
+}
 
-  title         String     @trim @length(min: 1, max: 300, "title must be between 1 and 300 characters")
-  description   String?    @trim
-
-  tasklists     Tasklist[]
-  tasks         Task[]
-  resources     Resource[]
-
-  is_public     Boolean    @default(false)
-
-  archived_at   DateTime?  @db.Timestamptz
+model Topic extends BaseRecord {
+  tasklists Tasklist[]
+  tasks     Task[]
+  resources Resource[]
 
   @@map("topics")
   @@allow("all", created_by_id == auth().id)
   @@allow("read", is_public == true && archived_at == null)
 }
 
-model Resource {
-  id            String    @id @default(cuid())
-  created_at    DateTime  @default(now()) @db.Timestamptz
-  updated_at    DateTime  @updatedAt @db.Timestamptz
-  created_by_id String    @default(auth().id)
-  created_by    User      @relation(fields: [created_by_id], references: [id])
-
-  topic_id      String
-  topic         Topic     @relation(fields: [topic_id], references: [id])
-
-  is_public     Boolean   @default(false)
-
-  title         String    @trim @length(min: 1, max: 300, "title must be between 1 and 300 characters")
-  content       String?   @trim
-
-  archived_at   DateTime? @db.Timestamptz
+model Resource extends BaseRecord {
+  topic_id String
+  topic    Topic   @relation(fields: [topic_id], references: [id])
+  content  String? @trim
 
   @@map("resources")
   @@allow("all", created_by_id == auth().id)
   @@allow("read", topic.is_public == true && topic.archived_at == null && is_public == true && archived_at == null)
 }
 
-model Tasklist {
-  id            String         @id @default(cuid())
-  created_at    DateTime       @default(now()) @db.Timestamptz
-  updated_at    DateTime       @updatedAt @db.Timestamptz
-  created_by_id String         @default(auth().id)
-  created_by    User           @relation(fields: [created_by_id], references: [id])
+model Tasklist extends BaseRecord {
+  topic_id   String
+  topic      Topic          @relation(fields: [topic_id], references: [id])
+  target     RelativeTarget @default(NONE)
+  tasks      Task[]
+  task_order String[]
 
-  topic_id      String
-  topic         Topic          @relation(fields: [topic_id], references: [id])
   @@unique([id, topic_id])
-
-  is_public     Boolean        @default(false)
-
-  title         String         @trim @length(min: 1, max: 300, "title must be between 1 and 300 characters")
-  description   String?        @trim
-  target        RelativeTarget @default(NONE)
-
-  tasks         Task[]
-  task_order    String[]
-
-  archived_at   DateTime?      @db.Timestamptz
-
   @@map("tasklists")
   @@allow("all", created_by_id == auth().id)
   @@allow("read", topic.is_public == true && topic.archived_at == null && is_public == true && archived_at == null)
 }
 
-model Task {
-  id                String    @id @default(cuid())
-  created_at        DateTime  @default(now()) @db.Timestamptz
-  updated_at        DateTime  @updatedAt @db.Timestamptz
-  created_by_id     String    @default(auth().id)
-  created_by        User      @relation(fields: [created_by_id], references: [id])
-
+model Task extends BaseRecord {
   topic_id          String
   topic             Topic     @relation(fields: [topic_id], references: [id]) // must be the same as the tasklist's topic
 
@@ -125,13 +92,8 @@ model Task {
   tasklist_topic_id String
   tasklist          Tasklist  @relation(fields: [tasklist_id, tasklist_topic_id], references: [id, topic_id])
 
-  title             String    @trim @length(min: 1, max: 300, "title must be between 1 and 300 characters")
-  description       String?   @trim
   size_minutes      Int?
   done_at           DateTime? @db.Timestamptz
-
-  archived_at       DateTime? @db.Timestamptz
-
 
   @@map("tasks")
   @@validate(topic_id == tasklist_topic_id, "topic_id must match tasklist_topic_id")
