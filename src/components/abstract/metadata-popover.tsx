@@ -27,6 +27,7 @@ export default function MetadataPopover<T extends GenericUseMutationResult>({
   parentIsPublic,
   updateMutation,
   iconSize = 20,
+  hideVisibility = false,
 }: {
   recordType: RecordType
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- to allow for any record type to be passed
@@ -34,6 +35,7 @@ export default function MetadataPopover<T extends GenericUseMutationResult>({
   updateMutation: T
   parentIsPublic: boolean
   iconSize?: number
+  hideVisibility?: boolean
 }) {
   const { isSignedIn } = useUser()
   const [isOpen, setIsOpen] = useState(false)
@@ -52,8 +54,9 @@ export default function MetadataPopover<T extends GenericUseMutationResult>({
     })
   }
 
-  const displayedVisibility: "public" | "private" | null =
-    record?.is_public === undefined
+  const displayedVisibility: "public" | "private" | null = hideVisibility
+    ? null
+    : record?.is_public === undefined
       ? null
       : recordType === "Topic"
         ? record?.is_public
@@ -66,7 +69,7 @@ export default function MetadataPopover<T extends GenericUseMutationResult>({
           : null
 
   const showVisibilityToggle =
-    (recordType === "Topic" || parentIsPublic) && record?.is_public !== undefined
+    !hideVisibility && (recordType === "Topic" || parentIsPublic) && record?.is_public !== undefined
 
   if (!isSignedIn) return null
 

@@ -312,6 +312,7 @@ function Task({ task, tasklist }: { task: ITask; tasklist: TasklistData }) {
             updateMutation={updateTask}
             parentIsPublic={tasklist.is_public}
             iconSize={16}
+            hideVisibility
           />
         </div>
       </div>
