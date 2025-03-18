@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "vercel-build": "pnpm vercel-build-no-db",
+    "vercel-build": "pnpm vercel-build-with-db",
     "vercel-build-no-db": "pnpm db:generate && pnpm build",
     "vercel-build-with-db": "pnpm db:generate && pnpm db:migrate-deploy && pnpm build",
     "db:generate": "npx zenstack generate",
