@@ -2,7 +2,7 @@
 
 import { Bookmark, Text } from "lucide-react"
 import TopicTasklists from "./tasklists"
-import TopicResources from "./resources"
+import TopicNotes from "./notes"
 import EditableText from "@/components/abstract/editable-text"
 import { useUpdateTopic } from "@/database/generated/hooks"
 import { useTopicData } from "@/lib/data/topic"
@@ -57,7 +57,7 @@ export default function TopicPage({ id }: { id: string }) {
       </div>
       <div>
         <SectionTitle title="Notes" />
-        {topic ? <TopicResources topic={topic} /> : null}
+        {topic ? <TopicNotes topic={topic} /> : null}
       </div>
     </div>
   )

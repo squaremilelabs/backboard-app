@@ -16,46 +16,6 @@ type DefaultError = QueryError;
 import { useSuspenseModelQuery, useSuspenseInfiniteModelQuery } from '@zenstackhq/tanstack-query/runtime-v5/react';
 import type { UseSuspenseQueryOptions, UseSuspenseInfiniteQueryOptions } from '@tanstack/react-query';
 
-export function useCreateResource(options?: Omit<(UseMutationOptions<(Resource | undefined), DefaultError, Prisma.ResourceCreateArgs> & ExtraMutationOptions), 'mutationFn'>) {
-    const { endpoint, fetch } = getHooksContext();
-    const _mutation =
-        useModelMutation<Prisma.ResourceCreateArgs, DefaultError, Resource, true>('Resource', 'POST', `${endpoint}/resource/create`, metadata, options, fetch, true)
-        ;
-    const mutation = {
-        ..._mutation,
-        mutateAsync: async <T extends Prisma.ResourceCreateArgs>(
-            args: Prisma.SelectSubset<T, Prisma.ResourceCreateArgs>,
-            options?: Omit<(UseMutationOptions<(CheckSelect<T, Resource, Prisma.ResourceGetPayload<T>> | undefined), DefaultError, Prisma.SelectSubset<T, Prisma.ResourceCreateArgs>> & ExtraMutationOptions), 'mutationFn'>
-        ) => {
-            return (await _mutation.mutateAsync(
-                args,
-                options as any
-            )) as (CheckSelect<T, Resource, Prisma.ResourceGetPayload<T>> | undefined);
-        },
-    };
-    return mutation;
-}
-
-export function useCreateManyResource(options?: Omit<(UseMutationOptions<Prisma.BatchPayload, DefaultError, Prisma.ResourceCreateManyArgs> & ExtraMutationOptions), 'mutationFn'>) {
-    const { endpoint, fetch } = getHooksContext();
-    const _mutation =
-        useModelMutation<Prisma.ResourceCreateManyArgs, DefaultError, Prisma.BatchPayload, false>('Resource', 'POST', `${endpoint}/resource/createMany`, metadata, options, fetch, false)
-        ;
-    const mutation = {
-        ..._mutation,
-        mutateAsync: async <T extends Prisma.ResourceCreateManyArgs>(
-            args: Prisma.SelectSubset<T, Prisma.ResourceCreateManyArgs>,
-            options?: Omit<(UseMutationOptions<Prisma.BatchPayload, DefaultError, Prisma.SelectSubset<T, Prisma.ResourceCreateManyArgs>> & ExtraMutationOptions), 'mutationFn'>
-        ) => {
-            return (await _mutation.mutateAsync(
-                args,
-                options as any
-            )) as Prisma.BatchPayload;
-        },
-    };
-    return mutation;
-}
-
 export function useFindManyResource<TArgs extends Prisma.ResourceFindManyArgs, TQueryFnData = Array<Prisma.ResourceGetPayload<TArgs> & { $optimistic?: boolean }>, TData = TQueryFnData, TError = DefaultError>(args?: Prisma.SelectSubset<TArgs, Prisma.ResourceFindManyArgs>, options?: (Omit<UseQueryOptions<TQueryFnData, TError, TData>, 'queryKey'> & ExtraQueryOptions)) {
     const { endpoint, fetch } = getHooksContext();
     return useModelQuery<TQueryFnData, TData, TError>('Resource', `${endpoint}/resource/findMany`, args, options, fetch);
@@ -133,26 +93,6 @@ export function useUpdateManyResource(options?: Omit<(UseMutationOptions<Prisma.
                 args,
                 options as any
             )) as Prisma.BatchPayload;
-        },
-    };
-    return mutation;
-}
-
-export function useUpsertResource(options?: Omit<(UseMutationOptions<(Resource | undefined), DefaultError, Prisma.ResourceUpsertArgs> & ExtraMutationOptions), 'mutationFn'>) {
-    const { endpoint, fetch } = getHooksContext();
-    const _mutation =
-        useModelMutation<Prisma.ResourceUpsertArgs, DefaultError, Resource, true>('Resource', 'POST', `${endpoint}/resource/upsert`, metadata, options, fetch, true)
-        ;
-    const mutation = {
-        ..._mutation,
-        mutateAsync: async <T extends Prisma.ResourceUpsertArgs>(
-            args: Prisma.SelectSubset<T, Prisma.ResourceUpsertArgs>,
-            options?: Omit<(UseMutationOptions<(CheckSelect<T, Resource, Prisma.ResourceGetPayload<T>> | undefined), DefaultError, Prisma.SelectSubset<T, Prisma.ResourceUpsertArgs>> & ExtraMutationOptions), 'mutationFn'>
-        ) => {
-            return (await _mutation.mutateAsync(
-                args,
-                options as any
-            )) as (CheckSelect<T, Resource, Prisma.ResourceGetPayload<T>> | undefined);
         },
     };
     return mutation;
@@ -328,7 +268,7 @@ export function useSuspenseCountResource<TArgs extends Prisma.ResourceCountArgs,
     return useSuspenseModelQuery<TQueryFnData, TData, TError>('Resource', `${endpoint}/resource/count`, args, options, fetch);
 }
 
-export function useCheckResource<TError = DefaultError>(args: { operation: PolicyCrudKind; where?: { id?: string; created_by_id?: string; topic_id?: string; is_public?: boolean; title?: string; content?: string }; }, options?: (Omit<UseQueryOptions<boolean, TError, boolean>, 'queryKey'> & ExtraQueryOptions)) {
+export function useCheckResource<TError = DefaultError>(args: { operation: PolicyCrudKind; where?: { id?: string; created_by_id?: string; title?: string; description?: string; is_public?: boolean; topic_id?: string; tasklist_id?: string; tasklist_topic_id?: string; task_id?: string; task_topic_id?: string; resource_type?: string }; }, options?: (Omit<UseQueryOptions<boolean, TError, boolean>, 'queryKey'> & ExtraQueryOptions)) {
     const { endpoint, fetch } = getHooksContext();
     return useModelQuery<boolean, boolean, TError>('Resource', `${endpoint}/resource/check`, args, options, fetch);
 }

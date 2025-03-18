@@ -44,9 +44,11 @@ abstract model BaseRecord {
   created_at    DateTime  @default(now()) @db.Timestamptz
   updated_at    DateTime  @updatedAt @db.Timestamptz
   created_by_id String    @default(auth().id)
-  created_by    User      @relation(fields: [created_by_id], references: [id])
+  created_by    User      @relation(fields: [created_by_id], references: [id], onDelete: Cascade)
+
   title         String    @trim @length(min: 1, max: 300, "title must be between 1 and 300 characters")
   description   String?   @trim
+
   is_public     Boolean   @default(false)
   archived_at   DateTime? @db.Timestamptz
 }
@@ -62,20 +64,48 @@ model Topic extends BaseRecord {
 }
 
 model Resource extends BaseRecord {
-  topic_id String
-  topic    Topic   @relation(fields: [topic_id], references: [id])
-  content  String? @trim
+  topic_id          String
+  topic             Topic     @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+
+  tasklist_id       String?
+  tasklist_topic_id String?
+  tasklist          Tasklist? @relation(fields: [tasklist_id, tasklist_topic_id], references: [id, topic_id], onDelete: SetNull)
+
+  task_id           String?
+  task_topic_id     String?
+  task              Task?     @relation(fields: [task_id, task_topic_id], references: [id, topic_id], onDelete: SetNull)
+
+  resource_type     String
+  @@delegate(resource_type)
 
   @@map("resources")
+  @@validate(tasklist_id == null || tasklist_topic_id == topic_id, "tasklist_topic_id must match topic_id")
+  @@validate(task_id == null || task_topic_id == topic_id, "task_topic_id must match topic_id")
   @@allow("all", created_by_id == auth().id)
   @@allow("read", topic.is_public == true && topic.archived_at == null && is_public == true && archived_at == null)
 }
 
+model Note extends Resource {
+  content String? @trim
+
+  @@map("resource_notes")
+}
+
+model Link extends Resource {
+  url String @url
+
+  @@map("resource_links")
+}
+
 model Tasklist extends BaseRecord {
   topic_id   String
-  topic      Topic          @relation(fields: [topic_id], references: [id])
+  topic      Topic          @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+  
   target     RelativeTarget @default(NONE)
+  
   tasks      Task[]
+  resources  Resource[]
+
   task_order String[]
 
   @@unique([id, topic_id])
@@ -86,15 +116,19 @@ model Tasklist extends BaseRecord {
 
 model Task extends BaseRecord {
   topic_id          String
-  topic             Topic     @relation(fields: [topic_id], references: [id]) // must be the same as the tasklist's topic
+  topic             Topic      @relation(fields: [topic_id], references: [id], onDelete: Cascade)
 
   tasklist_id       String
   tasklist_topic_id String
-  tasklist          Tasklist  @relation(fields: [tasklist_id, tasklist_topic_id], references: [id, topic_id])
+  tasklist          Tasklist   @relation(fields: [tasklist_id, tasklist_topic_id], references: [id, topic_id], onDelete: Cascade)
 
-  size_minutes      Int?
-  done_at           DateTime? @db.Timestamptz
+  resources         Resource[]
 
+  size_minutes      Int?       @gt(0)
+  is_draft          Boolean    @default(true)
+  done_at           DateTime?  @db.Timestamptz
+
+  @@unique([id, topic_id])
   @@map("tasks")
   @@validate(topic_id == tasklist_topic_id, "topic_id must match tasklist_topic_id")
   @@allow("all", created_by_id == auth().id)

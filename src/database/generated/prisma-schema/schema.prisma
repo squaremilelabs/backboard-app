@@ -44,32 +44,57 @@ model Topic {
   created_at    DateTime   @default(now()) @db.Timestamptz()
   updated_at    DateTime   @updatedAt() @db.Timestamptz()
   created_by_id String
-  created_by    User       @relation(fields: [created_by_id], references: [id])
+  created_by    User       @relation(fields: [created_by_id], references: [id], onDelete: Cascade)
   title         String
   description   String?
+  is_public     Boolean    @default(false)
+  archived_at   DateTime?  @db.Timestamptz()
   tasklists     Tasklist[]
   tasks         Task[]
   resources     Resource[]
-  is_public     Boolean    @default(false)
-  archived_at   DateTime?  @db.Timestamptz()
 
   @@map("topics")
 }
 
 model Resource {
-  id            String    @id() @default(cuid())
-  created_at    DateTime  @default(now()) @db.Timestamptz()
-  updated_at    DateTime  @updatedAt() @db.Timestamptz()
-  created_by_id String
-  created_by    User      @relation(fields: [created_by_id], references: [id])
-  topic_id      String
-  topic         Topic     @relation(fields: [topic_id], references: [id])
-  is_public     Boolean   @default(false)
-  title         String
-  content       String?
-  archived_at   DateTime? @db.Timestamptz()
+  id                String    @id() @default(cuid())
+  created_at        DateTime  @default(now()) @db.Timestamptz()
+  updated_at        DateTime  @updatedAt() @db.Timestamptz()
+  created_by_id     String
+  created_by        User      @relation(fields: [created_by_id], references: [id], onDelete: Cascade)
+  title             String
+  description       String?
+  is_public         Boolean   @default(false)
+  archived_at       DateTime? @db.Timestamptz()
+  topic_id          String
+  topic             Topic     @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+  tasklist_id       String?
+  tasklist_topic_id String?
+  tasklist          Tasklist? @relation(fields: [tasklist_id, tasklist_topic_id], references: [id, topic_id], onDelete: SetNull)
+  task_id           String?
+  task_topic_id     String?
+  task              Task?     @relation(fields: [task_id, task_topic_id], references: [id, topic_id], onDelete: SetNull)
+  resource_type     String
+  delegate_aux_note Note?
+  delegate_aux_link Link?
 
   @@map("resources")
+}
+
+model Note {
+  id                    String   @id()
+  content               String?
+  delegate_aux_resource Resource @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@map("resource_notes")
+}
+
+model Link {
+  id                    String   @id()
+  url                   String
+  delegate_aux_resource Resource @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@map("resource_links")
 }
 
 model Tasklist {
@@ -77,37 +102,42 @@ model Tasklist {
   created_at    DateTime       @default(now()) @db.Timestamptz()
   updated_at    DateTime       @updatedAt() @db.Timestamptz()
   created_by_id String
-  created_by    User           @relation(fields: [created_by_id], references: [id])
-  topic_id      String
-  topic         Topic          @relation(fields: [topic_id], references: [id])
-  is_public     Boolean        @default(false)
+  created_by    User           @relation(fields: [created_by_id], references: [id], onDelete: Cascade)
   title         String
   description   String?
+  is_public     Boolean        @default(false)
+  archived_at   DateTime?      @db.Timestamptz()
+  topic_id      String
+  topic         Topic          @relation(fields: [topic_id], references: [id], onDelete: Cascade)
   target        RelativeTarget @default(NONE)
   tasks         Task[]
+  resources     Resource[]
   task_order    String[]
-  archived_at   DateTime?      @db.Timestamptz()
 
   @@unique([id, topic_id])
   @@map("tasklists")
 }
 
 model Task {
-  id                String    @id() @default(cuid())
-  created_at        DateTime  @default(now()) @db.Timestamptz()
-  updated_at        DateTime  @updatedAt() @db.Timestamptz()
+  id                String     @id() @default(cuid())
+  created_at        DateTime   @default(now()) @db.Timestamptz()
+  updated_at        DateTime   @updatedAt() @db.Timestamptz()
   created_by_id     String
-  created_by        User      @relation(fields: [created_by_id], references: [id])
-  topic_id          String
-  topic             Topic     @relation(fields: [topic_id], references: [id])
-  tasklist_id       String
-  tasklist_topic_id String
-  tasklist          Tasklist  @relation(fields: [tasklist_id, tasklist_topic_id], references: [id, topic_id])
+  created_by        User       @relation(fields: [created_by_id], references: [id], onDelete: Cascade)
   title             String
   description       String?
+  is_public         Boolean    @default(false)
+  archived_at       DateTime?  @db.Timestamptz()
+  topic_id          String
+  topic             Topic      @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+  tasklist_id       String
+  tasklist_topic_id String
+  tasklist          Tasklist   @relation(fields: [tasklist_id, tasklist_topic_id], references: [id, topic_id], onDelete: Cascade)
+  resources         Resource[]
   size_minutes      Int?
-  done_at           DateTime? @db.Timestamptz()
-  archived_at       DateTime? @db.Timestamptz()
+  is_draft          Boolean    @default(true)
+  done_at           DateTime?  @db.Timestamptz()
 
+  @@unique([id, topic_id])
   @@map("tasks")
 }

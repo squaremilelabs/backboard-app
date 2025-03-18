@@ -1,38 +1,39 @@
-import { Resource as IResource } from "@prisma/client"
+import { Note as INote } from "@zenstackhq/runtime/models"
 import { ChevronDown, File, FileText, Loader } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Button, Disclosure, DisclosurePanel, Heading } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
 import TextareaAutosize from "react-textarea-autosize"
 import { useUser } from "@clerk/nextjs"
-import { useUpdateResource } from "@/database/generated/hooks"
+import { useUpdateNote } from "@/database/generated/hooks"
 import EditableText from "@/components/abstract/editable-text"
 import { formatDate } from "@/lib/utils"
 import { TopicData } from "@/lib/data/topic"
 import MetadataPopover from "@/components/abstract/metadata-popover"
 
-export default function Resource({ resource, topic }: { resource: IResource; topic: TopicData }) {
+export default function Note({ note, topic }: { note: INote; topic: TopicData }) {
   const { isSignedIn } = useUser()
   const [isExpanded, setIsExpanded] = useState(false)
-  const updateResource = useUpdateResource()
+  const updateNote = useUpdateNote()
 
   const [contentValue, setContentValue] = useState("")
+
   useEffect(() => {
-    if (resource.content) {
-      setContentValue(resource.content)
+    if (note.content) {
+      setContentValue(note.content)
     } else {
       setContentValue("")
     }
-  }, [resource.content])
+  }, [note.content])
 
   const handleSave = () => {
-    updateResource.mutate({
-      where: { id: resource.id },
+    updateNote.mutate({
+      where: { id: note.id },
       data: { content: contentValue },
     })
   }
 
-  const isUnsaved = contentValue !== (resource.content ?? "")
+  const isUnsaved = contentValue !== (note.content ?? "")
   const ContentIcon = contentValue ? FileText : File
   return (
     <Disclosure
@@ -53,7 +54,7 @@ export default function Resource({ resource, topic }: { resource: IResource; top
             {isUnsaved && !isExpanded ? (
               <p className="text-gold-600 text-sm">Unsaved!</p>
             ) : (
-              <p className="text-sm">{formatDate(resource.updated_at, { withTime: true })}</p>
+              <p className="text-sm">{formatDate(note.updated_at, { withTime: true })}</p>
             )}
           </div>
           <ChevronDown
@@ -62,13 +63,13 @@ export default function Resource({ resource, topic }: { resource: IResource; top
           />
         </Button>
         <div className="flex items-start gap-2">
-          <EditableText record={resource} updateMutation={updateResource} />
+          <EditableText record={note} updateMutation={updateNote} />
           <div className="flex h-[20px] items-center">
             <MetadataPopover
               recordType="Resource"
-              record={resource}
+              record={note}
               parentIsPublic={topic.is_public}
-              updateMutation={updateResource}
+              updateMutation={updateNote}
               iconSize={16}
             />
           </div>
@@ -93,20 +94,20 @@ export default function Resource({ resource, topic }: { resource: IResource; top
           {isUnsaved ? (
             <div className="flex items-center justify-end gap-4">
               <Button
-                isDisabled={updateResource.isPending}
+                isDisabled={updateNote.isPending}
                 className={twMerge("text-sm text-neutral-500")}
-                onPress={() => setContentValue(resource.content ?? "")}
+                onPress={() => setContentValue(note.content ?? "")}
               >
                 Clear Changes
               </Button>
               <Button
-                isDisabled={updateResource.isPending}
+                isDisabled={updateNote.isPending}
                 className={twMerge("bg-gold-500 text-gold-50 rounded-full px-4 py-1 font-medium")}
                 onPress={handleSave}
               >
                 Save
               </Button>
-              {updateResource.isPending ? (
+              {updateNote.isPending ? (
                 <Loader size={20} className="text-gold-500 animate-spin" />
               ) : null}
             </div>
