@@ -1,7 +1,7 @@
 import { useCreateNote, useFindManyNote } from "@/database/generated/hooks"
 import CreateByTitleForm from "@/components/abstract/create-by-title-form"
 import { TopicData } from "@/lib/data/topic"
-import Note from "@/components/concrete/note"
+import Note from "@/components/concrete/resource/note"
 
 export default function TopicNotes({ topic }: { topic: TopicData }) {
   const resourcesQuery = useFindManyNote({

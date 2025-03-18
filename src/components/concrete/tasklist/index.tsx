@@ -16,7 +16,7 @@ import { useUser } from "@clerk/nextjs"
 import { Task as ITask } from "@prisma/client"
 import { ArrowUpToLine, Loader, Square, SquareCheck } from "lucide-react"
 import { twMerge } from "tailwind-merge"
-import MetadataPopover from "../abstract/metadata-popover"
+import MetadataPopover from "../../abstract/metadata-popover"
 import CreateByTitleForm from "@/components/abstract/create-by-title-form"
 import {
   useCreateTask,
