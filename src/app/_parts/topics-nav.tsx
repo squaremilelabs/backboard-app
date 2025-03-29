@@ -14,7 +14,7 @@ import { BookMarked, ChevronDown, Share2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useUser } from "@clerk/nextjs"
 import { useTopicsData } from "@/lib/data/topic"
-import CreateByTitleForm from "@/components/abstract/create-by-title-form"
+import CreateByTitleForm from "@/components/abstract/_legacy/create-by-title-form"
 import { useCreateTopic } from "@/database/generated/hooks"
 import { RELATIVE_TARGETS_UI_ENUM } from "@/lib/constants"
 

@@ -1,4 +1,4 @@
-import CreateByTitleForm from "@/components/abstract/create-by-title-form"
+import CreateByTitleForm from "@/components/abstract/_legacy/create-by-title-form"
 import { useCreateTasklist } from "@/database/generated/hooks"
 import { useTaskslistsData } from "@/lib/data/tasklist"
 import { TopicData } from "@/lib/data/topic"

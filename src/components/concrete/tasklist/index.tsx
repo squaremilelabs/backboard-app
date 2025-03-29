@@ -16,8 +16,8 @@ import { useUser } from "@clerk/nextjs"
 import { Task as ITask } from "@prisma/client"
 import { ArrowUpToLine, Loader, Square, SquareCheck } from "lucide-react"
 import { twMerge } from "tailwind-merge"
-import MetadataPopover from "../../abstract/metadata-popover"
-import CreateByTitleForm from "@/components/abstract/create-by-title-form"
+import MetadataPopover from "../../abstract/_legacy/metadata-popover"
+import CreateByTitleForm from "@/components/abstract/_legacy/create-by-title-form"
 import {
   useCreateTask,
   useFindManyTask,
@@ -26,7 +26,7 @@ import {
 } from "@/database/generated/hooks"
 import { RELATIVE_TARGETS_UI_ENUM } from "@/lib/constants"
 import { TasklistData } from "@/lib/data/tasklist"
-import EditableText from "@/components/abstract/editable-text"
+import EditableText from "@/components/abstract/_legacy/editable-text"
 import { TopicData } from "@/lib/data/topic"
 import { formatDate } from "@/lib/utils"
 

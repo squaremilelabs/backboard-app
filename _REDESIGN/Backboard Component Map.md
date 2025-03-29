@@ -1,0 +1,141 @@
+# Backboard Component Map
+
+### Techstack
+
+- **Framework:** NextJS (App Router) (Typescript)
+- **Auth:** Clerk
+- **Database:** Zenstack + Prisma (using zenstack’s built-in tanstack query hooks)
+- **UI:** Tailwind V4 + React Aria
+
+### **Key**
+
+- **TaskType** = Ready | Pending | Done | Routine/Ready | Routine/Done
+- **ModelType** = AdhocTask | RoutineTask | ProjectTask | Routine | Project | Milestone | Topic
+
+### **Components**
+
+- Abstract
+    - **Draggable**
+    - **Droppable**
+    - **Collapsible**
+        - Header
+        - Content
+    - **Pagination**
+    - **EditableTextArea**
+        - TextAreaAutoResize
+        - Actions (Save, Reset)
+    - **EditableText**
+        - Text (read mode)
+        - PopoverTextInput (edit mode, when focused)
+    - **CreateLine**
+    - **ClipboardTrigger**
+    - **ContextMenu**
+        - Trigger
+        - Popover (Content WIP)
+- Concrete
+    - Task
+        - **Task**<T = *TaskType*> ← **Draggable**
+            - T = Ready | Done | Routine/Ready ? *Task Checkbox*
+            - T = Routine/Ready | Routine/Done ? *Task Routine Instance Number*
+            - T = Done ? *Task Done At Timestamp*
+            - **EditableText**
+            - **ClipboardTrigger**
+            - **ContextMenu**
+        - **TaskList**<T = *TaskType*> ← **Collapsible**
+            - {Collapsible.Header}
+                - *Icon + Label*
+                - *Task Count Badge*
+            - {Collapsible.Content}
+                - **TaskListContent**<T> ← **Droppable**
+                    - **Task[]**<T>
+                    - T = Ready | Pending ? **CreateLine**
+                    - T = Done | Routine/Done ? **Pagination**
+        - **TaskListsByStatus**
+            - **TaskList**<T = Ready>
+            - **TaskList**<T = Pending>
+            - **TaskList**<T = Done>
+    - Routine
+        - **Routine** ← **Collapsible, Draggable**
+            - {CollapsibleHeader}
+                - **EditableText**
+                - *Create Instance Button*
+                - **ClipboardTrigger**
+                - **ContextMenu**
+            - {CollapsibleContent}
+                - **TaskList**<T = Routine/Done>
+        - **RoutineList** ← **Collapsible**
+            - {Collapsible.Header}
+                - *“All”*
+            - {Collapsible.Content}
+                - **RoutineListContent** ← **Droppable**
+                    - **Routine[]**
+                    - **CreateLine**
+    - Project
+        - **ProjectMilestone** ← **Collapsible, Draggable**
+            - {Collapsible.Header}
+                - **EditableText**
+                - **ClipboardTrigger**
+                - **ContextMenu**
+            - {Collapsible.Content}
+                - **TaskListsByStatus**
+        - **ProjectMilestoneList** ← **Droppable**
+            - **ProjectMilestone**[]
+            - **CreateLine**
+        - **Project** ← **Collapsible, Draggable**
+            - {Collapsible.Header}
+                - **EditableText**
+                - **ClipboardTrigger**
+                - **ContextMenu**
+            - {Collapsible.Content}
+                - **ProjectMilestoneList**
+        - **ProjectList** ← **Droppable**
+            - **Project[]**
+            - **CreateLine**
+- Composed
+    - **TopicNav**
+        - **TopicList** ← **Droppable**
+            - **TopicListItem[]** ← **Draggable**
+        - **CreateLine**
+    - **TopicPage**
+        - {TopicPage.Header}
+            - **EditableText**
+            - **ClipboardTrigger**
+            - **ContextMenu**
+        - **AdhocTasksSection** ← TopicPage.Section
+            - {TopicPage.Section.Header}
+                - *“Adhoc Tasks”*
+            - {TopicPage.Section.Content}
+                - **TaskListsByStatus**
+        - **RoutinesSection** ← TopicPage.Section
+            - {TopicPage.Section.Header}
+                - *“Routines”*
+            - {TopicPage.Section.Content}
+                - **Tasklist**<T = Routine/Ready>
+                - **RoutineList**
+        - **ProjectsSection** ← TopicPage.Section
+            - {TopicPage.Section.Header}
+                - *“Projects”*
+            - {TopicPage.Section.Content}
+                - **ProjectList**
+    - **ClipboardDrawer**<T = *ModelType*>
+        - {ClipboardDrawer.Header}
+            - *Title of Record*
+        - T = Routine | RoutineTask ? **ClipboardRoutineContent**
+        - **NotepadSection** ← ClipboardDrawer.Section
+            - {ClipboardDrawer.Section.Header}
+            - {ClipboardDrawer.Section.Content}
+                - **TextArea**
+        - **ResourcesSection** ← ClipboardDrawer.Section
+            - {ClipboardDrawer.Section.Header}
+            - {ClipboardDrawer.Section.Content}
+                - **Resource[]** ← **Collapsible**
+                    - {Collapsible.Header}
+                    - {Collapsible.Content}
+                        - **TextArea**
+                - **ResourceCreateLine** ← **CreateLine**
+        - T = Routine | Task ? **ChecklistSection**<T> ← ClipboardDrawer.Section
+            - {ClipboardDrawer.Section.Header}
+            - {ClipboardDrawer.Section.Content}
+                - **Checklist**<T> ← **Droppable**
+                    - **ChecklistItem[]**<T> ← **Draggable**
+                    - **ChecklistCreateLine** ← **CreateLine**

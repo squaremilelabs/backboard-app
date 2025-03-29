@@ -6,10 +6,10 @@ import { twMerge } from "tailwind-merge"
 import TextareaAutosize from "react-textarea-autosize"
 import { useUser } from "@clerk/nextjs"
 import { useUpdateNote } from "@/database/generated/hooks"
-import EditableText from "@/components/abstract/editable-text"
+import EditableText from "@/components/abstract/_legacy/editable-text"
 import { formatDate } from "@/lib/utils"
 import { TopicData } from "@/lib/data/topic"
-import MetadataPopover from "@/components/abstract/metadata-popover"
+import MetadataPopover from "@/components/abstract/_legacy/metadata-popover"
 
 export default function Note({ note, topic }: { note: INote; topic: TopicData }) {
   const { isSignedIn } = useUser()

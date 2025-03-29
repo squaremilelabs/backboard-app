@@ -1,5 +1,5 @@
 import { useCreateNote, useFindManyNote } from "@/database/generated/hooks"
-import CreateByTitleForm from "@/components/abstract/create-by-title-form"
+import CreateByTitleForm from "@/components/abstract/_legacy/create-by-title-form"
 import { TopicData } from "@/lib/data/topic"
 import Note from "@/components/concrete/resource/note"
 
