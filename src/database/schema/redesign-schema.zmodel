@@ -29,6 +29,7 @@ model User {
   image_href   String?  @url
 
   topics       Topic[]
+  topic_order  String[]
 
   @@auth
   @@map("users")
@@ -86,6 +87,15 @@ model Clipboard extends WithMetadata {
   @@map('clipboards')
 }
 
+type ItemOrderItem {
+  key   String
+  order String[]
+}
+
+type ItemOrders {
+  items ItemOrderItem[]
+}
+
 model Topic extends WithMetadata, WithClipboard {
   done_at     DateTime    @default(now()) @db.Timestamptz
   owner_id    String      @default(auth().id)
@@ -95,7 +105,7 @@ model Topic extends WithMetadata, WithClipboard {
   routines    Routine[]
   projects    Project[]
 
-  item_orders Json
+  item_orders ItemOrders  @json
 
   @@map('topics')
 }
