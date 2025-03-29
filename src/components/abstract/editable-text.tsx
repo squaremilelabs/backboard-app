@@ -86,7 +86,8 @@ export default function EditableText({
         onPress={() => setIsEditing(true)}
         className={twMerge(
           "flex grow cursor-text justify-start text-start !outline-0",
-          isEditing ? "text-transparent" : null
+          isEditing ? "text-transparent" : null,
+          "underline-offset-2 focus-visible:underline"
         )}
       >
         {innerValue}

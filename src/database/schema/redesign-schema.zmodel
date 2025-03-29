@@ -1,0 +1,170 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+
+plugin prisma {
+  provider = '@core/prisma'
+  output = '../generated/prisma-schema/schema.prisma'
+}
+
+plugin hooks {
+  provider = '@zenstackhq/tanstack-query'
+  output = "../generated/hooks"
+  target = "react"
+  version = "v5"
+}
+
+model User {
+  id           String   @id @deny('update', true) // Should match clerk auth ID
+  created_at   DateTime @default(now()) @db.Timestamptz @deny('update', true)
+  updated_at   DateTime @updatedAt @db.Timestamptz
+
+  display_name String   @trim @length(min: 1, max: 50, "name must be between 1 and 50 characters")
+  email        String   @email @unique
+  image_href   String?  @url
+
+  topics       Topic[]
+
+  @@auth
+  @@map("users")
+  @@allow("read", true)
+  @@allow("update", auth().id == id)
+}
+
+abstract model WithMetadata {
+  id         String   @id @default(cuid())
+  created_at DateTime @default(now()) @db.Timestamptz
+  updated_at DateTime @updatedAt @db.Timestamptz
+}
+
+abstract model WithBaseRecordData {
+  title       String    @trim @length(min: 1, max: 300, "title must be between 1 and 300 characters")
+  archived_at DateTime? @db.Timestamptz
+}
+
+abstract model WithClipboard {
+  clipboard_id String    @unique
+  clipboard    Clipboard @relation(fields: [clipboard_id], references: [id], onDelete: Cascade)
+}
+
+type CliipboardChecklistItem {
+  id      String
+  title   String
+  is_done Boolean
+}
+
+type ClipboardChecklist {
+  items CliipboardChecklistItem[]
+}
+
+type ClipboardResourceItem {
+  id      String
+  title   String
+  content String
+}
+
+type ClipboardResources {
+  resources ClipboardResourceItem[]
+}
+
+model Clipboard extends WithMetadata {
+  topic             Topic?
+  task              Task?
+  project           Project?
+  project_milestone ProjectMilestone?
+  routine           Routine?
+
+  notepad           String?
+  checklist         ClipboardChecklist @json
+  resources         ClipboardResources @json
+
+  @@map('clipboards')
+}
+
+model Topic extends WithMetadata, WithClipboard {
+  done_at     DateTime    @default(now()) @db.Timestamptz
+  owner_id    String      @default(auth().id)
+  owner       User        @relation(fields: [owner_id], references: [id], onDelete: Cascade)
+
+  adhoc_tasks AdhocTask[]
+  routines    Routine[]
+  projects    Project[]
+
+  item_orders Json
+
+  @@map('topics')
+}
+
+model Task extends WithMetadata, WithClipboard {
+  type   String
+  status TaskStatus
+
+  @@delegate(type)
+  @@map('tasks')
+}
+
+enum TaskStatus {
+  READY
+  PENDING
+  DONE
+  @@map('TASK_STATUS')
+}
+
+model AdhocTask extends Task {
+  topic_id String
+  topic    Topic  @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+
+  @@map('adhoc_tasks')
+  @@allow('all', topic.owner_id == auth().id)
+}
+
+model Routine extends WithMetadata, WithClipboard {
+  topic_id       String
+  topic          Topic         @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+  task_instances RoutineTask[]
+
+  @@map('routines')
+  @@allow('all', topic.owner_id == auth().id)
+}
+
+model RoutineTask extends Task {
+  routine_id      String
+  routine         Routine @relation(fields: [routine_id], references: [id], onDelete: Cascade)
+  instance_number Int
+
+  @@unique([routine_id, instance_number])
+  @@map('routine_tasks')
+  @@allow('all', routine.topic.owner_id == auth().id)
+}
+
+model Project extends WithMetadata, WithClipboard {
+  topic_id   String
+  topic      Topic              @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+  milestones ProjectMilestone[]
+
+  @@map('projects')
+  @@allow('all', topic.owner_id == auth().id)
+}
+
+model ProjectMilestone extends WithMetadata, WithClipboard {
+  project_id String
+  project    Project       @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  tasks      ProjectTask[]
+
+  @@map('project_milestones')
+  @@allow('all', project.topic.owner_id == auth().id)
+}
+
+model ProjectTask extends Task {
+  project_milestone_id String
+  project_milestone    ProjectMilestone @relation(fields: [project_milestone_id], references: [id], onDelete: Cascade)
+
+  @@map('project_tasks')
+  @@allow('all', project_milestone.project.topic.owner_id == auth().id)
+}
+

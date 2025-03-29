@@ -1,8 +1,17 @@
 "use client"
 
-import { Button, GridList, GridListItem, useDragAndDrop } from "react-aria-components"
+import {
+  Button,
+  Disclosure,
+  DisclosurePanel,
+  GridList,
+  GridListItem,
+  Heading,
+  useDragAndDrop,
+} from "react-aria-components"
 import { useListData } from "react-stately"
-import { GripVertical } from "lucide-react"
+import { GripVertical, Menu } from "lucide-react"
+import React from "react"
 import EditableText from "@/components/abstract/editable-text"
 
 const textValues = [
@@ -15,12 +24,12 @@ export default function Dev() {
   return (
     <div className="flex flex-col gap-8">
       <DragDev />
-      <DragDev />
+      <DragDev content={<DragDev />} />
     </div>
   )
 }
 
-function DragDev() {
+function DragDev({ content }: { content?: React.ReactNode }) {
   const list = useListData({
     initialItems: textValues.map((value, index) => ({
       id: index,
@@ -38,6 +47,7 @@ function DragDev() {
       }
     },
   })
+
   return (
     <GridList
       items={list.items}
@@ -49,8 +59,16 @@ function DragDev() {
           <Button slot="drag" className="cursor-grab">
             <GripVertical size={16} />
           </Button>
-          {/* eslint-disable-next-line no-console */}
-          <EditableText initialValue={item.value} onSave={console.log} />
+          <Disclosure className="grow">
+            <Heading className="flex grow items-start">
+              {/* eslint-disable-next-line no-console */}
+              <EditableText initialValue={item.value} onSave={console.log} />
+              <Button slot="trigger">
+                <Menu size={16} />
+              </Button>
+            </Heading>
+            <DisclosurePanel>{content && item.id === 1 ? content : "CONTENT"}</DisclosurePanel>
+          </Disclosure>
         </GridListItem>
       )}
     </GridList>
