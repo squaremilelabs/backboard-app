@@ -19,23 +19,7 @@ plugin hooks {
   version = "v5"
 }
 
-model User {
-  id           String   @id @deny('update', true) // Should match clerk auth ID
-  created_at   DateTime @default(now()) @db.Timestamptz @deny('update', true)
-  updated_at   DateTime @updatedAt @db.Timestamptz
-
-  display_name String   @trim @length(min: 1, max: 50, "name must be between 1 and 50 characters")
-  email        String   @email @unique
-  image_href   String?  @url
-
-  topics       Topic[]
-  topic_order  String[]
-
-  @@auth
-  @@map("users")
-  @@allow("read", true)
-  @@allow("update", auth().id == id)
-}
+/** Abstract Models */
 
 abstract model WithMetadata {
   id         String   @id @default(cuid())
@@ -53,27 +37,34 @@ abstract model WithClipboard {
   clipboard    Clipboard @relation(fields: [clipboard_id], references: [id], onDelete: Cascade)
 }
 
-type CliipboardChecklistItem {
-  id      String
-  title   String
-  is_done Boolean
-}
+/** User Model (Clerk) */
 
-type ClipboardChecklist {
-  items CliipboardChecklistItem[]
-}
+model User {
+  @@auth
+  @@map("users")
 
-type ClipboardResourceItem {
-  id      String
-  title   String
-  content String
-}
+  id           String      @id @deny('update', true) // Should match clerk auth ID
+  created_at   DateTime    @default(now()) @db.Timestamptz @deny('update', true)
+  updated_at   DateTime    @updatedAt @db.Timestamptz
 
-type ClipboardResources {
-  resources ClipboardResourceItem[]
+  display_name String      @trim @length(min: 1, max: 50, "name must be between 1 and 50 characters")
+  email        String      @email @unique
+  image_href   String?     @url
+
+  topics       Topic[]
+  topic_order  String[]
+
+  clipboards   Clipboard[]
+
+  @@allow("read", true)
+  @@allow("update", auth().id == id)
 }
 
 model Clipboard extends WithMetadata {
+  owner_id          String             @default(auth().id)
+  owner             User               @relation(fields: [owner_id], references: [id])
+
+  // Should only be attached to 1 of the below records
   topic             Topic?
   task              Task?
   project           Project?
@@ -85,34 +76,59 @@ model Clipboard extends WithMetadata {
   resources         ClipboardResources @json
 
   @@map('clipboards')
+
+  @@allow('create,read,update', owner_id == auth().id)
 }
 
-type ItemOrderItem {
+type ClipboardChecklistItem {
+  id      String
+  title   String
+  is_done Boolean
+}
+
+type ClipboardChecklist {
+  items ClipboardChecklistItem[]
+}
+
+type ClipboardResourceItem {
+  id      String
+  title   String
+  content String
+}
+
+type ClipboardResources {
+  items ClipboardResourceItem[]
+}
+
+model Topic extends WithMetadata, WithClipboard {
+  owner_id    String         @default(auth().id)
+  owner       User           @relation(fields: [owner_id], references: [id], onDelete: Cascade)
+
+  tasks       Task[]
+  routines    Routine[]
+  projects    Project[]
+
+  item_orders TopicItemOrder @json
+
+  @@map('topics')
+  @@allow('all', owner_id == auth().id)
+}
+
+type TopicItemOrderItem {
   key   String
   order String[]
 }
 
-type ItemOrders {
-  items ItemOrderItem[]
+type TopicItemOrder {
+  items TopicItemOrderItem[]
 }
 
-model Topic extends WithMetadata, WithClipboard {
-  done_at     DateTime    @default(now()) @db.Timestamptz
-  owner_id    String      @default(auth().id)
-  owner       User        @relation(fields: [owner_id], references: [id], onDelete: Cascade)
-
-  adhoc_tasks AdhocTask[]
-  routines    Routine[]
-  projects    Project[]
-
-  item_orders ItemOrders  @json
-
-  @@map('topics')
-}
-
+/** Polymorphic Task Model */
 model Task extends WithMetadata, WithClipboard {
-  type   String
-  status TaskStatus
+  topic_id String
+  topic    Topic      @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+  type     String
+  status   TaskStatus
 
   @@delegate(type)
   @@map('tasks')
@@ -126,9 +142,6 @@ enum TaskStatus {
 }
 
 model AdhocTask extends Task {
-  topic_id String
-  topic    Topic  @relation(fields: [topic_id], references: [id], onDelete: Cascade)
-
   @@map('adhoc_tasks')
   @@allow('all', topic.owner_id == auth().id)
 }
@@ -139,42 +152,65 @@ model Routine extends WithMetadata, WithClipboard {
   task_instances RoutineTask[]
 
   @@map('routines')
+  @@unique([id,topic_id])
+
   @@allow('all', topic.owner_id == auth().id)
 }
 
 model RoutineTask extends Task {
-  routine_id      String
-  routine         Routine @relation(fields: [routine_id], references: [id], onDelete: Cascade)
-  instance_number Int
+  routine_id       String
+  routine_topic_id String
+  routine          Routine @relation(fields: [routine_id, routine_topic_id], references: [id, topic_id], onDelete: Cascade)
 
-  @@unique([routine_id, instance_number])
+  instance_number  Int
+
   @@map('routine_tasks')
-  @@allow('all', routine.topic.owner_id == auth().id)
+  @@unique([routine_id, instance_number])
+
+  @@validate(routine_topic_id == topic_id, 'invalid topic_id')
+
+  @@allow('all', topic.owner_id == auth().id)
 }
 
 model Project extends WithMetadata, WithClipboard {
   topic_id   String
   topic      Topic              @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+
   milestones ProjectMilestone[]
+  tasks      ProjectTask[]
 
   @@map('projects')
+  @@unique([id, topic_id])
+
   @@allow('all', topic.owner_id == auth().id)
 }
 
 model ProjectMilestone extends WithMetadata, WithClipboard {
   project_id String
   project    Project       @relation(fields: [project_id], references: [id], onDelete: Cascade)
+
   tasks      ProjectTask[]
 
   @@map('project_milestones')
+  @@unique([id, project_id])
+
   @@allow('all', project.topic.owner_id == auth().id)
 }
 
 model ProjectTask extends Task {
-  project_milestone_id String
-  project_milestone    ProjectMilestone @relation(fields: [project_milestone_id], references: [id], onDelete: Cascade)
+  project_id                   String
+  project_topic_id             String
+  project                      Project          @relation(fields: [project_id, project_topic_id], references: [id, topic_id], onDelete: Cascade)
 
-  @@map('project_tasks')
-  @@allow('all', project_milestone.project.topic.owner_id == auth().id)
+  project_milestone_id         String
+  project_milestone_project_id String
+  project_milestone            ProjectMilestone @relation(fields: [project_milestone_id, project_milestone_id], references: [id, project_id], onDelete: Cascade)
+
+  @@map('project_milestone_tasks')
+
+  @@validate(project_topic_id == topic_id, 'invalid topic_id')
+  @@validate(project_id == project_milestone_id, 'invalid project_id')
+
+  @@allow('all', topic.owner_id == auth().id)
 }
 
