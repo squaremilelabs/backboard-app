@@ -1,0 +1,147 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+
+plugin prisma {
+  provider = '@core/prisma'
+  output = '../generated/prisma-schema/schema.prisma'
+}
+
+plugin hooks {
+  provider = '@zenstackhq/tanstack-query'
+  output = "../generated/hooks"
+  target = "react"
+  version = "v5"
+}
+
+model User {
+  id           String     @id @deny('update', true) // Should match clerk auth ID
+  created_at   DateTime   @default(now()) @db.Timestamptz @deny('update', true)
+  updated_at   DateTime   @updatedAt @db.Timestamptz
+
+  display_name String     @trim @length(min: 1, max: 50, "name must be between 1 and 50 characters")
+  email        String     @email @unique
+  image_href   String?    @url
+
+  topics       Topic[]
+  resources    Resource[]
+  tasklists    Tasklist[]
+  tasks        Task[]
+
+  @@auth
+  @@map("users")
+  @@allow("read", true)
+  @@allow("update", auth().id == id)
+}
+
+abstract model BaseRecord {
+  id            String    @id @default(cuid())
+  created_at    DateTime  @default(now()) @db.Timestamptz
+  updated_at    DateTime  @updatedAt @db.Timestamptz
+  created_by_id String    @default(auth().id)
+  created_by    User      @relation(fields: [created_by_id], references: [id], onDelete: Cascade)
+
+  title         String    @trim @length(min: 1, max: 300, "title must be between 1 and 300 characters")
+  description   String?   @trim
+
+  is_public     Boolean   @default(false)
+  archived_at   DateTime? @db.Timestamptz
+}
+
+model Topic extends BaseRecord {
+  tasklists Tasklist[]
+  tasks     Task[]
+  resources Resource[]
+
+  @@map("topics")
+  @@allow("all", created_by_id == auth().id)
+  @@allow("read", is_public == true && archived_at == null)
+}
+
+model Resource extends BaseRecord {
+  topic_id          String
+  topic             Topic     @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+
+  tasklist_id       String?
+  tasklist_topic_id String?
+  tasklist          Tasklist? @relation(fields: [tasklist_id, tasklist_topic_id], references: [id, topic_id], onDelete: SetNull)
+
+  task_id           String?
+  task_topic_id     String?
+  task              Task?     @relation(fields: [task_id, task_topic_id], references: [id, topic_id], onDelete: SetNull)
+
+  resource_type     String
+  @@delegate(resource_type)
+
+  @@map("resources")
+  @@validate(tasklist_id == null || tasklist_topic_id == topic_id, "tasklist_topic_id must match topic_id")
+  @@validate(task_id == null || task_topic_id == topic_id, "task_topic_id must match topic_id")
+  @@allow("all", created_by_id == auth().id)
+  @@allow("read", topic.is_public == true && topic.archived_at == null && is_public == true && archived_at == null)
+}
+
+model Note extends Resource {
+  content String? @trim
+
+  @@map("resource_notes")
+}
+
+model Link extends Resource {
+  url String @url
+
+  @@map("resource_links")
+}
+
+model Tasklist extends BaseRecord {
+  topic_id   String
+  topic      Topic          @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+  
+  target     RelativeTarget @default(NONE)
+  
+  tasks      Task[]
+  resources  Resource[]
+
+  task_order String[]
+
+  @@unique([id, topic_id])
+  @@map("tasklists")
+  @@allow("all", created_by_id == auth().id)
+  @@allow("read", topic.is_public == true && topic.archived_at == null && is_public == true && archived_at == null)
+}
+
+model Task extends BaseRecord {
+  topic_id          String
+  topic             Topic      @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+
+  tasklist_id       String
+  tasklist_topic_id String
+  tasklist          Tasklist   @relation(fields: [tasklist_id, tasklist_topic_id], references: [id, topic_id], onDelete: Cascade)
+
+  resources         Resource[]
+
+  size_minutes      Int?       @gt(0)
+  is_draft          Boolean    @default(true)
+  done_at           DateTime?  @db.Timestamptz
+
+  @@unique([id, topic_id])
+  @@map("tasks")
+  @@validate(topic_id == tasklist_topic_id, "topic_id must match tasklist_topic_id")
+  @@allow("all", created_by_id == auth().id)
+  @@allow("read", topic.is_public == true && topic.archived_at == null && tasklist.is_public == true && tasklist.archived_at == null && archived_at == null)
+}
+
+enum RelativeTarget {
+  TODAY
+  THIS_WEEK
+  NEXT_WEEK
+  THIS_MONTH
+  NEXT_MONTH
+  SOMEDAY
+  NONE
+  @@map("RELATIVE_TARGET")
+}

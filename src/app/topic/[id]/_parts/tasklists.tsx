@@ -1,8 +1,8 @@
-import CreateByTitleForm from "@/components/abstract/_legacy/create-by-title-form"
+import CreateByTitleForm from "@/components/_legacy/abstract/create-by-title-form"
 import { useCreateTasklist } from "@/database/generated/hooks"
 import { useTaskslistsData } from "@/lib/data/tasklist"
 import { TopicData } from "@/lib/data/topic"
-import Tasklist from "@/components/concrete/tasklist"
+import Tasklist from "@/components/_legacy/concrete/tasklist"
 
 export default function TopicTasklists({ topic }: { topic: TopicData }) {
   const { data: tasklists } = useTaskslistsData({

@@ -12,7 +12,7 @@ import {
 import { useListData } from "react-stately"
 import { GripVertical, Menu } from "lucide-react"
 import React from "react"
-import EditableText from "@/components/abstract/editable-text"
+import EditableText from "@/components/common/editable-text"
 
 const textValues = [
   "Lorem ipsum dolor sit amet",

@@ -7,7 +7,7 @@ import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
 import { usePathname } from "next/navigation"
 import TopicsNav from "./topics-nav"
-import BackboardLogo from "@/components/concrete/backboard-logo"
+import BackboardLogo from "@/components/_legacy/concrete/backboard-logo"
 import { useCountTask } from "@/database/generated/hooks"
 import { getWorkModeTasksWhereParam } from "@/lib/data/task"
 

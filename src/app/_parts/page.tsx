@@ -11,7 +11,7 @@ import {
 } from "@/lib/constants"
 import { useCountUser } from "@/database/generated/hooks"
 import { useTopicData } from "@/lib/data/topic"
-import BackboardLogo from "@/components/concrete/backboard-logo"
+import BackboardLogo from "@/components/_legacy/concrete/backboard-logo"
 
 export default function HomePage() {
   return (
