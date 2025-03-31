@@ -161,16 +161,19 @@ model ProjectMilestone extends WithMetadata, WithClipboard {
 
 /** Task Models */
 
-model Task extends WithMetadata, WithClipboard {
+model Task extends WithMetadata, WithBaseRecordData, WithClipboard {
   topic_id String
   topic    Topic      @relation(fields: [topic_id], references: [id], onDelete: Cascade)
   type     String
   status   TaskStatus
-  done_at  DateTime   @db.Timestamptz
+  done_at  DateTime?   @db.Timestamptz
 
   @@delegate(type)
+
   @@map('tasks')
   @@allow('all', topic.owner_id == auth().id)
+
+  @@validate(status != "DONE" || done_at == null, 'done_at must be provided for done tasks')
 }
 
 enum TaskStatus {
@@ -205,7 +208,7 @@ model ProjectTask extends Task {
 
   project_milestone_id         String
   project_milestone_project_id String
-  project_milestone            ProjectMilestone @relation(fields: [project_milestone_id, project_milestone_id], references: [id, project_id], onDelete: Cascade)
+  project_milestone            ProjectMilestone @relation(fields: [project_milestone_id, project_milestone_project_id], references: [id, project_id], onDelete: Cascade)
 
   @@map('project_milestone_tasks')
 

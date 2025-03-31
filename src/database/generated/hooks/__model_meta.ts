@@ -36,25 +36,17 @@ const metadata = {
                     type: "Topic",
                     isDataModel: true,
                     isArray: true,
-                    backLink: 'created_by',
-                }, resources: {
-                    name: "resources",
-                    type: "Resource",
+                    backLink: 'owner',
+                }, topic_order: {
+                    name: "topic_order",
+                    type: "String",
+                    isArray: true,
+                }, clipboards: {
+                    name: "clipboards",
+                    type: "Clipboard",
                     isDataModel: true,
                     isArray: true,
-                    backLink: 'created_by',
-                }, tasklists: {
-                    name: "tasklists",
-                    type: "Tasklist",
-                    isDataModel: true,
-                    isArray: true,
-                    backLink: 'created_by',
-                }, tasks: {
-                    name: "tasks",
-                    type: "Task",
-                    isDataModel: true,
-                    isArray: true,
-                    backLink: 'created_by',
+                    backLink: 'owner',
                 },
             }
             , uniqueConstraints: {
@@ -69,8 +61,8 @@ const metadata = {
             ,
         }
         ,
-        topic: {
-            name: 'Topic', fields: {
+        clipboard: {
+            name: 'Clipboard', fields: {
                 id: {
                     name: "id",
                     type: "String",
@@ -84,67 +76,165 @@ const metadata = {
                     name: "updated_at",
                     type: "DateTime",
                     attributes: [{ "name": "@updatedAt", "args": [] }],
-                }, created_by_id: {
-                    name: "created_by_id",
+                }, owner_id: {
+                    name: "owner_id",
                     type: "String",
                     attributes: [{ "name": "@default", "args": [] }],
-                    defaultValueProvider: $default$Topic$created_by_id,
+                    defaultValueProvider: $default$Clipboard$owner_id,
                     isForeignKey: true,
-                    relationField: 'created_by',
-                }, created_by: {
-                    name: "created_by",
+                    relationField: 'owner',
+                }, owner: {
+                    name: "owner",
+                    type: "User",
+                    isDataModel: true,
+                    backLink: 'clipboards',
+                    isRelationOwner: true,
+                    foreignKeyMapping: { "id": "owner_id" },
+                }, topic: {
+                    name: "topic",
+                    type: "Topic",
+                    isDataModel: true,
+                    isOptional: true,
+                    backLink: 'clipboard',
+                }, task: {
+                    name: "task",
+                    type: "Task",
+                    isDataModel: true,
+                    isOptional: true,
+                    backLink: 'clipboard',
+                }, project: {
+                    name: "project",
+                    type: "Project",
+                    isDataModel: true,
+                    isOptional: true,
+                    backLink: 'clipboard',
+                }, project_milestone: {
+                    name: "project_milestone",
+                    type: "ProjectMilestone",
+                    isDataModel: true,
+                    isOptional: true,
+                    backLink: 'clipboard',
+                }, routine: {
+                    name: "routine",
+                    type: "Routine",
+                    isDataModel: true,
+                    isOptional: true,
+                    backLink: 'clipboard',
+                }, notepad: {
+                    name: "notepad",
+                    type: "String",
+                    isOptional: true,
+                }, checklist: {
+                    name: "checklist",
+                    type: "ClipboardChecklist",
+                    isTypeDef: true,
+                }, resources: {
+                    name: "resources",
+                    type: "ClipboardResources",
+                    isTypeDef: true,
+                },
+            }
+            , uniqueConstraints: {
+                id: {
+                    name: "id",
+                    fields: ["id"]
+                },
+            }
+            ,
+        }
+        ,
+        topic: {
+            name: 'Topic', fields: {
+                clipboard_id: {
+                    name: "clipboard_id",
+                    type: "String",
+                    isForeignKey: true,
+                    relationField: 'clipboard',
+                }, clipboard: {
+                    name: "clipboard",
+                    type: "Clipboard",
+                    isDataModel: true,
+                    backLink: 'topic',
+                    isRelationOwner: true,
+                    foreignKeyMapping: { "id": "clipboard_id" },
+                }, id: {
+                    name: "id",
+                    type: "String",
+                    isId: true,
+                    attributes: [{ "name": "@default", "args": [] }],
+                }, created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ "name": "@default", "args": [] }],
+                }, updated_at: {
+                    name: "updated_at",
+                    type: "DateTime",
+                    attributes: [{ "name": "@updatedAt", "args": [] }],
+                }, owner_id: {
+                    name: "owner_id",
+                    type: "String",
+                    attributes: [{ "name": "@default", "args": [] }],
+                    defaultValueProvider: $default$Topic$owner_id,
+                    isForeignKey: true,
+                    relationField: 'owner',
+                }, owner: {
+                    name: "owner",
                     type: "User",
                     isDataModel: true,
                     backLink: 'topics',
                     isRelationOwner: true,
-                    foreignKeyMapping: { "id": "created_by_id" },
-                }, title: {
-                    name: "title",
-                    type: "String",
-                }, description: {
-                    name: "description",
-                    type: "String",
-                    isOptional: true,
-                }, is_public: {
-                    name: "is_public",
-                    type: "Boolean",
-                    attributes: [{ "name": "@default", "args": [{ "value": false }] }],
-                }, archived_at: {
-                    name: "archived_at",
-                    type: "DateTime",
-                    isOptional: true,
-                }, tasklists: {
-                    name: "tasklists",
-                    type: "Tasklist",
-                    isDataModel: true,
-                    isArray: true,
-                    backLink: 'topic',
+                    foreignKeyMapping: { "id": "owner_id" },
                 }, tasks: {
                     name: "tasks",
                     type: "Task",
                     isDataModel: true,
                     isArray: true,
                     backLink: 'topic',
-                }, resources: {
-                    name: "resources",
-                    type: "Resource",
+                }, routines: {
+                    name: "routines",
+                    type: "Routine",
                     isDataModel: true,
                     isArray: true,
                     backLink: 'topic',
+                }, projects: {
+                    name: "projects",
+                    type: "Project",
+                    isDataModel: true,
+                    isArray: true,
+                    backLink: 'topic',
+                }, item_orders: {
+                    name: "item_orders",
+                    type: "TopicItemOrder",
+                    isTypeDef: true,
                 },
             }
             , uniqueConstraints: {
                 id: {
                     name: "id",
                     fields: ["id"]
+                }, clipboard_id: {
+                    name: "clipboard_id",
+                    fields: ["clipboard_id"]
                 },
             }
             ,
         }
         ,
-        resource: {
-            name: 'Resource', fields: {
-                id: {
+        routine: {
+            name: 'Routine', fields: {
+                clipboard_id: {
+                    name: "clipboard_id",
+                    type: "String",
+                    isForeignKey: true,
+                    relationField: 'clipboard',
+                }, clipboard: {
+                    name: "clipboard",
+                    type: "Clipboard",
+                    isDataModel: true,
+                    backLink: 'routine',
+                    isRelationOwner: true,
+                    foreignKeyMapping: { "id": "clipboard_id" },
+                }, id: {
                     name: "id",
                     type: "String",
                     isId: true,
@@ -157,35 +247,6 @@ const metadata = {
                     name: "updated_at",
                     type: "DateTime",
                     attributes: [{ "name": "@updatedAt", "args": [] }],
-                }, created_by_id: {
-                    name: "created_by_id",
-                    type: "String",
-                    attributes: [{ "name": "@default", "args": [] }],
-                    defaultValueProvider: $default$Resource$created_by_id,
-                    isForeignKey: true,
-                    relationField: 'created_by',
-                }, created_by: {
-                    name: "created_by",
-                    type: "User",
-                    isDataModel: true,
-                    backLink: 'resources',
-                    isRelationOwner: true,
-                    foreignKeyMapping: { "id": "created_by_id" },
-                }, title: {
-                    name: "title",
-                    type: "String",
-                }, description: {
-                    name: "description",
-                    type: "String",
-                    isOptional: true,
-                }, is_public: {
-                    name: "is_public",
-                    type: "Boolean",
-                    attributes: [{ "name": "@default", "args": [{ "value": false }] }],
-                }, archived_at: {
-                    name: "archived_at",
-                    type: "DateTime",
-                    isOptional: true,
                 }, topic_id: {
                     name: "topic_id",
                     type: "String",
@@ -195,406 +256,24 @@ const metadata = {
                     name: "topic",
                     type: "Topic",
                     isDataModel: true,
-                    backLink: 'resources',
+                    backLink: 'routines',
                     isRelationOwner: true,
                     foreignKeyMapping: { "id": "topic_id" },
-                }, tasklist_id: {
-                    name: "tasklist_id",
-                    type: "String",
-                    isOptional: true,
-                    isForeignKey: true,
-                    relationField: 'tasklist',
-                }, tasklist_topic_id: {
-                    name: "tasklist_topic_id",
-                    type: "String",
-                    isOptional: true,
-                    isForeignKey: true,
-                    relationField: 'tasklist',
-                }, tasklist: {
-                    name: "tasklist",
-                    type: "Tasklist",
-                    isDataModel: true,
-                    isOptional: true,
-                    backLink: 'resources',
-                    isRelationOwner: true,
-                    foreignKeyMapping: { "id": "tasklist_id", "topic_id": "tasklist_topic_id" },
-                }, task_id: {
-                    name: "task_id",
-                    type: "String",
-                    isOptional: true,
-                    isForeignKey: true,
-                    relationField: 'task',
-                }, task_topic_id: {
-                    name: "task_topic_id",
-                    type: "String",
-                    isOptional: true,
-                    isForeignKey: true,
-                    relationField: 'task',
-                }, task: {
-                    name: "task",
-                    type: "Task",
-                    isDataModel: true,
-                    isOptional: true,
-                    backLink: 'resources',
-                    isRelationOwner: true,
-                    foreignKeyMapping: { "id": "task_id", "topic_id": "task_topic_id" },
-                }, resource_type: {
-                    name: "resource_type",
-                    type: "String",
-                },
-            }
-            , uniqueConstraints: {
-                id: {
-                    name: "id",
-                    fields: ["id"]
-                },
-            }
-            , discriminator: "resource_type",
-        }
-        ,
-        note: {
-            name: 'Note', baseTypes: ['Resource'], fields: {
-                id: {
-                    name: "id",
-                    type: "String",
-                    isId: true,
-                    attributes: [{ "name": "@default", "args": [] }],
-                }, created_at: {
-                    name: "created_at",
-                    type: "DateTime",
-                    attributes: [{ "name": "@default", "args": [] }],
-                    inheritedFrom: "Resource",
-                }, updated_at: {
-                    name: "updated_at",
-                    type: "DateTime",
-                    attributes: [{ "name": "@updatedAt", "args": [] }],
-                    inheritedFrom: "Resource",
-                }, created_by_id: {
-                    name: "created_by_id",
-                    type: "String",
-                    attributes: [{ "name": "@default", "args": [] }],
-                    defaultValueProvider: $default$Note$created_by_id,
-                    isForeignKey: true,
-                    relationField: 'created_by',
-                    inheritedFrom: "Resource",
-                }, created_by: {
-                    name: "created_by",
-                    type: "User",
-                    isDataModel: true,
-                    backLink: 'resources',
-                    isRelationOwner: true,
-                    foreignKeyMapping: { "id": "created_by_id" },
-                    inheritedFrom: "Resource",
-                }, title: {
-                    name: "title",
-                    type: "String",
-                    inheritedFrom: "Resource",
-                }, description: {
-                    name: "description",
-                    type: "String",
-                    isOptional: true,
-                    inheritedFrom: "Resource",
-                }, is_public: {
-                    name: "is_public",
-                    type: "Boolean",
-                    attributes: [{ "name": "@default", "args": [{ "value": false }] }],
-                    inheritedFrom: "Resource",
-                }, archived_at: {
-                    name: "archived_at",
-                    type: "DateTime",
-                    isOptional: true,
-                    inheritedFrom: "Resource",
-                }, topic_id: {
-                    name: "topic_id",
-                    type: "String",
-                    isForeignKey: true,
-                    relationField: 'topic',
-                    inheritedFrom: "Resource",
-                }, topic: {
-                    name: "topic",
-                    type: "Topic",
-                    isDataModel: true,
-                    backLink: 'resources',
-                    isRelationOwner: true,
-                    foreignKeyMapping: { "id": "topic_id" },
-                    inheritedFrom: "Resource",
-                }, tasklist_id: {
-                    name: "tasklist_id",
-                    type: "String",
-                    isOptional: true,
-                    isForeignKey: true,
-                    relationField: 'tasklist',
-                    inheritedFrom: "Resource",
-                }, tasklist_topic_id: {
-                    name: "tasklist_topic_id",
-                    type: "String",
-                    isOptional: true,
-                    isForeignKey: true,
-                    relationField: 'tasklist',
-                    inheritedFrom: "Resource",
-                }, tasklist: {
-                    name: "tasklist",
-                    type: "Tasklist",
-                    isDataModel: true,
-                    isOptional: true,
-                    backLink: 'resources',
-                    isRelationOwner: true,
-                    foreignKeyMapping: { "id": "tasklist_id", "topic_id": "tasklist_topic_id" },
-                    inheritedFrom: "Resource",
-                }, task_id: {
-                    name: "task_id",
-                    type: "String",
-                    isOptional: true,
-                    isForeignKey: true,
-                    relationField: 'task',
-                    inheritedFrom: "Resource",
-                }, task_topic_id: {
-                    name: "task_topic_id",
-                    type: "String",
-                    isOptional: true,
-                    isForeignKey: true,
-                    relationField: 'task',
-                    inheritedFrom: "Resource",
-                }, task: {
-                    name: "task",
-                    type: "Task",
-                    isDataModel: true,
-                    isOptional: true,
-                    backLink: 'resources',
-                    isRelationOwner: true,
-                    foreignKeyMapping: { "id": "task_id", "topic_id": "task_topic_id" },
-                    inheritedFrom: "Resource",
-                }, resource_type: {
-                    name: "resource_type",
-                    type: "String",
-                    inheritedFrom: "Resource",
-                }, content: {
-                    name: "content",
-                    type: "String",
-                    isOptional: true,
-                },
-            }
-            , uniqueConstraints: {
-                id: {
-                    name: "id",
-                    fields: ["id"]
-                },
-            }
-            ,
-        }
-        ,
-        link: {
-            name: 'Link', baseTypes: ['Resource'], fields: {
-                id: {
-                    name: "id",
-                    type: "String",
-                    isId: true,
-                    attributes: [{ "name": "@default", "args": [] }],
-                }, created_at: {
-                    name: "created_at",
-                    type: "DateTime",
-                    attributes: [{ "name": "@default", "args": [] }],
-                    inheritedFrom: "Resource",
-                }, updated_at: {
-                    name: "updated_at",
-                    type: "DateTime",
-                    attributes: [{ "name": "@updatedAt", "args": [] }],
-                    inheritedFrom: "Resource",
-                }, created_by_id: {
-                    name: "created_by_id",
-                    type: "String",
-                    attributes: [{ "name": "@default", "args": [] }],
-                    defaultValueProvider: $default$Link$created_by_id,
-                    isForeignKey: true,
-                    relationField: 'created_by',
-                    inheritedFrom: "Resource",
-                }, created_by: {
-                    name: "created_by",
-                    type: "User",
-                    isDataModel: true,
-                    backLink: 'resources',
-                    isRelationOwner: true,
-                    foreignKeyMapping: { "id": "created_by_id" },
-                    inheritedFrom: "Resource",
-                }, title: {
-                    name: "title",
-                    type: "String",
-                    inheritedFrom: "Resource",
-                }, description: {
-                    name: "description",
-                    type: "String",
-                    isOptional: true,
-                    inheritedFrom: "Resource",
-                }, is_public: {
-                    name: "is_public",
-                    type: "Boolean",
-                    attributes: [{ "name": "@default", "args": [{ "value": false }] }],
-                    inheritedFrom: "Resource",
-                }, archived_at: {
-                    name: "archived_at",
-                    type: "DateTime",
-                    isOptional: true,
-                    inheritedFrom: "Resource",
-                }, topic_id: {
-                    name: "topic_id",
-                    type: "String",
-                    isForeignKey: true,
-                    relationField: 'topic',
-                    inheritedFrom: "Resource",
-                }, topic: {
-                    name: "topic",
-                    type: "Topic",
-                    isDataModel: true,
-                    backLink: 'resources',
-                    isRelationOwner: true,
-                    foreignKeyMapping: { "id": "topic_id" },
-                    inheritedFrom: "Resource",
-                }, tasklist_id: {
-                    name: "tasklist_id",
-                    type: "String",
-                    isOptional: true,
-                    isForeignKey: true,
-                    relationField: 'tasklist',
-                    inheritedFrom: "Resource",
-                }, tasklist_topic_id: {
-                    name: "tasklist_topic_id",
-                    type: "String",
-                    isOptional: true,
-                    isForeignKey: true,
-                    relationField: 'tasklist',
-                    inheritedFrom: "Resource",
-                }, tasklist: {
-                    name: "tasklist",
-                    type: "Tasklist",
-                    isDataModel: true,
-                    isOptional: true,
-                    backLink: 'resources',
-                    isRelationOwner: true,
-                    foreignKeyMapping: { "id": "tasklist_id", "topic_id": "tasklist_topic_id" },
-                    inheritedFrom: "Resource",
-                }, task_id: {
-                    name: "task_id",
-                    type: "String",
-                    isOptional: true,
-                    isForeignKey: true,
-                    relationField: 'task',
-                    inheritedFrom: "Resource",
-                }, task_topic_id: {
-                    name: "task_topic_id",
-                    type: "String",
-                    isOptional: true,
-                    isForeignKey: true,
-                    relationField: 'task',
-                    inheritedFrom: "Resource",
-                }, task: {
-                    name: "task",
-                    type: "Task",
-                    isDataModel: true,
-                    isOptional: true,
-                    backLink: 'resources',
-                    isRelationOwner: true,
-                    foreignKeyMapping: { "id": "task_id", "topic_id": "task_topic_id" },
-                    inheritedFrom: "Resource",
-                }, resource_type: {
-                    name: "resource_type",
-                    type: "String",
-                    inheritedFrom: "Resource",
-                }, url: {
-                    name: "url",
-                    type: "String",
-                },
-            }
-            , uniqueConstraints: {
-                id: {
-                    name: "id",
-                    fields: ["id"]
-                },
-            }
-            ,
-        }
-        ,
-        tasklist: {
-            name: 'Tasklist', fields: {
-                id: {
-                    name: "id",
-                    type: "String",
-                    isId: true,
-                    attributes: [{ "name": "@default", "args": [] }],
-                }, created_at: {
-                    name: "created_at",
-                    type: "DateTime",
-                    attributes: [{ "name": "@default", "args": [] }],
-                }, updated_at: {
-                    name: "updated_at",
-                    type: "DateTime",
-                    attributes: [{ "name": "@updatedAt", "args": [] }],
-                }, created_by_id: {
-                    name: "created_by_id",
-                    type: "String",
-                    attributes: [{ "name": "@default", "args": [] }],
-                    defaultValueProvider: $default$Tasklist$created_by_id,
-                    isForeignKey: true,
-                    relationField: 'created_by',
-                }, created_by: {
-                    name: "created_by",
-                    type: "User",
-                    isDataModel: true,
-                    backLink: 'tasklists',
-                    isRelationOwner: true,
-                    foreignKeyMapping: { "id": "created_by_id" },
-                }, title: {
-                    name: "title",
-                    type: "String",
-                }, description: {
-                    name: "description",
-                    type: "String",
-                    isOptional: true,
-                }, is_public: {
-                    name: "is_public",
-                    type: "Boolean",
-                    attributes: [{ "name": "@default", "args": [{ "value": false }] }],
-                }, archived_at: {
-                    name: "archived_at",
-                    type: "DateTime",
-                    isOptional: true,
-                }, topic_id: {
-                    name: "topic_id",
-                    type: "String",
-                    isForeignKey: true,
-                    relationField: 'topic',
-                }, topic: {
-                    name: "topic",
-                    type: "Topic",
-                    isDataModel: true,
-                    backLink: 'tasklists',
-                    isRelationOwner: true,
-                    foreignKeyMapping: { "id": "topic_id" },
-                }, target: {
-                    name: "target",
-                    type: "RelativeTarget",
-                    attributes: [{ "name": "@default", "args": [] }],
-                }, tasks: {
-                    name: "tasks",
-                    type: "Task",
+                }, task_instances: {
+                    name: "task_instances",
+                    type: "RoutineTask",
                     isDataModel: true,
                     isArray: true,
-                    backLink: 'tasklist',
-                }, resources: {
-                    name: "resources",
-                    type: "Resource",
-                    isDataModel: true,
-                    isArray: true,
-                    backLink: 'tasklist',
-                }, task_order: {
-                    name: "task_order",
-                    type: "String",
-                    isArray: true,
+                    backLink: 'routine',
                 },
             }
             , uniqueConstraints: {
                 id: {
                     name: "id",
                     fields: ["id"]
+                }, clipboard_id: {
+                    name: "clipboard_id",
+                    fields: ["clipboard_id"]
                 }, id_topic_id: {
                     name: "id_topic_id",
                     fields: ["id", "topic_id"]
@@ -603,9 +282,21 @@ const metadata = {
             ,
         }
         ,
-        task: {
-            name: 'Task', fields: {
-                id: {
+        project: {
+            name: 'Project', fields: {
+                clipboard_id: {
+                    name: "clipboard_id",
+                    type: "String",
+                    isForeignKey: true,
+                    relationField: 'clipboard',
+                }, clipboard: {
+                    name: "clipboard",
+                    type: "Clipboard",
+                    isDataModel: true,
+                    backLink: 'project',
+                    isRelationOwner: true,
+                    foreignKeyMapping: { "id": "clipboard_id" },
+                }, id: {
                     name: "id",
                     type: "String",
                     isId: true,
@@ -618,35 +309,143 @@ const metadata = {
                     name: "updated_at",
                     type: "DateTime",
                     attributes: [{ "name": "@updatedAt", "args": [] }],
-                }, created_by_id: {
-                    name: "created_by_id",
+                }, topic_id: {
+                    name: "topic_id",
                     type: "String",
-                    attributes: [{ "name": "@default", "args": [] }],
-                    defaultValueProvider: $default$Task$created_by_id,
                     isForeignKey: true,
-                    relationField: 'created_by',
-                }, created_by: {
-                    name: "created_by",
-                    type: "User",
+                    relationField: 'topic',
+                }, topic: {
+                    name: "topic",
+                    type: "Topic",
                     isDataModel: true,
-                    backLink: 'tasks',
+                    backLink: 'projects',
                     isRelationOwner: true,
-                    foreignKeyMapping: { "id": "created_by_id" },
+                    foreignKeyMapping: { "id": "topic_id" },
+                }, milestones: {
+                    name: "milestones",
+                    type: "ProjectMilestone",
+                    isDataModel: true,
+                    isArray: true,
+                    backLink: 'project',
+                }, tasks: {
+                    name: "tasks",
+                    type: "ProjectTask",
+                    isDataModel: true,
+                    isArray: true,
+                    backLink: 'project',
+                },
+            }
+            , uniqueConstraints: {
+                id: {
+                    name: "id",
+                    fields: ["id"]
+                }, clipboard_id: {
+                    name: "clipboard_id",
+                    fields: ["clipboard_id"]
+                }, id_topic_id: {
+                    name: "id_topic_id",
+                    fields: ["id", "topic_id"]
+                },
+            }
+            ,
+        }
+        ,
+        projectMilestone: {
+            name: 'ProjectMilestone', fields: {
+                clipboard_id: {
+                    name: "clipboard_id",
+                    type: "String",
+                    isForeignKey: true,
+                    relationField: 'clipboard',
+                }, clipboard: {
+                    name: "clipboard",
+                    type: "Clipboard",
+                    isDataModel: true,
+                    backLink: 'project_milestone',
+                    isRelationOwner: true,
+                    foreignKeyMapping: { "id": "clipboard_id" },
+                }, id: {
+                    name: "id",
+                    type: "String",
+                    isId: true,
+                    attributes: [{ "name": "@default", "args": [] }],
+                }, created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ "name": "@default", "args": [] }],
+                }, updated_at: {
+                    name: "updated_at",
+                    type: "DateTime",
+                    attributes: [{ "name": "@updatedAt", "args": [] }],
+                }, project_id: {
+                    name: "project_id",
+                    type: "String",
+                    isForeignKey: true,
+                    relationField: 'project',
+                }, project: {
+                    name: "project",
+                    type: "Project",
+                    isDataModel: true,
+                    backLink: 'milestones',
+                    isRelationOwner: true,
+                    foreignKeyMapping: { "id": "project_id" },
+                }, tasks: {
+                    name: "tasks",
+                    type: "ProjectTask",
+                    isDataModel: true,
+                    isArray: true,
+                    backLink: 'project_milestone',
+                },
+            }
+            , uniqueConstraints: {
+                id: {
+                    name: "id",
+                    fields: ["id"]
+                }, clipboard_id: {
+                    name: "clipboard_id",
+                    fields: ["clipboard_id"]
+                }, id_project_id: {
+                    name: "id_project_id",
+                    fields: ["id", "project_id"]
+                },
+            }
+            ,
+        }
+        ,
+        task: {
+            name: 'Task', fields: {
+                clipboard_id: {
+                    name: "clipboard_id",
+                    type: "String",
+                    isForeignKey: true,
+                    relationField: 'clipboard',
+                }, clipboard: {
+                    name: "clipboard",
+                    type: "Clipboard",
+                    isDataModel: true,
+                    backLink: 'task',
+                    isRelationOwner: true,
+                    foreignKeyMapping: { "id": "clipboard_id" },
                 }, title: {
                     name: "title",
                     type: "String",
-                }, description: {
-                    name: "description",
-                    type: "String",
-                    isOptional: true,
-                }, is_public: {
-                    name: "is_public",
-                    type: "Boolean",
-                    attributes: [{ "name": "@default", "args": [{ "value": false }] }],
                 }, archived_at: {
                     name: "archived_at",
                     type: "DateTime",
                     isOptional: true,
+                }, id: {
+                    name: "id",
+                    type: "String",
+                    isId: true,
+                    attributes: [{ "name": "@default", "args": [] }],
+                }, created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ "name": "@default", "args": [] }],
+                }, updated_at: {
+                    name: "updated_at",
+                    type: "DateTime",
+                    attributes: [{ "name": "@updatedAt", "args": [] }],
                 }, topic_id: {
                     name: "topic_id",
                     type: "String",
@@ -659,37 +458,12 @@ const metadata = {
                     backLink: 'tasks',
                     isRelationOwner: true,
                     foreignKeyMapping: { "id": "topic_id" },
-                }, tasklist_id: {
-                    name: "tasklist_id",
+                }, type: {
+                    name: "type",
                     type: "String",
-                    isForeignKey: true,
-                    relationField: 'tasklist',
-                }, tasklist_topic_id: {
-                    name: "tasklist_topic_id",
-                    type: "String",
-                    isForeignKey: true,
-                    relationField: 'tasklist',
-                }, tasklist: {
-                    name: "tasklist",
-                    type: "Tasklist",
-                    isDataModel: true,
-                    backLink: 'tasks',
-                    isRelationOwner: true,
-                    foreignKeyMapping: { "id": "tasklist_id", "topic_id": "tasklist_topic_id" },
-                }, resources: {
-                    name: "resources",
-                    type: "Resource",
-                    isDataModel: true,
-                    isArray: true,
-                    backLink: 'task',
-                }, size_minutes: {
-                    name: "size_minutes",
-                    type: "Int",
-                    isOptional: true,
-                }, is_draft: {
-                    name: "is_draft",
-                    type: "Boolean",
-                    attributes: [{ "name": "@default", "args": [{ "value": true }] }],
+                }, status: {
+                    name: "status",
+                    type: "TaskStatus",
                 }, done_at: {
                     name: "done_at",
                     type: "DateTime",
@@ -700,9 +474,394 @@ const metadata = {
                 id: {
                     name: "id",
                     fields: ["id"]
-                }, id_topic_id: {
-                    name: "id_topic_id",
-                    fields: ["id", "topic_id"]
+                }, clipboard_id: {
+                    name: "clipboard_id",
+                    fields: ["clipboard_id"]
+                },
+            }
+            , discriminator: "type",
+        }
+        ,
+        adhocTask: {
+            name: 'AdhocTask', baseTypes: ['Task'], fields: {
+                clipboard_id: {
+                    name: "clipboard_id",
+                    type: "String",
+                    isForeignKey: true,
+                    relationField: 'clipboard',
+                    inheritedFrom: "Task",
+                }, clipboard: {
+                    name: "clipboard",
+                    type: "Clipboard",
+                    isDataModel: true,
+                    backLink: 'task',
+                    isRelationOwner: true,
+                    foreignKeyMapping: { "id": "clipboard_id" },
+                    inheritedFrom: "Task",
+                }, title: {
+                    name: "title",
+                    type: "String",
+                    inheritedFrom: "Task",
+                }, archived_at: {
+                    name: "archived_at",
+                    type: "DateTime",
+                    isOptional: true,
+                    inheritedFrom: "Task",
+                }, id: {
+                    name: "id",
+                    type: "String",
+                    isId: true,
+                    attributes: [{ "name": "@default", "args": [] }],
+                }, created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ "name": "@default", "args": [] }],
+                    inheritedFrom: "Task",
+                }, updated_at: {
+                    name: "updated_at",
+                    type: "DateTime",
+                    attributes: [{ "name": "@updatedAt", "args": [] }],
+                    inheritedFrom: "Task",
+                }, topic_id: {
+                    name: "topic_id",
+                    type: "String",
+                    isForeignKey: true,
+                    relationField: 'topic',
+                    inheritedFrom: "Task",
+                }, topic: {
+                    name: "topic",
+                    type: "Topic",
+                    isDataModel: true,
+                    backLink: 'tasks',
+                    isRelationOwner: true,
+                    foreignKeyMapping: { "id": "topic_id" },
+                    inheritedFrom: "Task",
+                }, type: {
+                    name: "type",
+                    type: "String",
+                    inheritedFrom: "Task",
+                }, status: {
+                    name: "status",
+                    type: "TaskStatus",
+                    inheritedFrom: "Task",
+                }, done_at: {
+                    name: "done_at",
+                    type: "DateTime",
+                    isOptional: true,
+                    inheritedFrom: "Task",
+                },
+            }
+            , uniqueConstraints: {
+                id: {
+                    name: "id",
+                    fields: ["id"]
+                }, clipboard_id: {
+                    name: "clipboard_id",
+                    fields: ["clipboard_id"]
+                },
+            }
+            ,
+        }
+        ,
+        routineTask: {
+            name: 'RoutineTask', baseTypes: ['Task'], fields: {
+                clipboard_id: {
+                    name: "clipboard_id",
+                    type: "String",
+                    isForeignKey: true,
+                    relationField: 'clipboard',
+                    inheritedFrom: "Task",
+                }, clipboard: {
+                    name: "clipboard",
+                    type: "Clipboard",
+                    isDataModel: true,
+                    backLink: 'task',
+                    isRelationOwner: true,
+                    foreignKeyMapping: { "id": "clipboard_id" },
+                    inheritedFrom: "Task",
+                }, title: {
+                    name: "title",
+                    type: "String",
+                    inheritedFrom: "Task",
+                }, archived_at: {
+                    name: "archived_at",
+                    type: "DateTime",
+                    isOptional: true,
+                    inheritedFrom: "Task",
+                }, id: {
+                    name: "id",
+                    type: "String",
+                    isId: true,
+                    attributes: [{ "name": "@default", "args": [] }],
+                }, created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ "name": "@default", "args": [] }],
+                    inheritedFrom: "Task",
+                }, updated_at: {
+                    name: "updated_at",
+                    type: "DateTime",
+                    attributes: [{ "name": "@updatedAt", "args": [] }],
+                    inheritedFrom: "Task",
+                }, topic_id: {
+                    name: "topic_id",
+                    type: "String",
+                    isForeignKey: true,
+                    relationField: 'topic',
+                    inheritedFrom: "Task",
+                }, topic: {
+                    name: "topic",
+                    type: "Topic",
+                    isDataModel: true,
+                    backLink: 'tasks',
+                    isRelationOwner: true,
+                    foreignKeyMapping: { "id": "topic_id" },
+                    inheritedFrom: "Task",
+                }, type: {
+                    name: "type",
+                    type: "String",
+                    inheritedFrom: "Task",
+                }, status: {
+                    name: "status",
+                    type: "TaskStatus",
+                    inheritedFrom: "Task",
+                }, done_at: {
+                    name: "done_at",
+                    type: "DateTime",
+                    isOptional: true,
+                    inheritedFrom: "Task",
+                }, routine_id: {
+                    name: "routine_id",
+                    type: "String",
+                    isForeignKey: true,
+                    relationField: 'routine',
+                }, routine_topic_id: {
+                    name: "routine_topic_id",
+                    type: "String",
+                    isForeignKey: true,
+                    relationField: 'routine',
+                }, routine: {
+                    name: "routine",
+                    type: "Routine",
+                    isDataModel: true,
+                    backLink: 'task_instances',
+                    isRelationOwner: true,
+                    foreignKeyMapping: { "id": "routine_id", "topic_id": "routine_topic_id" },
+                }, instance_number: {
+                    name: "instance_number",
+                    type: "Int",
+                },
+            }
+            , uniqueConstraints: {
+                id: {
+                    name: "id",
+                    fields: ["id"]
+                }, clipboard_id: {
+                    name: "clipboard_id",
+                    fields: ["clipboard_id"]
+                }, routine_id_instance_number: {
+                    name: "routine_id_instance_number",
+                    fields: ["routine_id", "instance_number"]
+                },
+            }
+            ,
+        }
+        ,
+        projectTask: {
+            name: 'ProjectTask', baseTypes: ['Task'], fields: {
+                clipboard_id: {
+                    name: "clipboard_id",
+                    type: "String",
+                    isForeignKey: true,
+                    relationField: 'clipboard',
+                    inheritedFrom: "Task",
+                }, clipboard: {
+                    name: "clipboard",
+                    type: "Clipboard",
+                    isDataModel: true,
+                    backLink: 'task',
+                    isRelationOwner: true,
+                    foreignKeyMapping: { "id": "clipboard_id" },
+                    inheritedFrom: "Task",
+                }, title: {
+                    name: "title",
+                    type: "String",
+                    inheritedFrom: "Task",
+                }, archived_at: {
+                    name: "archived_at",
+                    type: "DateTime",
+                    isOptional: true,
+                    inheritedFrom: "Task",
+                }, id: {
+                    name: "id",
+                    type: "String",
+                    isId: true,
+                    attributes: [{ "name": "@default", "args": [] }],
+                }, created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ "name": "@default", "args": [] }],
+                    inheritedFrom: "Task",
+                }, updated_at: {
+                    name: "updated_at",
+                    type: "DateTime",
+                    attributes: [{ "name": "@updatedAt", "args": [] }],
+                    inheritedFrom: "Task",
+                }, topic_id: {
+                    name: "topic_id",
+                    type: "String",
+                    isForeignKey: true,
+                    relationField: 'topic',
+                    inheritedFrom: "Task",
+                }, topic: {
+                    name: "topic",
+                    type: "Topic",
+                    isDataModel: true,
+                    backLink: 'tasks',
+                    isRelationOwner: true,
+                    foreignKeyMapping: { "id": "topic_id" },
+                    inheritedFrom: "Task",
+                }, type: {
+                    name: "type",
+                    type: "String",
+                    inheritedFrom: "Task",
+                }, status: {
+                    name: "status",
+                    type: "TaskStatus",
+                    inheritedFrom: "Task",
+                }, done_at: {
+                    name: "done_at",
+                    type: "DateTime",
+                    isOptional: true,
+                    inheritedFrom: "Task",
+                }, project_id: {
+                    name: "project_id",
+                    type: "String",
+                    isForeignKey: true,
+                    relationField: 'project',
+                }, project_topic_id: {
+                    name: "project_topic_id",
+                    type: "String",
+                    isForeignKey: true,
+                    relationField: 'project',
+                }, project: {
+                    name: "project",
+                    type: "Project",
+                    isDataModel: true,
+                    backLink: 'tasks',
+                    isRelationOwner: true,
+                    foreignKeyMapping: { "id": "project_id", "topic_id": "project_topic_id" },
+                }, project_milestone_id: {
+                    name: "project_milestone_id",
+                    type: "String",
+                    isForeignKey: true,
+                    relationField: 'project_milestone',
+                }, project_milestone_project_id: {
+                    name: "project_milestone_project_id",
+                    type: "String",
+                    isForeignKey: true,
+                    relationField: 'project_milestone',
+                }, project_milestone: {
+                    name: "project_milestone",
+                    type: "ProjectMilestone",
+                    isDataModel: true,
+                    backLink: 'tasks',
+                    isRelationOwner: true,
+                    foreignKeyMapping: { "id": "project_milestone_id", "project_id": "project_milestone_project_id" },
+                },
+            }
+            , uniqueConstraints: {
+                id: {
+                    name: "id",
+                    fields: ["id"]
+                }, clipboard_id: {
+                    name: "clipboard_id",
+                    fields: ["clipboard_id"]
+                },
+            }
+            ,
+        }
+        ,
+    }
+    ,
+    typeDefs: {
+        clipboardChecklistItem: {
+            name: 'ClipboardChecklistItem', fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                }, title: {
+                    name: "title",
+                    type: "String",
+                }, is_done: {
+                    name: "is_done",
+                    type: "Boolean",
+                },
+            }
+            ,
+        }
+        ,
+        clipboardChecklist: {
+            name: 'ClipboardChecklist', fields: {
+                items: {
+                    name: "items",
+                    type: "ClipboardChecklistItem",
+                    isTypeDef: true,
+                    isArray: true,
+                },
+            }
+            ,
+        }
+        ,
+        clipboardResourceItem: {
+            name: 'ClipboardResourceItem', fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                }, title: {
+                    name: "title",
+                    type: "String",
+                }, content: {
+                    name: "content",
+                    type: "String",
+                },
+            }
+            ,
+        }
+        ,
+        clipboardResources: {
+            name: 'ClipboardResources', fields: {
+                items: {
+                    name: "items",
+                    type: "ClipboardResourceItem",
+                    isTypeDef: true,
+                    isArray: true,
+                },
+            }
+            ,
+        }
+        ,
+        topicItemOrderItem: {
+            name: 'TopicItemOrderItem', fields: {
+                key: {
+                    name: "key",
+                    type: "String",
+                }, order: {
+                    name: "order",
+                    type: "String",
+                    isArray: true,
+                },
+            }
+            ,
+        }
+        ,
+        topicItemOrder: {
+            name: 'TopicItemOrder', fields: {
+                items: {
+                    name: "items",
+                    type: "TopicItemOrderItem",
+                    isTypeDef: true,
+                    isArray: true,
                 },
             }
             ,
@@ -711,34 +870,21 @@ const metadata = {
     }
     ,
     deleteCascade: {
-        user: ['Topic', 'Resource', 'Note', 'Link', 'Tasklist', 'Task'],
-        topic: ['Resource', 'Note', 'Link', 'Tasklist', 'Task'],
-        tasklist: ['Task'],
+        user: ['Topic'],
+        clipboard: ['Topic', 'Routine', 'Project', 'ProjectMilestone', 'Task', 'AdhocTask', 'RoutineTask', 'ProjectTask'],
+        topic: ['Routine', 'Project', 'Task', 'AdhocTask', 'RoutineTask', 'ProjectTask'],
+        routine: ['RoutineTask'],
+        project: ['ProjectMilestone', 'ProjectTask'],
+        projectMilestone: ['ProjectTask'],
     }
     ,
     authModel: 'User'
 };
-function $default$Topic$created_by_id(user: any): unknown {
+function $default$Clipboard$owner_id(user: any): unknown {
     return user?.id;
 }
 
-function $default$Resource$created_by_id(user: any): unknown {
-    return user?.id;
-}
-
-function $default$Note$created_by_id(user: any): unknown {
-    return user?.id;
-}
-
-function $default$Link$created_by_id(user: any): unknown {
-    return user?.id;
-}
-
-function $default$Tasklist$created_by_id(user: any): unknown {
-    return user?.id;
-}
-
-function $default$Task$created_by_id(user: any): unknown {
+function $default$Topic$owner_id(user: any): unknown {
     return user?.id;
 }
 export default metadata;

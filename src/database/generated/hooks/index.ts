@@ -6,12 +6,15 @@
 // @ts-nocheck
 
 export * from './user';
+export * from './clipboard';
 export * from './topic';
-export * from './resource';
-export * from './note';
-export * from './link';
-export * from './tasklist';
+export * from './routine';
+export * from './project';
+export * from './project-milestone';
 export * from './task';
+export * from './adhoc-task';
+export * from './routine-task';
+export * from './project-task';
 export { getQueryKey } from '@zenstackhq/tanstack-query/runtime-v5';
 export { Provider } from '@zenstackhq/tanstack-query/runtime-v5/react';
 export { default as metadata } from './__model_meta';

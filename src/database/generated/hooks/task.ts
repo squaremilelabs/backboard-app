@@ -16,46 +16,6 @@ type DefaultError = QueryError;
 import { useSuspenseModelQuery, useSuspenseInfiniteModelQuery } from '@zenstackhq/tanstack-query/runtime-v5/react';
 import type { UseSuspenseQueryOptions, UseSuspenseInfiniteQueryOptions } from '@tanstack/react-query';
 
-export function useCreateTask(options?: Omit<(UseMutationOptions<(Task | undefined), DefaultError, Prisma.TaskCreateArgs> & ExtraMutationOptions), 'mutationFn'>) {
-    const { endpoint, fetch } = getHooksContext();
-    const _mutation =
-        useModelMutation<Prisma.TaskCreateArgs, DefaultError, Task, true>('Task', 'POST', `${endpoint}/task/create`, metadata, options, fetch, true)
-        ;
-    const mutation = {
-        ..._mutation,
-        mutateAsync: async <T extends Prisma.TaskCreateArgs>(
-            args: Prisma.SelectSubset<T, Prisma.TaskCreateArgs>,
-            options?: Omit<(UseMutationOptions<(CheckSelect<T, Task, Prisma.TaskGetPayload<T>> | undefined), DefaultError, Prisma.SelectSubset<T, Prisma.TaskCreateArgs>> & ExtraMutationOptions), 'mutationFn'>
-        ) => {
-            return (await _mutation.mutateAsync(
-                args,
-                options as any
-            )) as (CheckSelect<T, Task, Prisma.TaskGetPayload<T>> | undefined);
-        },
-    };
-    return mutation;
-}
-
-export function useCreateManyTask(options?: Omit<(UseMutationOptions<Prisma.BatchPayload, DefaultError, Prisma.TaskCreateManyArgs> & ExtraMutationOptions), 'mutationFn'>) {
-    const { endpoint, fetch } = getHooksContext();
-    const _mutation =
-        useModelMutation<Prisma.TaskCreateManyArgs, DefaultError, Prisma.BatchPayload, false>('Task', 'POST', `${endpoint}/task/createMany`, metadata, options, fetch, false)
-        ;
-    const mutation = {
-        ..._mutation,
-        mutateAsync: async <T extends Prisma.TaskCreateManyArgs>(
-            args: Prisma.SelectSubset<T, Prisma.TaskCreateManyArgs>,
-            options?: Omit<(UseMutationOptions<Prisma.BatchPayload, DefaultError, Prisma.SelectSubset<T, Prisma.TaskCreateManyArgs>> & ExtraMutationOptions), 'mutationFn'>
-        ) => {
-            return (await _mutation.mutateAsync(
-                args,
-                options as any
-            )) as Prisma.BatchPayload;
-        },
-    };
-    return mutation;
-}
-
 export function useFindManyTask<TArgs extends Prisma.TaskFindManyArgs, TQueryFnData = Array<Prisma.TaskGetPayload<TArgs> & { $optimistic?: boolean }>, TData = TQueryFnData, TError = DefaultError>(args?: Prisma.SelectSubset<TArgs, Prisma.TaskFindManyArgs>, options?: (Omit<UseQueryOptions<TQueryFnData, TError, TData>, 'queryKey'> & ExtraQueryOptions)) {
     const { endpoint, fetch } = getHooksContext();
     return useModelQuery<TQueryFnData, TData, TError>('Task', `${endpoint}/task/findMany`, args, options, fetch);
@@ -133,26 +93,6 @@ export function useUpdateManyTask(options?: Omit<(UseMutationOptions<Prisma.Batc
                 args,
                 options as any
             )) as Prisma.BatchPayload;
-        },
-    };
-    return mutation;
-}
-
-export function useUpsertTask(options?: Omit<(UseMutationOptions<(Task | undefined), DefaultError, Prisma.TaskUpsertArgs> & ExtraMutationOptions), 'mutationFn'>) {
-    const { endpoint, fetch } = getHooksContext();
-    const _mutation =
-        useModelMutation<Prisma.TaskUpsertArgs, DefaultError, Task, true>('Task', 'POST', `${endpoint}/task/upsert`, metadata, options, fetch, true)
-        ;
-    const mutation = {
-        ..._mutation,
-        mutateAsync: async <T extends Prisma.TaskUpsertArgs>(
-            args: Prisma.SelectSubset<T, Prisma.TaskUpsertArgs>,
-            options?: Omit<(UseMutationOptions<(CheckSelect<T, Task, Prisma.TaskGetPayload<T>> | undefined), DefaultError, Prisma.SelectSubset<T, Prisma.TaskUpsertArgs>> & ExtraMutationOptions), 'mutationFn'>
-        ) => {
-            return (await _mutation.mutateAsync(
-                args,
-                options as any
-            )) as (CheckSelect<T, Task, Prisma.TaskGetPayload<T>> | undefined);
         },
     };
     return mutation;
@@ -327,8 +267,9 @@ export function useSuspenseCountTask<TArgs extends Prisma.TaskCountArgs, TQueryF
     const { endpoint, fetch } = getHooksContext();
     return useSuspenseModelQuery<TQueryFnData, TData, TError>('Task', `${endpoint}/task/count`, args, options, fetch);
 }
+import type { TaskStatus } from '@zenstackhq/runtime/models';
 
-export function useCheckTask<TError = DefaultError>(args: { operation: PolicyCrudKind; where?: { id?: string; created_by_id?: string; title?: string; description?: string; is_public?: boolean; topic_id?: string; tasklist_id?: string; tasklist_topic_id?: string; size_minutes?: number; is_draft?: boolean }; }, options?: (Omit<UseQueryOptions<boolean, TError, boolean>, 'queryKey'> & ExtraQueryOptions)) {
+export function useCheckTask<TError = DefaultError>(args: { operation: PolicyCrudKind; where?: { clipboard_id?: string; title?: string; id?: string; topic_id?: string; type?: string; status?: TaskStatus }; }, options?: (Omit<UseQueryOptions<boolean, TError, boolean>, 'queryKey'> & ExtraQueryOptions)) {
     const { endpoint, fetch } = getHooksContext();
     return useModelQuery<boolean, boolean, TError>('Task', `${endpoint}/task/check`, args, options, fetch);
 }

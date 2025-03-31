@@ -12,132 +12,153 @@ generator client {
   provider = "prisma-client-js"
 }
 
-enum RelativeTarget {
-  TODAY
-  THIS_WEEK
-  NEXT_WEEK
-  THIS_MONTH
-  NEXT_MONTH
-  SOMEDAY
-  NONE
+enum TaskStatus {
+  READY
+  PENDING
+  DONE
 
-  @@map("RELATIVE_TARGET")
+  @@map("TASK_STATUS")
 }
 
 model User {
-  id           String     @id()
-  created_at   DateTime   @default(now()) @db.Timestamptz()
-  updated_at   DateTime   @updatedAt() @db.Timestamptz()
+  id           String      @id()
+  created_at   DateTime    @default(now()) @db.Timestamptz()
+  updated_at   DateTime    @updatedAt() @db.Timestamptz()
   display_name String
-  email        String     @unique()
+  email        String      @unique()
   image_href   String?
   topics       Topic[]
-  resources    Resource[]
-  tasklists    Tasklist[]
-  tasks        Task[]
+  topic_order  String[]
+  clipboards   Clipboard[]
 
   @@map("users")
 }
 
+model Clipboard {
+  id                String            @id() @default(cuid())
+  created_at        DateTime          @default(now()) @db.Timestamptz()
+  updated_at        DateTime          @updatedAt() @db.Timestamptz()
+  owner_id          String
+  owner             User              @relation(fields: [owner_id], references: [id])
+  topic             Topic?
+  task              Task?
+  project           Project?
+  project_milestone ProjectMilestone?
+  routine           Routine?
+  notepad           String?
+  checklist         Json
+  resources         Json
+
+  @@map("clipboards")
+}
+
 model Topic {
-  id            String     @id() @default(cuid())
-  created_at    DateTime   @default(now()) @db.Timestamptz()
-  updated_at    DateTime   @updatedAt() @db.Timestamptz()
-  created_by_id String
-  created_by    User       @relation(fields: [created_by_id], references: [id], onDelete: Cascade)
-  title         String
-  description   String?
-  is_public     Boolean    @default(false)
-  archived_at   DateTime?  @db.Timestamptz()
-  tasklists     Tasklist[]
-  tasks         Task[]
-  resources     Resource[]
+  clipboard_id String    @unique()
+  clipboard    Clipboard @relation(fields: [clipboard_id], references: [id], onDelete: Cascade)
+  id           String    @id() @default(cuid())
+  created_at   DateTime  @default(now()) @db.Timestamptz()
+  updated_at   DateTime  @updatedAt() @db.Timestamptz()
+  owner_id     String
+  owner        User      @relation(fields: [owner_id], references: [id], onDelete: Cascade)
+  tasks        Task[]
+  routines     Routine[]
+  projects     Project[]
+  item_orders  Json
 
   @@map("topics")
 }
 
-model Resource {
-  id                String    @id() @default(cuid())
-  created_at        DateTime  @default(now()) @db.Timestamptz()
-  updated_at        DateTime  @updatedAt() @db.Timestamptz()
-  created_by_id     String
-  created_by        User      @relation(fields: [created_by_id], references: [id], onDelete: Cascade)
-  title             String
-  description       String?
-  is_public         Boolean   @default(false)
-  archived_at       DateTime? @db.Timestamptz()
-  topic_id          String
-  topic             Topic     @relation(fields: [topic_id], references: [id], onDelete: Cascade)
-  tasklist_id       String?
-  tasklist_topic_id String?
-  tasklist          Tasklist? @relation(fields: [tasklist_id, tasklist_topic_id], references: [id, topic_id], onDelete: SetNull)
-  task_id           String?
-  task_topic_id     String?
-  task              Task?     @relation(fields: [task_id, task_topic_id], references: [id, topic_id], onDelete: SetNull)
-  resource_type     String
-  delegate_aux_note Note?
-  delegate_aux_link Link?
-
-  @@map("resources")
-}
-
-model Note {
-  id                    String   @id()
-  content               String?
-  delegate_aux_resource Resource @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-
-  @@map("resource_notes")
-}
-
-model Link {
-  id                    String   @id()
-  url                   String
-  delegate_aux_resource Resource @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-
-  @@map("resource_links")
-}
-
-model Tasklist {
-  id            String         @id() @default(cuid())
-  created_at    DateTime       @default(now()) @db.Timestamptz()
-  updated_at    DateTime       @updatedAt() @db.Timestamptz()
-  created_by_id String
-  created_by    User           @relation(fields: [created_by_id], references: [id], onDelete: Cascade)
-  title         String
-  description   String?
-  is_public     Boolean        @default(false)
-  archived_at   DateTime?      @db.Timestamptz()
-  topic_id      String
-  topic         Topic          @relation(fields: [topic_id], references: [id], onDelete: Cascade)
-  target        RelativeTarget @default(NONE)
-  tasks         Task[]
-  resources     Resource[]
-  task_order    String[]
+model Routine {
+  clipboard_id   String        @unique()
+  clipboard      Clipboard     @relation(fields: [clipboard_id], references: [id], onDelete: Cascade)
+  id             String        @id() @default(cuid())
+  created_at     DateTime      @default(now()) @db.Timestamptz()
+  updated_at     DateTime      @updatedAt() @db.Timestamptz()
+  topic_id       String
+  topic          Topic         @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+  task_instances RoutineTask[]
 
   @@unique([id, topic_id])
-  @@map("tasklists")
+  @@map("routines")
+}
+
+model Project {
+  clipboard_id String             @unique()
+  clipboard    Clipboard          @relation(fields: [clipboard_id], references: [id], onDelete: Cascade)
+  id           String             @id() @default(cuid())
+  created_at   DateTime           @default(now()) @db.Timestamptz()
+  updated_at   DateTime           @updatedAt() @db.Timestamptz()
+  topic_id     String
+  topic        Topic              @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+  milestones   ProjectMilestone[]
+  tasks        ProjectTask[]
+
+  @@unique([id, topic_id])
+  @@map("projects")
+}
+
+model ProjectMilestone {
+  clipboard_id String        @unique()
+  clipboard    Clipboard     @relation(fields: [clipboard_id], references: [id], onDelete: Cascade)
+  id           String        @id() @default(cuid())
+  created_at   DateTime      @default(now()) @db.Timestamptz()
+  updated_at   DateTime      @updatedAt() @db.Timestamptz()
+  project_id   String
+  project      Project       @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  tasks        ProjectTask[]
+
+  @@unique([id, project_id])
+  @@map("project_milestones")
 }
 
 model Task {
-  id                String     @id() @default(cuid())
-  created_at        DateTime   @default(now()) @db.Timestamptz()
-  updated_at        DateTime   @updatedAt() @db.Timestamptz()
-  created_by_id     String
-  created_by        User       @relation(fields: [created_by_id], references: [id], onDelete: Cascade)
-  title             String
-  description       String?
-  is_public         Boolean    @default(false)
-  archived_at       DateTime?  @db.Timestamptz()
-  topic_id          String
-  topic             Topic      @relation(fields: [topic_id], references: [id], onDelete: Cascade)
-  tasklist_id       String
-  tasklist_topic_id String
-  tasklist          Tasklist   @relation(fields: [tasklist_id, tasklist_topic_id], references: [id, topic_id], onDelete: Cascade)
-  resources         Resource[]
-  size_minutes      Int?
-  is_draft          Boolean    @default(true)
-  done_at           DateTime?  @db.Timestamptz()
+  clipboard_id             String       @unique()
+  clipboard                Clipboard    @relation(fields: [clipboard_id], references: [id], onDelete: Cascade)
+  title                    String
+  archived_at              DateTime?    @db.Timestamptz()
+  id                       String       @id() @default(cuid())
+  created_at               DateTime     @default(now()) @db.Timestamptz()
+  updated_at               DateTime     @updatedAt() @db.Timestamptz()
+  topic_id                 String
+  topic                    Topic        @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+  type                     String
+  status                   TaskStatus
+  done_at                  DateTime?    @db.Timestamptz()
+  delegate_aux_adhocTask   AdhocTask?
+  delegate_aux_routineTask RoutineTask?
+  delegate_aux_projectTask ProjectTask?
 
-  @@unique([id, topic_id])
   @@map("tasks")
+}
+
+model AdhocTask {
+  id                String @id()
+  delegate_aux_task Task   @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@map("adhoc_tasks")
+}
+
+model RoutineTask {
+  id                String  @id()
+  routine_id        String
+  routine_topic_id  String
+  routine           Routine @relation(fields: [routine_id, routine_topic_id], references: [id, topic_id], onDelete: Cascade)
+  instance_number   Int
+  delegate_aux_task Task    @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([routine_id, instance_number])
+  @@map("routine_tasks")
+}
+
+model ProjectTask {
+  id                           String           @id()
+  project_id                   String
+  project_topic_id             String
+  project                      Project          @relation(fields: [project_id, project_topic_id], references: [id, topic_id], onDelete: Cascade)
+  project_milestone_id         String
+  project_milestone_project_id String
+  project_milestone            ProjectMilestone @relation(fields: [project_milestone_id, project_milestone_project_id], references: [id, project_id], onDelete: Cascade)
+  delegate_aux_task            Task             @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@map("project_milestone_tasks")
 }

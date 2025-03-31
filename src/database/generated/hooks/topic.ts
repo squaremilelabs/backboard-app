@@ -328,7 +328,7 @@ export function useSuspenseCountTopic<TArgs extends Prisma.TopicCountArgs, TQuer
     return useSuspenseModelQuery<TQueryFnData, TData, TError>('Topic', `${endpoint}/topic/count`, args, options, fetch);
 }
 
-export function useCheckTopic<TError = DefaultError>(args: { operation: PolicyCrudKind; where?: { id?: string; created_by_id?: string; title?: string; description?: string; is_public?: boolean }; }, options?: (Omit<UseQueryOptions<boolean, TError, boolean>, 'queryKey'> & ExtraQueryOptions)) {
+export function useCheckTopic<TError = DefaultError>(args: { operation: PolicyCrudKind; where?: { clipboard_id?: string; id?: string; owner_id?: string }; }, options?: (Omit<UseQueryOptions<boolean, TError, boolean>, 'queryKey'> & ExtraQueryOptions)) {
     const { endpoint, fetch } = getHooksContext();
     return useModelQuery<boolean, boolean, TError>('Topic', `${endpoint}/topic/check`, args, options, fetch);
 }
