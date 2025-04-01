@@ -10,8 +10,8 @@ import {
   RELATIVE_TARGETS_UI_ENUM,
 } from "@/lib/constants"
 import { useCountUser } from "@/database/generated/hooks"
-import { useTopicData } from "@/lib/data/topic"
-import BackboardLogo from "@/components/concrete/backboard-logo"
+import { useTopicData } from "@/lib/topic"
+import BackboardLogo from "@/components/common/BackboardLogo"
 
 export default function HomePage() {
   return (

@@ -1,7 +1,7 @@
 "use client"
 
 import { Prisma, Tasklist, Topic } from "@prisma/client"
-import { RELATIVE_TARGETS_ORDER } from "../constants"
+import { RELATIVE_TARGETS_ORDER } from "./constants"
 import { useFindManyTopic, useFindUniqueTopic } from "@/database/generated/hooks"
 
 export interface TopicRawResult extends Topic {

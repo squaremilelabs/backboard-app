@@ -13,8 +13,8 @@ import { ClassNameValue, twMerge } from "tailwind-merge"
 import { BookMarked, ChevronDown, Share2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useUser } from "@clerk/nextjs"
-import { useTopicsData } from "@/lib/data/topic"
-import CreateByTitleForm from "@/components/abstract/create-by-title-form"
+import { useTopicsData } from "@/lib/topic"
+import CreateByTitleLine from "@/components/common/CreateByTitleLine"
 import { useCreateTopic } from "@/database/generated/hooks"
 import { RELATIVE_TARGETS_UI_ENUM } from "@/lib/constants"
 
@@ -50,7 +50,7 @@ export default function TopicsNav() {
                 p-1 !outline-0 backdrop-blur-xl"
             >
               <TopicsNavList />
-              <CreateByTitleForm
+              <CreateByTitleLine
                 createMutation={createTopic}
                 placeholder="New Topic"
                 className="border-2"
@@ -62,7 +62,7 @@ export default function TopicsNav() {
       <div className="hidden w-full flex-col gap-2 md:flex">
         <TopicsNavTitle className="px-2" />
         <TopicsNavList />
-        <CreateByTitleForm createMutation={createTopic} placeholder="New Topic" />
+        <CreateByTitleLine createMutation={createTopic} placeholder="New Topic" />
       </div>
     </div>
   )

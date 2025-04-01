@@ -10,20 +10,17 @@ import { ClassNameValue, twMerge } from "tailwind-merge"
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- to allow for any `useCreate` hook to be provided
 type GenericUseMutationResult = UseMutationResult<any, any, any, any>
 
-export default function CreateByTitleForm<T extends GenericUseMutationResult>({
+export default function CreateByTitleLine<T extends GenericUseMutationResult>({
   createMutation,
   additionalData,
   placeholder = "New",
-  endContent,
   className,
 }: {
   createMutation: T
   additionalData?: T["variables"]["data"]
   placeholder?: string
-  endContent?: React.ReactNode
   className?: ClassNameValue
 }) {
-  const { isSignedIn } = useUser()
   const [input, setInput] = useState("")
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
@@ -49,8 +46,9 @@ export default function CreateByTitleForm<T extends GenericUseMutationResult>({
   }
 
   const errorMessage = createMutation.isError ? createMutation.error.info?.message : null
-
   const Icon = createMutation.isPending ? Loader : createMutation.isError ? CircleX : Plus
+
+  const { isSignedIn } = useUser()
   if (!isSignedIn) return null
 
   return (
@@ -83,7 +81,6 @@ export default function CreateByTitleForm<T extends GenericUseMutationResult>({
             "grow resize-none text-neutral-950 placeholder-neutral-500 !ring-0 !outline-0"
           )}
         />
-        {endContent ? <div className="hidden group-focus-within:flex">{endContent}</div> : null}
       </div>
       {errorMessage ? <div className="px-2 text-sm text-red-600">{errorMessage}</div> : null}
     </div>

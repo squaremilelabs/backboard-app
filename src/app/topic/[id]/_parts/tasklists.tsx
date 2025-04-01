@@ -1,8 +1,8 @@
-import CreateByTitleForm from "@/components/abstract/create-by-title-form"
+import CreateByTitleLine from "@/components/common/CreateByTitleLine"
 import { useCreateTasklist } from "@/database/generated/hooks"
-import { useTaskslistsData } from "@/lib/data/tasklist"
-import { TopicData } from "@/lib/data/topic"
-import Tasklist from "@/components/concrete/tasklist"
+import { useTaskslistsData } from "@/lib/tasklist"
+import { TopicData } from "@/lib/topic"
+import Tasklist from "@/components/task/Tasklist"
 
 export default function TopicTasklists({ topic }: { topic: TopicData }) {
   const { data: tasklists } = useTaskslistsData({
@@ -15,7 +15,7 @@ export default function TopicTasklists({ topic }: { topic: TopicData }) {
       {tasklists?.map((tasklist) => (
         <Tasklist key={tasklist.id} tasklist={tasklist} topic={topic} />
       ))}
-      <CreateByTitleForm
+      <CreateByTitleLine
         createMutation={createTasklist}
         additionalData={{ topic_id: topic.id, is_public: topic.is_public }}
         placeholder="New Tasklist"

@@ -1,17 +1,20 @@
 "use client"
 
 import { Bookmark, Text } from "lucide-react"
+import { Prisma } from "@zenstackhq/runtime/models"
 import TopicTasklists from "./tasklists"
 import TopicNotes from "./notes"
-import EditableText from "@/components/abstract/editable-text"
+import EditableText from "@/components/common/EditableText"
 import { useUpdateTopic } from "@/database/generated/hooks"
-import { useTopicData } from "@/lib/data/topic"
-import MetadataPopover from "@/components/abstract/metadata-popover"
+import { useTopicData } from "@/lib/topic"
+import MetadataPopover from "@/components/common/MetadataPopover"
 
 export default function TopicPage({ id }: { id: string }) {
   const { data: topic } = useTopicData(id)
-  const updateTopic = useUpdateTopic()
-
+  const updateTopicMutation = useUpdateTopic()
+  const updateTopic = (data: Prisma.TopicUpdateArgs["data"]) => {
+    updateTopicMutation.mutate({ where: { id }, data })
+  }
   return (
     <div className="flex flex-col gap-8">
       {/* Title & Description */}
@@ -23,8 +26,8 @@ export default function TopicPage({ id }: { id: string }) {
           <div className="flex grow">
             {topic ? (
               <EditableText
-                record={topic}
-                updateMutation={updateTopic}
+                initialValue={topic.title}
+                onSave={(title) => updateTopic({ title })}
                 className="grow text-xl font-medium"
               />
             ) : null}
@@ -35,7 +38,7 @@ export default function TopicPage({ id }: { id: string }) {
               record={topic}
               iconSize={20}
               parentIsPublic={false}
-              updateMutation={updateTopic}
+              updateMutation={updateTopicMutation}
             />
           </div>
         </div>
@@ -44,9 +47,9 @@ export default function TopicPage({ id }: { id: string }) {
             <Text size={16} />
           </div>
           <EditableText
-            record={topic}
-            updateMutation={updateTopic}
-            updateField="description"
+            initialValue={topic?.description ?? ""}
+            onSave={(description) => updateTopic({ description })}
+            allowEmpty
             placeholder="About this topic..."
           />
         </div>

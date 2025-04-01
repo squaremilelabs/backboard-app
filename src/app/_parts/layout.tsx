@@ -7,9 +7,9 @@ import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
 import { usePathname } from "next/navigation"
 import TopicsNav from "./topics-nav"
-import BackboardLogo from "@/components/concrete/backboard-logo"
+import BackboardLogo from "@/components/common/BackboardLogo"
 import { useCountTask } from "@/database/generated/hooks"
-import { getWorkModeTasksWhereParam } from "@/lib/data/task"
+import { getWorkModeTasksWhereParam } from "@/lib/task"
 
 const NO_TOPIC_NAV_PATHNAMES: string[] = ["/archive", "/work-mode"]
 

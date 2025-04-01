@@ -5,11 +5,11 @@ import { Button, Disclosure, DisclosurePanel, Heading } from "react-aria-compone
 import { twMerge } from "tailwind-merge"
 import TextareaAutosize from "react-textarea-autosize"
 import { useUser } from "@clerk/nextjs"
+import EditableText from "../common/EditableText"
 import { useUpdateNote } from "@/database/generated/hooks"
-import EditableText from "@/components/abstract/editable-text"
 import { formatDate } from "@/lib/utils"
-import { TopicData } from "@/lib/data/topic"
-import MetadataPopover from "@/components/abstract/metadata-popover"
+import { TopicData } from "@/lib/topic"
+import MetadataPopover from "@/components/common/MetadataPopover"
 
 export default function Note({ note, topic }: { note: INote; topic: TopicData }) {
   const { isSignedIn } = useUser()
@@ -25,6 +25,13 @@ export default function Note({ note, topic }: { note: INote; topic: TopicData })
       setContentValue("")
     }
   }, [note.content])
+
+  const handleTitleUpdate = (title: string) => {
+    updateNote.mutate({
+      where: { id: note.id },
+      data: { title },
+    })
+  }
 
   const handleSave = () => {
     updateNote.mutate({
@@ -63,7 +70,7 @@ export default function Note({ note, topic }: { note: INote; topic: TopicData })
           />
         </Button>
         <div className="flex items-start gap-2">
-          <EditableText record={note} updateMutation={updateNote} />
+          <EditableText initialValue={note.title} onSave={handleTitleUpdate} />
           <div className="flex h-[20px] items-center">
             <MetadataPopover
               recordType="Resource"

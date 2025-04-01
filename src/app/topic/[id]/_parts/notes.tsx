@@ -1,7 +1,7 @@
 import { useCreateNote, useFindManyNote } from "@/database/generated/hooks"
-import CreateByTitleForm from "@/components/abstract/create-by-title-form"
-import { TopicData } from "@/lib/data/topic"
-import Note from "@/components/concrete/resource/note"
+import CreateByTitleLine from "@/components/common/CreateByTitleLine"
+import { TopicData } from "@/lib/topic"
+import Note from "@/components/resource/Note"
 
 export default function TopicNotes({ topic }: { topic: TopicData }) {
   const resourcesQuery = useFindManyNote({
@@ -16,7 +16,7 @@ export default function TopicNotes({ topic }: { topic: TopicData }) {
         {notes?.map((note) => <Note key={note.id} note={note} topic={topic} />)}
       </div>
       <div className="grid grid-cols-1 gap-2 @sm:grid-cols-2">
-        <CreateByTitleForm
+        <CreateByTitleLine
           createMutation={createNote}
           additionalData={{ topic_id: topic.id, is_public: topic.is_public }}
           placeholder="New Note"

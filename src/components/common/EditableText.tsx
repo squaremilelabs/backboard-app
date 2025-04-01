@@ -93,10 +93,11 @@ export default function EditableText({
           "flex grow cursor-text justify-start text-start !outline-0",
           "decoration-gold-300 underline-offset-4 focus-visible:underline",
           className,
+          !innerValue ? "text-neutral-500" : null,
           isEditing ? "text-transparent" : null
         )}
       >
-        {innerValue}
+        {innerValue || placeholder}
       </Button>
       <Popover placement="left top" offset={-triggerWidth} style={{ width: triggerWidth }}>
         <Dialog className="w-full !outline-0">
