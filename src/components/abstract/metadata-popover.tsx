@@ -77,9 +77,12 @@ export default function MetadataPopover<T extends GenericUseMutationResult>({
     <DialogTrigger>
       <Button
         onPress={() => setIsOpen((prev) => !prev)}
-        className="focus-visible:!text-gold-500 flex items-center !outline-0"
+        className="group flex items-center !outline-0"
       >
-        <EllipsisVertical size={iconSize} className="text-neutral-500" />
+        <EllipsisVertical
+          size={iconSize}
+          className="group-focus-visible:text-gold-500 text-neutral-500"
+        />
         {record?.archived_at ? (
           <Archive size={iconSize} className="text-neutral-500" />
         ) : displayedVisibility === "public" ? (

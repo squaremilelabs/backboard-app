@@ -2,20 +2,24 @@ import {
   Button,
   Disclosure,
   DisclosurePanel,
+  GridList,
+  GridListItem,
   Heading,
   ListBox,
   ListBoxItem,
   Popover,
   Select,
   SelectValue,
+  useDragAndDrop,
 } from "react-aria-components"
 import { RelativeTarget } from "@prisma/client"
-import { ChevronDown, ListTodo } from "lucide-react"
-import { useEffect, useMemo, useState } from "react"
+import { ChevronDown, GripVertical, ListTodo } from "lucide-react"
+import { useEffect, useState } from "react"
 import { useUser } from "@clerk/nextjs"
 import { Task as ITask } from "@prisma/client"
-import { ArrowUpToLine, Loader, Square, SquareCheck } from "lucide-react"
+import { Loader, Square, SquareCheck } from "lucide-react"
 import { twMerge } from "tailwind-merge"
+import { useAsyncList } from "react-stately"
 import MetadataPopover from "../../abstract/metadata-popover"
 import CreateByTitleForm from "@/components/abstract/create-by-title-form"
 import {
@@ -26,9 +30,9 @@ import {
 } from "@/database/generated/hooks"
 import { RELATIVE_TARGETS_UI_ENUM } from "@/lib/constants"
 import { TasklistData } from "@/lib/data/tasklist"
-import EditableText from "@/components/abstract/editable-text"
 import { TopicData } from "@/lib/data/topic"
-import { formatDate } from "@/lib/utils"
+import { formatDate, isEqualArrays } from "@/lib/utils"
+import EditableText from "@/components/common/EditableText"
 
 export default function Tasklist({
   tasklist,
@@ -39,6 +43,13 @@ export default function Tasklist({
 }) {
   const [isExpanded, setIsExpanded] = useState(false)
   const updateTasklist = useUpdateTasklist()
+
+  const handleTitleUpdate = (value: string) => {
+    updateTasklist.mutate({
+      where: { id: tasklist.id },
+      data: { title: value },
+    })
+  }
 
   return (
     <Disclosure
@@ -52,7 +63,7 @@ export default function Tasklist({
             <div className="flex h-[20px] items-center text-neutral-500">
               <ListTodo size={16} />
             </div>
-            <EditableText record={tasklist} updateMutation={updateTasklist} />
+            <EditableText initialValue={tasklist.title} onSave={handleTitleUpdate} />
           </div>
           <TargetSelect tasklist={tasklist} />
         </div>
@@ -162,30 +173,13 @@ function TasksSection({ tasklist }: { tasklist: TasklistData }) {
     }
   }, [tasklist._computed.done_task_count])
 
-  const sortedUndoneTasks = useMemo(
-    () =>
-      [...tasklist._computed.undone_tasks].sort((a, b) => {
-        const aOrder = tasklist.task_order.indexOf(a.id)
-        const bOrder = tasklist.task_order.indexOf(b.id)
-        if (aOrder > -1 && bOrder === -1) return -1
-        if (aOrder === -1 && bOrder > -1) return 1
-        if (aOrder > -1 && bOrder > -1) {
-          return aOrder - bOrder
-        }
-        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-      }),
-    [tasklist]
-  )
-
   const hasTasks =
     tasklist._computed.undone_task_count > 0 || tasklist._computed.done_task_count > 0
 
   return (
     <div className="bg-canvas flex flex-col gap-2 rounded-lg border p-4">
       <div className="flex flex-col">
-        {sortedUndoneTasks.map((task) => {
-          return <Task key={task.id} task={task} tasklist={tasklist} />
-        })}
+        <ReordableTasks tasks={tasklist._computed.undone_tasks} tasklist={tasklist} />
         <CreateByTitleForm
           createMutation={createTask}
           additionalData={{
@@ -224,6 +218,88 @@ function TasksSection({ tasklist }: { tasklist: TasklistData }) {
   )
 }
 
+const taskGridListClassName = twMerge(
+  "flex items-start p-2 rounded-lg outline-neutral-200 hover:outline-2"
+)
+
+function ReordableTasks({ tasklist, tasks }: { tasklist: TasklistData; tasks: ITask[] }) {
+  const savedOrder = tasklist.task_order
+
+  const updateTaskList = useUpdateTasklist()
+
+  const list = useAsyncList({
+    load: () => {
+      const sortedTasks = tasks.sort((a, b) => {
+        const aIndex = savedOrder.indexOf(a.id)
+        const bIndex = savedOrder.indexOf(b.id)
+        if (aIndex !== -1 && bIndex === -1) return -1
+        if (aIndex === -1 && bIndex !== -1) return 1
+        if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex
+        if (a.created_at < b.created_at) return -1
+        if (a.created_at > b.created_at) return 1
+        return 0
+      })
+      return { items: sortedTasks }
+    },
+    getKey: (task) => task.id,
+  })
+
+  // Reload list when items are added or removed
+  useEffect(() => {
+    if (list.loadingState === "idle") {
+      if (tasks.length !== list.items.length) {
+        list.reload()
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tasks])
+
+  const saveTaskOrder = (newOrder: string[]) => {
+    if (isEqualArrays(newOrder, savedOrder)) return
+    updateTaskList.mutate({
+      where: { id: tasklist.id },
+      data: { task_order: newOrder },
+    })
+  }
+
+  const { dragAndDropHooks } = useDragAndDrop({
+    getItems: (keys) =>
+      [...keys].map((key) => ({ "text/plain": list.getItem(key as string)?.title ?? "" })),
+    onReorder: (e) => {
+      if (e.target.dropPosition === "before") {
+        list.moveBefore(e.target.key, e.keys)
+      }
+      if (e.target.dropPosition === "after") {
+        list.moveAfter(e.target.key, e.keys)
+      }
+    },
+    onDragEnd: () => {
+      const newOrder = list.items.map(({ id }) => id)
+      saveTaskOrder(newOrder)
+    },
+  })
+
+  return (
+    <GridList
+      aria-label="Reorderable To-Do Tasks"
+      items={list.items}
+      dragAndDropHooks={dragAndDropHooks}
+    >
+      {(task) => (
+        <GridListItem className={taskGridListClassName} textValue={task.title}>
+          <Button
+            slot="drag"
+            className="focus-visible:text-gold-500 cursor-grab text-neutral-500 !outline-0"
+          >
+            <GripVertical size={20} />
+          </Button>
+          <Task task={task} tasklist={tasklist} />
+        </GridListItem>
+      )}
+    </GridList>
+  )
+}
+
 function DoneTasks({ tasklist }: { tasklist: TasklistData }) {
   const doneTasksQuery = useFindManyTask({
     where: { tasklist_id: tasklist.id, done_at: { not: null } },
@@ -241,17 +317,18 @@ function DoneTasks({ tasklist }: { tasklist: TasklistData }) {
   }
 
   return (
-    <div className="flex flex-col">
-      {doneTasks.map((task) => (
-        <Task key={task.id} task={task} tasklist={tasklist} />
-      ))}
-    </div>
+    <GridList aria-label="Done Tasks by Done Date" className="flex flex-col" items={doneTasks}>
+      {(task) => (
+        <GridListItem className={taskGridListClassName} textValue={task.title}>
+          <Task task={task} tasklist={tasklist} />
+        </GridListItem>
+      )}
+    </GridList>
   )
 }
 
 function Task({ task, tasklist }: { task: ITask; tasklist: TasklistData }) {
   const updateTask = useUpdateTask()
-  const updateTasklist = useUpdateTasklist()
 
   const handleCheck = () => {
     updateTask.mutate({
@@ -260,30 +337,18 @@ function Task({ task, tasklist }: { task: ITask; tasklist: TasklistData }) {
     })
   }
 
-  const handleMoveToTop = () => {
-    const currentTaskOrder = tasklist.task_order
-    let updatedTaskOrder = [...currentTaskOrder]
-
-    // if task.id is not in currentTaskOrder, add to front of array
-    if (!updatedTaskOrder.includes(task.id)) {
-      updatedTaskOrder.unshift(task.id)
-    } else {
-      // if task.id is in currentTaskOrder – move to front of array
-      updatedTaskOrder = updatedTaskOrder.filter((id) => id !== task.id)
-      updatedTaskOrder.unshift(task.id)
-    }
-
-    updateTasklist.mutate({
-      where: { id: tasklist.id },
-      data: { task_order: updatedTaskOrder },
+  const handleTitleUpdate = (value: string) => {
+    updateTask.mutate({
+      where: { id: task.id },
+      data: { title: value },
     })
   }
 
-  const isPending = updateTask.isPending || updateTasklist.isPending
+  const isPending = updateTask.isPending
   const CheckboxIcon = task.done_at ? SquareCheck : Square
 
   return (
-    <div className="group flex items-start gap-2 rounded-lg p-2 outline-neutral-200 hover:outline-2">
+    <div className="group flex grow items-start gap-2">
       {isPending ? (
         <Loader size={20} className="text-gold-500 animate-spin" />
       ) : (
@@ -291,15 +356,8 @@ function Task({ task, tasklist }: { task: ITask; tasklist: TasklistData }) {
           <CheckboxIcon size={20} />
         </Button>
       )}
-      <EditableText record={task} updateMutation={updateTask} updateField="title" />
+      <EditableText initialValue={task.title} onSave={handleTitleUpdate} />
       <div className="flex min-w-fit items-center gap-2">
-        {!task.done_at ? (
-          <div className="hidden h-[20px] items-center group-focus-within:flex group-hover:flex">
-            <Button onPress={handleMoveToTop} className="text-gold-500">
-              <ArrowUpToLine size={16} />
-            </Button>
-          </div>
-        ) : null}
         {task.done_at ? (
           <p className="bg-neutral-100 px-2 py-0.5 text-xs text-neutral-600">
             {formatDate(task.done_at, { withTime: true })}

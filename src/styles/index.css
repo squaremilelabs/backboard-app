@@ -54,5 +54,16 @@ html {
   *, ::after, ::before, ::backdrop, ::file-selector-button {
     @apply border-neutral-200;
   }
+
+  .react-aria-DropIndicator {
+    &[data-drop-target] {
+      border: 1px solid var(--color-gold-500);
+    }
+  
+    @supports not selector(:has(.foo)) {
+      /* Undo gap in browsers that don't support :has */
+      margin-bottom: -2px;
+    }
+  }
 }
 
