@@ -7,6 +7,7 @@ import {
   GridList,
   GridListItem,
   Heading,
+  isTextDropItem,
   useDragAndDrop,
 } from "react-aria-components"
 import { useListData } from "react-stately"
@@ -38,7 +39,39 @@ function DragDev({ content }: { content?: React.ReactNode }) {
   })
 
   const { dragAndDropHooks } = useDragAndDrop({
-    getItems: (keys) => [...keys].map((key) => ({ "text/plain": list.getItem(key)?.value ?? "" })),
+    getItems: (keys) =>
+      [...keys].map((key) => ({
+        "record/task": JSON.stringify(list.getItem(key)),
+        "text/plain": list.getItem(key)?.value ?? "",
+      })),
+    acceptedDragTypes: ["record/task"],
+    getDropOperation: () => "move",
+    // onInsert: async (e) => {
+    //   const processedTasks = await Promise.all(
+    //     e.items
+    //       .filter(isTextDropItem)
+    //       .map(async (item) => JSON.parse(await item.getText("record/task")))
+    //   )
+    //   if (e.target.dropPosition === "before") {
+    //     list.insertBefore(e.target.key, ...processedTasks)
+    //   }
+    //   if (e.target.dropPosition === "after") {
+    //     list.insertAfter(e.target.key, ...processedTasks)
+    //   }
+    // },
+    onRootDrop: async (e) => {
+      const processedTasks = await Promise.all(
+        e.items
+          .filter(isTextDropItem)
+          .map(async (item) => JSON.parse(await item.getText("record/task")))
+      )
+      list.append(...processedTasks)
+    },
+    onDragEnd: (e) => {
+      if (e.dropOperation === "move" && !e.isInternal) {
+        list.remove(...e.keys)
+      }
+    },
     onReorder(e) {
       if (e.target.dropPosition === "before") {
         list.moveBefore(e.target.key, e.keys)

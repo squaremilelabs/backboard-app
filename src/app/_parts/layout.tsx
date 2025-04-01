@@ -11,7 +11,7 @@ import BackboardLogo from "@/components/_legacy/concrete/backboard-logo"
 import { useCountTask } from "@/database/generated/hooks"
 import { getWorkModeTasksWhereParam } from "@/lib/data/task"
 
-const NO_TOPIC_NAV_PATHNAMES: string[] = ["/archive", "/work-mode"]
+const NO_TOPIC_NAV_PATHNAMES: string[] = ["/archive", "/work-mode", "/dev"]
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()

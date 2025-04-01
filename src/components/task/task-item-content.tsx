@@ -9,10 +9,10 @@ import { formatDate } from "@/lib/utils"
 export default function TaskItemContent({ task }: { task: Task }) {
   const showCheckbox = task.status !== "PENDING"
   const showRoutineTaskInstanceNumber = task.type === "RoutineTask"
-  const showDoneAtTimestamp = !!task.done_at
+  const showDoneAtTimestamp = task.done_at !== null
 
   return (
-    <div className="flex items-start gap-1">
+    <div className="flex grow items-start gap-1">
       {showCheckbox ? <Checkbox task={task} /> : null}
       {showRoutineTaskInstanceNumber ? <RoutineTaskInstanceNumber task={task} /> : null}
       {showDoneAtTimestamp ? <DoneTaskTimestamp task={task} /> : null}
