@@ -1,7 +1,7 @@
 import { Metadata } from "next"
 import { currentUser } from "@clerk/nextjs/server"
 import { enhance } from "@zenstackhq/runtime"
-import TopicPage from "./_parts/page"
+import TopicPage from "./_parts/TopicPage"
 import prisma from "@/database/prisma"
 
 type Props = {

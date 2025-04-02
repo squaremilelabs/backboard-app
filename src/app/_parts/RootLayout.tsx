@@ -1,17 +1,15 @@
 "use client"
 import { twMerge } from "tailwind-merge"
-import { Archive, Moon, SunDim, X, Zap, ZapOff } from "lucide-react"
+import { Archive, Moon, SunDim, X } from "lucide-react"
 import { Button, Link } from "react-aria-components"
-import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from "@clerk/nextjs"
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs"
 import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
 import { usePathname } from "next/navigation"
-import TopicsNav from "./topics-nav"
+import TopicsNav from "./TopicsNav"
 import BackboardLogo from "@/components/common/BackboardLogo"
-import { useCountTask } from "@/database/generated/hooks"
-import { getWorkModeTasksWhereParam } from "@/lib/task"
 
-const NO_TOPIC_NAV_PATHNAMES: string[] = ["/archive", "/work-mode"]
+const NO_TOPIC_NAV_PATHNAMES: string[] = ["/archive"]
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -74,7 +72,6 @@ function Header() {
       </div>
       <div className="flex items-center gap-4">
         <SignedIn>
-          <WorkModeLink />
           <Link href="/archive">
             <Archive size={16} className="cursor-pointer text-neutral-500 hover:opacity-60" />
           </Link>
@@ -110,28 +107,5 @@ function ThemeButton() {
     >
       <Icon size={20} />
     </Button>
-  )
-}
-
-function WorkModeLink() {
-  const { user } = useUser()
-  const { data: count } = useCountTask({
-    where: {
-      ...getWorkModeTasksWhereParam(user?.id),
-      done_at: null,
-    },
-  })
-  const hasWorkModeTasks = count && count > 0
-  const Icon = hasWorkModeTasks ? Zap : ZapOff
-  return (
-    <Link href="/work-mode">
-      <Icon
-        size={16}
-        className={twMerge(
-          "cursor-pointer hover:opacity-60",
-          hasWorkModeTasks ? "text-gold-600" : "text-neutral-400"
-        )}
-      />
-    </Link>
   )
 }

@@ -1,4 +1,4 @@
-import HomePage from "./_parts/page"
+import HomePage from "./_parts/HomePage"
 
 export default function Page() {
   return <HomePage />

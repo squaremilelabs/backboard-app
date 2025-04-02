@@ -70,10 +70,9 @@ const taskGridListClassName = twMerge(
 )
 
 function ReordableTasks({ tasklist, tasks }: { tasklist: TasklistData; tasks: Task[] }) {
-  const savedOrder = tasklist.task_order
-
   const updateTaskList = useUpdateTasklist()
 
+  const savedOrder = tasklist.task_order
   const list = useAsyncList({
     load: () => {
       const sortedTasks = tasks.sort((a, b) => {
@@ -101,6 +100,7 @@ function ReordableTasks({ tasklist, tasks }: { tasklist: TasklistData; tasks: Ta
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tasks])
 
+  // Function to be passed to onDragEnd to save task order
   const saveTaskOrder = (newOrder: string[]) => {
     if (isEqualArrays(newOrder, savedOrder)) return
     updateTaskList.mutate({

@@ -76,9 +76,9 @@ model Resource extends BaseRecord {
   task              Task?     @relation(fields: [task_id, task_topic_id], references: [id, topic_id], onDelete: SetNull)
 
   resource_type     String
-  @@delegate(resource_type)
 
   @@map("resources")
+  @@delegate(resource_type)
   @@validate(tasklist_id == null || tasklist_topic_id == topic_id, "tasklist_topic_id must match topic_id")
   @@validate(task_id == null || task_topic_id == topic_id, "task_topic_id must match topic_id")
   @@allow("all", created_by_id == auth().id)

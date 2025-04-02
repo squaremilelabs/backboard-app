@@ -2,8 +2,8 @@
 
 import { Bookmark, Text } from "lucide-react"
 import { Prisma } from "@zenstackhq/runtime/models"
-import TopicTasklists from "./tasklists"
-import TopicNotes from "./notes"
+import TopicTasklists from "./TopicTasklists"
+import TopicNotes from "./TopicNotes"
 import EditableText from "@/components/common/EditableText"
 import { useUpdateTopic } from "@/database/generated/hooks"
 import { useTopicData } from "@/lib/topic"

@@ -8,15 +8,16 @@ import { UseMutationResult } from "@tanstack/react-query"
 import { useUser } from "@clerk/nextjs"
 import { formatDate } from "@/lib/utils"
 
-interface RecordMetadata {
+type RecordType = "Topic" | "Resource" | "Tasklist" | "Task"
+interface BaseRecord {
   id: string
   created_at: Date
   updated_at: Date
-  is_public?: boolean
+  is_public: boolean
   archived_at: Date | null
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- to allow for any extended record to be provided
+  [key: string]: any
 }
-
-type RecordType = "Topic" | "Resource" | "Tasklist" | "Task"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- to allow for any `useUpdate` hook to be provided
 type GenericUseMutationResult = UseMutationResult<any, any, any, any>
@@ -29,10 +30,9 @@ export default function MetadataPopover<T extends GenericUseMutationResult>({
   iconSize = 20,
   hideVisibility = false,
 }: {
-  recordType: RecordType
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- to allow for any record type to be passed
-  record: (RecordMetadata & Record<string, any>) | null
   updateMutation: T
+  recordType: RecordType
+  record: BaseRecord | null
   parentIsPublic: boolean
   iconSize?: number
   hideVisibility?: boolean
@@ -56,17 +56,15 @@ export default function MetadataPopover<T extends GenericUseMutationResult>({
 
   const displayedVisibility: "public" | "private" | null = hideVisibility
     ? null
-    : record?.is_public === undefined
-      ? null
-      : recordType === "Topic"
-        ? record?.is_public
-          ? "public"
+    : recordType === "Topic"
+      ? record?.is_public
+        ? "public"
+        : null
+      : parentIsPublic
+        ? !record?.is_public
+          ? "private"
           : null
-        : parentIsPublic
-          ? !record?.is_public
-            ? "private"
-            : null
-          : null
+        : null
 
   const showVisibilityToggle =
     !hideVisibility && (recordType === "Topic" || parentIsPublic) && record?.is_public !== undefined

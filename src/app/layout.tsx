@@ -2,8 +2,8 @@ import "@/styles/index.css"
 import type { Metadata } from "next"
 import { twMerge } from "tailwind-merge"
 import React from "react"
-import RootLayout from "./_parts/layout"
-import RootProviders from "@/app/_parts/providers"
+import RootLayout from "./_parts/RootLayout"
+import RootProviders from "@/app/_parts/RootProviders"
 import { fontsClassName } from "@/styles/fonts"
 
 export const metadata: Metadata = {

@@ -1,5 +1,4 @@
 import { Prisma, Task, Tasklist, Topic } from "@prisma/client"
-import { startOfDay } from "date-fns"
 import { useFindManyTask } from "@/database/generated/hooks"
 
 export interface TaskRawResult extends Task {
@@ -30,19 +29,6 @@ function transformTaskData(taskResult: TaskRawResult): TaskData {
         ? taskResult.tasklist.task_order.indexOf(taskResult.id)
         : null,
     },
-  }
-}
-
-export function getWorkModeTasksWhereParam(
-  userId: string | null | undefined
-): Prisma.TaskWhereInput {
-  const today = startOfDay(new Date())
-  return {
-    created_by_id: userId ?? "NO_RESULTS",
-    OR: [{ done_at: null, tasklist: { target: { in: ["TODAY"] } } }, { done_at: { gte: today } }],
-    topic: { archived_at: null },
-    tasklist: { archived_at: null },
-    archived_at: null,
   }
 }
 
