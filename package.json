@@ -14,13 +14,11 @@
     "db:migrate-deploy": "npx prisma migrate deploy",
     "db:dev:push": "npx prisma db push --skip-generate",
     "db:dev:reset": "npx prisma db push --skip-generate --force-reset",
-    "db:dev:seed": "npx prisma db seed",
-    "db:dev:migrate-dev": "npx prisma migrate dev --skip-generate --skip-seed",
-    "db:dev:migrate-reset": "npx prisma migrate reset --skip-generate --skip-seed"
+    "db:dev:migrate-dev": "npx prisma migrate dev --skip-generate",
+    "db:dev:migrate-reset": "npx prisma migrate reset --skip-generate"
   },
   "prisma": {
-    "schema": "src/database/generated/prisma-schema/schema.prisma",
-    "seed": "ts-node src/database/seed.ts"
+    "schema": "src/database/generated/prisma-schema/schema.prisma"
   },
   "zenstack": {
     "schema": "src/database/schema/schema.zmodel"
