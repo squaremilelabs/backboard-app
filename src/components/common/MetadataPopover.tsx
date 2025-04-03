@@ -37,7 +37,6 @@ export default function MetadataPopover<T extends GenericUseMutationResult>({
   iconSize?: number
   hideVisibility?: boolean
 }) {
-  const { isSignedIn } = useUser()
   const [isOpen, setIsOpen] = useState(false)
 
   const handleArchiveToggle = () => {
@@ -69,6 +68,7 @@ export default function MetadataPopover<T extends GenericUseMutationResult>({
   const showVisibilityToggle =
     !hideVisibility && (recordType === "Topic" || parentIsPublic) && record?.is_public !== undefined
 
+  const { isSignedIn } = useUser()
   if (!isSignedIn) return null
 
   return (

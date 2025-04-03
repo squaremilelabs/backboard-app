@@ -1,4 +1,4 @@
-import { Task } from "@zenstackhq/runtime/models"
+import { Prisma, Task } from "@zenstackhq/runtime/models"
 import { Loader, Square, SquareCheck } from "lucide-react"
 import { Button } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
@@ -9,28 +9,27 @@ import { TasklistData } from "@/lib/tasklist"
 import { useUpdateTask } from "@/database/generated/hooks"
 
 export default function TaskItem({ task, tasklist }: { task: Task; tasklist: TasklistData }) {
-  const updateTask = useUpdateTask()
+  const updateTaskMutation = useUpdateTask()
+
+  const updateTask = (data: Prisma.TaskUpdateInput) => {
+    updateTaskMutation.mutate({ where: { id: task.id }, data })
+  }
 
   const handleCheck = () => {
-    updateTask.mutate({
-      where: { id: task.id },
-      data: { done_at: task.done_at ? null : new Date() },
+    updateTask({
+      done_at: task.done_at ? null : new Date(),
     })
   }
 
-  const handleTitleUpdate = (value: string) => {
-    updateTask.mutate({
-      where: { id: task.id },
-      data: { title: value },
-    })
+  const handleTitleUpdate = (title: string) => {
+    updateTask({ title })
   }
 
-  const isPending = updateTask.isPending
   const CheckboxIcon = task.done_at ? SquareCheck : Square
 
   return (
     <div className="group flex grow items-start gap-2">
-      {isPending ? (
+      {updateTaskMutation.isPending ? (
         <Loader size={20} className="text-gold-500 animate-spin" />
       ) : (
         <Button onPress={handleCheck} className={twMerge("text-neutral-500")}>
@@ -48,7 +47,7 @@ export default function TaskItem({ task, tasklist }: { task: Task; tasklist: Tas
           <MetadataPopover
             record={task}
             recordType={"Task"}
-            updateMutation={updateTask}
+            updateMutation={updateTaskMutation}
             parentIsPublic={tasklist.is_public}
             iconSize={16}
             hideVisibility
