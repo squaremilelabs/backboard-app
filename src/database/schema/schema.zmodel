@@ -132,7 +132,7 @@ model Tasklist extends BaseRecord {
 
   @@unique([id, topic_id])
   @@map("tasklists")
-  @@validate(topic_id == parent_tasklist_topic_id, "topic_id must match parent_tasklist_topic_id")
+  @@validate(parent_tasklist_topic_id == null || topic_id == parent_tasklist_topic_id, "topic_id must match parent_tasklist_topic_id")
   @@validate(parent_tasklist_id != id, "cannot be own parent")
   @@allow("create", topic.created_by_id == auth().id)
   @@allow("read,update,delete", created_by_id == auth().id)

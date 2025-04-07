@@ -58,7 +58,6 @@ export default function TopicsNav() {
         </DialogTrigger>
       </div>
       <div className="hidden w-full flex-col gap-2 md:flex">
-        <TopicsNavTitle className="px-2" />
         <TopicsNavList />
         <CreateByTitleLine createMutation={createTopic} placeholder="New Topic" />
       </div>
@@ -117,7 +116,7 @@ function TopicsNavTitle({ className }: { className?: ClassNameValue }) {
   return (
     <div className={twMerge("flex items-center gap-1 text-sm", className)}>
       <BookMarked size={14} />
-      My Topics
+      Topics
     </div>
   )
 }

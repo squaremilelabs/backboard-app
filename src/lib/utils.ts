@@ -4,7 +4,7 @@ export function formatDate(
   date: Date | null | undefined,
   options?: { withTime?: boolean; customNoneLabel?: string }
 ): string {
-  if (!date) {
+  if (!date || !(date instanceof Date)) {
     if (options?.customNoneLabel) return options.customNoneLabel
     return "-"
   }
