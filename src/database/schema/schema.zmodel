@@ -33,6 +33,8 @@ model User {
   tasklists    Tasklist[]
   tasks        Task[]
 
+  topic_order  String[]
+
   @@auth
   @@map("users")
   @@allow("read", true)
@@ -54,9 +56,11 @@ abstract model BaseRecord {
 }
 
 model Topic extends BaseRecord {
-  tasklists Tasklist[]
-  tasks     Task[]
-  resources Resource[]
+  tasklists      Tasklist[]
+  tasks          Task[]
+  resources      Resource[]
+
+  tasklist_order String[]
 
   @@map("topics")
   @@allow("all", created_by_id == auth().id)
@@ -98,19 +102,37 @@ model Link extends Resource {
   @@map("resource_links")
 }
 
-model Tasklist extends BaseRecord {
-  topic_id   String
-  topic      Topic          @relation(fields: [topic_id], references: [id], onDelete: Cascade)
-  
-  target     RelativeTarget @default(NONE)
-  
-  tasks      Task[]
-  resources  Resource[]
+model Checklist extends Resource {
+  items ChecklistItem[] @json
 
-  task_order String[]
+  @@map("resource_checklists")
+}
+
+type ChecklistItem {
+  id         String
+  text       String
+  is_checked Boolean
+}
+
+model Tasklist extends BaseRecord {
+  topic_id                 String
+  topic                    Topic      @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+
+  tasks                    Task[]
+  resources                Resource[]
+
+  parent_tasklist_id       String?
+  parent_tasklist_topic_id String?
+  parent_tasklist          Tasklist?  @relation("nested_tasklists", fields: [parent_tasklist_id, parent_tasklist_topic_id], references: [id, topic_id])
+  sub_tasklists            Tasklist[] @relation("nested_tasklists")
+
+  now_task_order           String[]
+  later_task_order         String[]
+  sub_tasklist_order       String[]
 
   @@unique([id, topic_id])
   @@map("tasklists")
+  @@validate(topic_id == parent_tasklist_topic_id, "topic_id must match parent_tasklist_topic_id")
   @@allow("create", topic.created_by_id == auth().id)
   @@allow("read,update,delete", created_by_id == auth().id)
   @@allow("read", topic.is_public == true && topic.archived_at == null && is_public == true && archived_at == null)
@@ -126,25 +148,22 @@ model Task extends BaseRecord {
 
   resources         Resource[]
 
+  status            TaskStatus @default(LATER)
   size_minutes      Int?       @gt(0)
-  is_draft          Boolean    @default(true)
   done_at           DateTime?  @db.Timestamptz
 
   @@unique([id, topic_id])
   @@map("tasks")
   @@validate(topic_id == tasklist_topic_id, "topic_id must match tasklist_topic_id")
+  @@validate((done_at == null && status != "DONE") || (done_at != null && status == "DONE"), "status must be DONE if done_at is set")
   @@allow("create", topic.created_by_id == auth().id)
   @@allow("read,update,delete", created_by_id == auth().id)
   @@allow("read", topic.is_public == true && topic.archived_at == null && tasklist.is_public == true && tasklist.archived_at == null && archived_at == null)
 }
 
-enum RelativeTarget {
-  TODAY
-  THIS_WEEK
-  NEXT_WEEK
-  THIS_MONTH
-  NEXT_MONTH
-  SOMEDAY
-  NONE
-  @@map("RELATIVE_TARGET")
+enum TaskStatus {
+  NOW
+  LATER
+  DONE
+  @@map("TASK_STATUS")
 }

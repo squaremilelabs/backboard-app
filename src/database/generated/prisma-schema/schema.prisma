@@ -12,16 +12,12 @@ generator client {
   provider = "prisma-client-js"
 }
 
-enum RelativeTarget {
-  TODAY
-  THIS_WEEK
-  NEXT_WEEK
-  THIS_MONTH
-  NEXT_MONTH
-  SOMEDAY
-  NONE
+enum TaskStatus {
+  NOW
+  LATER
+  DONE
 
-  @@map("RELATIVE_TARGET")
+  @@map("TASK_STATUS")
 }
 
 model User {
@@ -35,48 +31,51 @@ model User {
   resources    Resource[]
   tasklists    Tasklist[]
   tasks        Task[]
+  topic_order  String[]
 
   @@map("users")
 }
 
 model Topic {
-  id            String     @id() @default(cuid())
-  created_at    DateTime   @default(now()) @db.Timestamptz()
-  updated_at    DateTime   @updatedAt() @db.Timestamptz()
-  created_by_id String
-  created_by    User       @relation(fields: [created_by_id], references: [id], onDelete: Cascade)
-  title         String
-  description   String?
-  is_public     Boolean    @default(false)
-  archived_at   DateTime?  @db.Timestamptz()
-  tasklists     Tasklist[]
-  tasks         Task[]
-  resources     Resource[]
+  id             String     @id() @default(cuid())
+  created_at     DateTime   @default(now()) @db.Timestamptz()
+  updated_at     DateTime   @updatedAt() @db.Timestamptz()
+  created_by_id  String
+  created_by     User       @relation(fields: [created_by_id], references: [id], onDelete: Cascade)
+  title          String
+  description    String?
+  is_public      Boolean    @default(false)
+  archived_at    DateTime?  @db.Timestamptz()
+  tasklists      Tasklist[]
+  tasks          Task[]
+  resources      Resource[]
+  tasklist_order String[]
 
   @@map("topics")
 }
 
 model Resource {
-  id                String    @id() @default(cuid())
-  created_at        DateTime  @default(now()) @db.Timestamptz()
-  updated_at        DateTime  @updatedAt() @db.Timestamptz()
-  created_by_id     String
-  created_by        User      @relation(fields: [created_by_id], references: [id], onDelete: Cascade)
-  title             String
-  description       String?
-  is_public         Boolean   @default(false)
-  archived_at       DateTime? @db.Timestamptz()
-  topic_id          String
-  topic             Topic     @relation(fields: [topic_id], references: [id], onDelete: Cascade)
-  tasklist_id       String?
-  tasklist_topic_id String?
-  tasklist          Tasklist? @relation(fields: [tasklist_id, tasklist_topic_id], references: [id, topic_id], onDelete: SetNull)
-  task_id           String?
-  task_topic_id     String?
-  task              Task?     @relation(fields: [task_id, task_topic_id], references: [id, topic_id], onDelete: SetNull)
-  resource_type     String
-  delegate_aux_note Note?
-  delegate_aux_link Link?
+  id                     String     @id() @default(cuid())
+  created_at             DateTime   @default(now()) @db.Timestamptz()
+  updated_at             DateTime   @updatedAt() @db.Timestamptz()
+  created_by_id          String
+  created_by             User       @relation(fields: [created_by_id], references: [id], onDelete: Cascade)
+  title                  String
+  description            String?
+  is_public              Boolean    @default(false)
+  archived_at            DateTime?  @db.Timestamptz()
+  topic_id               String
+  topic                  Topic      @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+  tasklist_id            String?
+  tasklist_topic_id      String?
+  tasklist               Tasklist?  @relation(fields: [tasklist_id, tasklist_topic_id], references: [id, topic_id], onDelete: SetNull)
+  task_id                String?
+  task_topic_id          String?
+  task                   Task?      @relation(fields: [task_id, task_topic_id], references: [id, topic_id], onDelete: SetNull)
+  resource_type          String
+  delegate_aux_note      Note?
+  delegate_aux_link      Link?
+  delegate_aux_checklist Checklist?
 
   @@map("resources")
 }
@@ -97,22 +96,35 @@ model Link {
   @@map("resource_links")
 }
 
+model Checklist {
+  id                    String   @id()
+  items                 Json
+  delegate_aux_resource Resource @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@map("resource_checklists")
+}
+
 model Tasklist {
-  id            String         @id() @default(cuid())
-  created_at    DateTime       @default(now()) @db.Timestamptz()
-  updated_at    DateTime       @updatedAt() @db.Timestamptz()
-  created_by_id String
-  created_by    User           @relation(fields: [created_by_id], references: [id], onDelete: Cascade)
-  title         String
-  description   String?
-  is_public     Boolean        @default(false)
-  archived_at   DateTime?      @db.Timestamptz()
-  topic_id      String
-  topic         Topic          @relation(fields: [topic_id], references: [id], onDelete: Cascade)
-  target        RelativeTarget @default(NONE)
-  tasks         Task[]
-  resources     Resource[]
-  task_order    String[]
+  id                       String     @id() @default(cuid())
+  created_at               DateTime   @default(now()) @db.Timestamptz()
+  updated_at               DateTime   @updatedAt() @db.Timestamptz()
+  created_by_id            String
+  created_by               User       @relation(fields: [created_by_id], references: [id], onDelete: Cascade)
+  title                    String
+  description              String?
+  is_public                Boolean    @default(false)
+  archived_at              DateTime?  @db.Timestamptz()
+  topic_id                 String
+  topic                    Topic      @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+  tasks                    Task[]
+  resources                Resource[]
+  parent_tasklist_id       String?
+  parent_tasklist_topic_id String?
+  parent_tasklist          Tasklist?  @relation("nested_tasklists", fields: [parent_tasklist_id, parent_tasklist_topic_id], references: [id, topic_id])
+  sub_tasklists            Tasklist[] @relation("nested_tasklists")
+  now_task_order           String[]
+  later_task_order         String[]
+  sub_tasklist_order       String[]
 
   @@unique([id, topic_id])
   @@map("tasklists")
@@ -134,8 +146,8 @@ model Task {
   tasklist_topic_id String
   tasklist          Tasklist   @relation(fields: [tasklist_id, tasklist_topic_id], references: [id, topic_id], onDelete: Cascade)
   resources         Resource[]
+  status            TaskStatus @default(LATER)
   size_minutes      Int?
-  is_draft          Boolean    @default(true)
   done_at           DateTime?  @db.Timestamptz()
 
   @@unique([id, topic_id])

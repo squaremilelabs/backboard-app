@@ -10,6 +10,7 @@ export * from './topic';
 export * from './resource';
 export * from './note';
 export * from './link';
+export * from './checklist';
 export * from './tasklist';
 export * from './task';
 export { getQueryKey } from '@zenstackhq/tanstack-query/runtime-v5';
