@@ -5,31 +5,35 @@ import { useUser } from "@clerk/nextjs"
 import { Task } from "@prisma/client"
 import { twMerge } from "tailwind-merge"
 import { useAsyncList } from "react-stately"
+import { Tasklist } from "@zenstackhq/runtime/models"
 import { useCreateTask, useFindManyTask, useUpdateTasklist } from "@/database/generated/hooks"
-import { TasklistData } from "@/lib/tasklist"
 import { isEqualArrays } from "@/lib/utils"
 import CreateByTitleLine from "@/components/common/CreateByTitleLine"
 import TaskItem from "@/components/task/TaskItem"
 
-export default function TasklistTasksContent({ tasklist }: { tasklist: TasklistData }) {
+export default function TasklistTasksContent({ tasklist }: { tasklist: Tasklist }) {
   const { user } = useUser()
   const createTask = useCreateTask()
   const [doneTasksExpanded, setDoneTasksExpanded] = useState(false)
 
-  useEffect(() => {
-    if (!tasklist._computed.done_task_count) {
-      setDoneTasksExpanded(false)
-    }
-  }, [tasklist._computed.done_task_count])
+  const undoneTasksQuery = useFindManyTask({
+    where: { tasklist_id: tasklist.id, status: { not: "DONE" }, archived_at: null },
+  })
+  const undoneTasks = undoneTasksQuery.data ?? []
 
-  const hasDoneTasks = tasklist._computed.done_task_count > 0
-  const hasTasks =
-    tasklist._computed.undone_task_count > 0 || tasklist._computed.done_task_count > 0
+  const doneTasksQuery = useFindManyTask({
+    where: { tasklist_id: tasklist.id, status: "DONE", archived_at: null },
+    orderBy: { done_at: "desc" },
+  })
+  const doneTasks = doneTasksQuery.data ?? []
+
+  const hasDoneTasks = doneTasks.length > 0
+  const hasTasks = undoneTasks.length > 0 || hasDoneTasks
 
   return (
     <div className="bg-canvas flex flex-col gap-2 rounded-lg border p-4">
       <div className="flex flex-col">
-        <ReordableTasks tasks={tasklist._computed.undone_tasks} tasklist={tasklist} />
+        <ReordableTasks tasks={undoneTasks} tasklist={tasklist} />
         <CreateByTitleLine
           createMutation={createTask}
           additionalData={{
@@ -56,9 +60,9 @@ export default function TasklistTasksContent({ tasklist }: { tasklist: TasklistD
               size={16}
               className={twMerge(doneTasksExpanded ? "rotate-0" : "-rotate-90")}
             />
-            <p className="text-sm">{tasklist._computed.done_task_count} done</p>
+            <p className="text-sm">{doneTasks.length} done</p>
           </Button>
-          {doneTasksExpanded ? <DoneTasks tasklist={tasklist} /> : null}
+          {doneTasksExpanded ? <DoneTasks tasklist={tasklist} tasks={doneTasks} /> : null}
         </div>
       )}
     </div>
@@ -69,10 +73,10 @@ const taskGridListClassName = twMerge(
   "flex items-start p-2 rounded-lg outline-neutral-200 hover:outline-2"
 )
 
-function ReordableTasks({ tasklist, tasks }: { tasklist: TasklistData; tasks: Task[] }) {
+function ReordableTasks({ tasklist, tasks }: { tasklist: Tasklist; tasks: Task[] }) {
   const updateTaskList = useUpdateTasklist()
 
-  const savedOrder = tasklist.task_order
+  const savedOrder = tasklist.later_task_order
   const list = useAsyncList({
     load: () => {
       const sortedTasks = tasks.sort((a, b) => {
@@ -105,7 +109,7 @@ function ReordableTasks({ tasklist, tasks }: { tasklist: TasklistData; tasks: Ta
     if (isEqualArrays(newOrder, savedOrder)) return
     updateTaskList.mutate({
       where: { id: tasklist.id },
-      data: { task_order: newOrder },
+      data: { later_task_order: newOrder },
     })
   }
 
@@ -147,24 +151,9 @@ function ReordableTasks({ tasklist, tasks }: { tasklist: TasklistData; tasks: Ta
   )
 }
 
-function DoneTasks({ tasklist }: { tasklist: TasklistData }) {
-  const doneTasksQuery = useFindManyTask({
-    where: { tasklist_id: tasklist.id, done_at: { not: null } },
-    orderBy: { done_at: "desc" },
-  })
-
-  if (doneTasksQuery.isLoading) {
-    return <span className="text-sm text-neutral-500">Loading...</span>
-  }
-
-  const doneTasks = doneTasksQuery.data || []
-
-  if (doneTasks.length === 0) {
-    return <span className="text-sm text-neutral-500">None</span>
-  }
-
+function DoneTasks({ tasklist, tasks }: { tasklist: Tasklist; tasks: Task[] }) {
   return (
-    <GridList aria-label="Done Tasks by Done Date" className="flex flex-col" items={doneTasks}>
+    <GridList aria-label="Done Tasks by Done Date" className="flex flex-col" items={tasks}>
       {(task) => (
         <GridListItem className={taskGridListClassName} textValue={task.title}>
           <TaskItem task={task} tasklist={tasklist} />

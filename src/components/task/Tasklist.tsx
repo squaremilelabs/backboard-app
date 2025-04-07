@@ -1,23 +1,14 @@
 import { Button, Disclosure, DisclosurePanel, Heading } from "react-aria-components"
-import { RelativeTarget } from "@prisma/client"
 import { ChevronDown, ListTodo } from "lucide-react"
 import { useState } from "react"
 import { twMerge } from "tailwind-merge"
+import { Tasklist as ITasklist, Topic } from "@zenstackhq/runtime/models"
 import MetadataPopover from "../common/MetadataPopover"
 import { useUpdateTasklist } from "@/database/generated/hooks"
-import { TasklistData } from "@/lib/tasklist"
-import { TopicData } from "@/lib/topic"
 import EditableText from "@/components/common/EditableText"
-import RelativeTargetSelect from "@/components/common/RelativeTargetSelect"
 import TasklistTasksContent from "@/components/task/TasklistTasksContent"
 
-export default function Tasklist({
-  tasklist,
-  topic,
-}: {
-  tasklist: TasklistData
-  topic: TopicData
-}) {
+export default function Tasklist({ tasklist, topic }: { tasklist: ITasklist; topic: Topic }) {
   const [isExpanded, setIsExpanded] = useState(false)
   const updateTasklist = useUpdateTasklist()
 
@@ -25,13 +16,6 @@ export default function Tasklist({
     updateTasklist.mutate({
       where: { id: tasklist.id },
       data: { title: value },
-    })
-  }
-
-  const handleTargetSelect = (target: RelativeTarget) => {
-    updateTasklist.mutate({
-      where: { id: tasklist.id },
-      data: { target },
     })
   }
 
@@ -53,7 +37,6 @@ export default function Tasklist({
               className="bg-neutral-100"
             />
           </div>
-          <RelativeTargetSelect selected={tasklist.target} onSelect={handleTargetSelect} />
         </div>
         <div className="flex items-center gap-2">
           <div className="gap flex h-[20px] items-center">
@@ -66,19 +49,6 @@ export default function Tasklist({
             />
           </div>
           <Button slot="trigger" className="group flex items-center gap-2 !outline-0">
-            <div
-              className={twMerge(
-                "flex h-[20px] w-[30px] items-center justify-center rounded-lg bg-neutral-200 px-2 text-sm",
-                "outline-gold-500 group-focus-within:outline-1",
-                tasklist.target == "TODAY" || tasklist.target === "THIS_WEEK"
-                  ? tasklist._computed.undone_task_count === 0
-                    ? "border border-red-200 bg-red-50 text-red-600"
-                    : "border-gold-200 bg-gold-50 text-gold-600 border"
-                  : ""
-              )}
-            >
-              {tasklist._computed.undone_task_count}
-            </div>
             <ChevronDown
               size={20}
               className={twMerge(

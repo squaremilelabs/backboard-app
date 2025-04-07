@@ -13,10 +13,8 @@ import { ClassNameValue, twMerge } from "tailwind-merge"
 import { BookMarked, ChevronDown, Share2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useUser } from "@clerk/nextjs"
-import { useTopicsData } from "@/lib/topic"
 import CreateByTitleLine from "@/components/common/CreateByTitleLine"
-import { useCreateTopic } from "@/database/generated/hooks"
-import { RELATIVE_TARGETS_UI_ENUM } from "@/lib/constants"
+import { useCreateTopic, useFindManyTopic } from "@/database/generated/hooks"
 
 export default function TopicsNav() {
   const pathname = usePathname()
@@ -73,8 +71,8 @@ function TopicsNavList() {
   const params = useParams<{ id: string }>()
   const selectedId = pathname.startsWith("/topic/") ? params.id : null
   const { user } = useUser()
-  const { data, isLoading } = useTopicsData({
-    where: { archived_at: null, created_by_id: user?.id ?? null },
+  const { data, isLoading } = useFindManyTopic({
+    where: { archived_at: null, created_by_id: user?.id ?? "NO_USER" },
     orderBy: { title: "asc" },
   })
 
@@ -94,8 +92,6 @@ function TopicsNavList() {
       {(topic) => {
         const noneSelected = selectedId === null
         const isSelected = selectedId === topic.id
-        const nextTasklist = topic._computed.next_tasklist
-        const nextTasklistUI = nextTasklist ? RELATIVE_TARGETS_UI_ENUM[nextTasklist.target] : null
         return (
           <GridListItem
             textValue={topic.title}
@@ -110,14 +106,6 @@ function TopicsNavList() {
           >
             <p className="grow truncate group-hover:font-semibold">{topic.title}</p>
             {topic.is_public ? <Share2 size={14} className="text-neutral-500" /> : null}
-            {nextTasklistUI ? (
-              <span
-                className={twMerge(
-                  "size-[16px] min-w-[16px] rounded-full border-2",
-                  nextTasklistUI.className
-                )}
-              />
-            ) : null}
           </GridListItem>
         )
       }}

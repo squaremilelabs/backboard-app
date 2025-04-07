@@ -1,14 +1,13 @@
-import { Prisma, Task } from "@zenstackhq/runtime/models"
+import { Prisma, Task, Tasklist } from "@zenstackhq/runtime/models"
 import { Loader, Square, SquareCheck } from "lucide-react"
 import { Button } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
 import EditableText from "../common/EditableText"
 import MetadataPopover from "../common/MetadataPopover"
 import { formatDate } from "@/lib/utils"
-import { TasklistData } from "@/lib/tasklist"
 import { useUpdateTask } from "@/database/generated/hooks"
 
-export default function TaskItem({ task, tasklist }: { task: Task; tasklist: TasklistData }) {
+export default function TaskItem({ task, tasklist }: { task: Task; tasklist: Tasklist }) {
   const updateTaskMutation = useUpdateTask()
 
   const updateTask = (data: Prisma.TaskUpdateInput) => {
@@ -18,6 +17,7 @@ export default function TaskItem({ task, tasklist }: { task: Task; tasklist: Tas
   const handleCheck = () => {
     updateTask({
       done_at: task.done_at ? null : new Date(),
+      status: task.done_at ? "NOW" : "DONE",
     })
   }
 

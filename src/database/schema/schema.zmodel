@@ -123,7 +123,7 @@ model Tasklist extends BaseRecord {
 
   parent_tasklist_id       String?
   parent_tasklist_topic_id String?
-  parent_tasklist          Tasklist?  @relation("nested_tasklists", fields: [parent_tasklist_id, parent_tasklist_topic_id], references: [id, topic_id])
+  parent_tasklist          Tasklist?  @relation("nested_tasklists", fields: [parent_tasklist_id, parent_tasklist_topic_id], references: [id, topic_id], onDelete: Cascade)
   sub_tasklists            Tasklist[] @relation("nested_tasklists")
 
   now_task_order           String[]
@@ -133,6 +133,7 @@ model Tasklist extends BaseRecord {
   @@unique([id, topic_id])
   @@map("tasklists")
   @@validate(topic_id == parent_tasklist_topic_id, "topic_id must match parent_tasklist_topic_id")
+  @@validate(parent_tasklist_id != id, "cannot be own parent")
   @@allow("create", topic.created_by_id == auth().id)
   @@allow("read,update,delete", created_by_id == auth().id)
   @@allow("read", topic.is_public == true && topic.archived_at == null && is_public == true && archived_at == null)

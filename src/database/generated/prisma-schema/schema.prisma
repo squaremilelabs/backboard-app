@@ -120,7 +120,7 @@ model Tasklist {
   resources                Resource[]
   parent_tasklist_id       String?
   parent_tasklist_topic_id String?
-  parent_tasklist          Tasklist?  @relation("nested_tasklists", fields: [parent_tasklist_id, parent_tasklist_topic_id], references: [id, topic_id])
+  parent_tasklist          Tasklist?  @relation("nested_tasklists", fields: [parent_tasklist_id, parent_tasklist_topic_id], references: [id, topic_id], onDelete: Cascade)
   sub_tasklists            Tasklist[] @relation("nested_tasklists")
   now_task_order           String[]
   later_task_order         String[]

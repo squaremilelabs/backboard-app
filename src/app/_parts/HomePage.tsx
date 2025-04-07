@@ -4,13 +4,8 @@ import { SignedIn, SignedOut } from "@clerk/nextjs"
 import { ExternalLink, Share2 } from "lucide-react"
 import { twMerge } from "tailwind-merge"
 import Image from "next/image"
-import {
-  BACKBOARD_INTRO_PAGE_LINK,
-  PROD_BACKBOARD_TOPIC_ID,
-  RELATIVE_TARGETS_UI_ENUM,
-} from "@/lib/constants"
+import { BACKBOARD_INTRO_PAGE_LINK, PROD_BACKBOARD_TOPIC_ID } from "@/lib/constants"
 import { useCountUser } from "@/database/generated/hooks"
-import { useTopicData } from "@/lib/topic"
 import BackboardLogo from "@/components/common/BackboardLogo"
 
 export default function HomePage() {
@@ -31,9 +26,6 @@ const headerClassName =
 
 function UserContent() {
   const userCount = useCountUser()
-  const { data: backboardTopic } = useTopicData(PROD_BACKBOARD_TOPIC_ID)
-  const nextTasklist = backboardTopic?._computed.next_tasklist
-  const nextTasklistUI = nextTasklist ? RELATIVE_TARGETS_UI_ENUM[nextTasklist.target] : null
   return (
     <div className="flex w-fit flex-col gap-8 rounded-lg border bg-neutral-100 p-8">
       <div className="flex flex-col gap-1">
@@ -74,14 +66,6 @@ function UserContent() {
           >
             <p className="grow group-hover:font-semibold">Backboard</p>
             <Share2 size={14} className="text-neutral-500" />
-            {nextTasklistUI ? (
-              <span
-                className={twMerge(
-                  "size-[16px] min-w-[16px] rounded-full border-2",
-                  nextTasklistUI.className
-                )}
-              />
-            ) : null}
           </Link>
         </div>
         <p className="text-sm text-neutral-500">

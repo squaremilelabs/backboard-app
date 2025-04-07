@@ -1,13 +1,12 @@
+import { Topic } from "@zenstackhq/runtime/models"
 import CreateByTitleLine from "@/components/common/CreateByTitleLine"
-import { useCreateTasklist } from "@/database/generated/hooks"
-import { useTaskslistsData } from "@/lib/tasklist"
-import { TopicData } from "@/lib/topic"
+import { useCreateTasklist, useFindManyTasklist } from "@/database/generated/hooks"
 import Tasklist from "@/components/task/Tasklist"
 
-export default function TopicTasklists({ topic }: { topic: TopicData }) {
-  const { data: tasklists } = useTaskslistsData({
+export default function TopicTasklists({ topic }: { topic: Topic }) {
+  const { data: tasklists } = useFindManyTasklist({
     where: { topic_id: topic.id, archived_at: null },
-    orderBy: [{ target: "asc" }, { created_at: "desc" }],
+    orderBy: [{ created_at: "desc" }],
   })
   const createTasklist = useCreateTasklist()
   return (

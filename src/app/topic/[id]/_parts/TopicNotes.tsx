@@ -1,9 +1,9 @@
+import { Topic } from "@zenstackhq/runtime/models"
 import { useCreateNote, useFindManyNote } from "@/database/generated/hooks"
 import CreateByTitleLine from "@/components/common/CreateByTitleLine"
-import { TopicData } from "@/lib/topic"
 import Note from "@/components/resource/Note"
 
-export default function TopicNotes({ topic }: { topic: TopicData }) {
+export default function TopicNotes({ topic }: { topic: Topic }) {
   const resourcesQuery = useFindManyNote({
     where: { topic_id: topic.id, archived_at: null },
     orderBy: { updated_at: "desc" },

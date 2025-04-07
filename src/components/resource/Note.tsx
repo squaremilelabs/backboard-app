@@ -1,4 +1,4 @@
-import { Note as INote } from "@zenstackhq/runtime/models"
+import { Note as INote, Topic } from "@zenstackhq/runtime/models"
 import { ChevronDown, File, FileText, Loader } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Button, Disclosure, DisclosurePanel, Heading } from "react-aria-components"
@@ -8,10 +8,9 @@ import { useUser } from "@clerk/nextjs"
 import EditableText from "../common/EditableText"
 import { useUpdateNote } from "@/database/generated/hooks"
 import { formatDate } from "@/lib/utils"
-import { TopicData } from "@/lib/topic"
 import MetadataPopover from "@/components/common/MetadataPopover"
 
-export default function Note({ note, topic }: { note: INote; topic: TopicData }) {
+export default function Note({ note, topic }: { note: INote; topic: Topic }) {
   const { isSignedIn } = useUser()
   const [isExpanded, setIsExpanded] = useState(false)
   const updateNote = useUpdateNote()

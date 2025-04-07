@@ -5,12 +5,11 @@ import { Prisma } from "@zenstackhq/runtime/models"
 import TopicTasklists from "./TopicTasklists"
 import TopicNotes from "./TopicNotes"
 import EditableText from "@/components/common/EditableText"
-import { useUpdateTopic } from "@/database/generated/hooks"
-import { useTopicData } from "@/lib/topic"
+import { useFindUniqueTopic, useUpdateTopic } from "@/database/generated/hooks"
 import MetadataPopover from "@/components/common/MetadataPopover"
 
 export default function TopicPage({ id }: { id: string }) {
-  const { data: topic } = useTopicData(id)
+  const { data: topic } = useFindUniqueTopic({ where: { id } })
   const updateTopicMutation = useUpdateTopic()
   const updateTopic = (data: Prisma.TopicUpdateArgs["data"]) => {
     updateTopicMutation.mutate({ where: { id }, data })
@@ -32,15 +31,17 @@ export default function TopicPage({ id }: { id: string }) {
               />
             ) : null}
           </div>
-          <div className="flex h-[30px] items-center">
-            <MetadataPopover
-              recordType="Topic"
-              record={topic}
-              iconSize={20}
-              parentIsPublic={false}
-              updateMutation={updateTopicMutation}
-            />
-          </div>
+          {topic ? (
+            <div className="flex h-[30px] items-center">
+              <MetadataPopover
+                recordType="Topic"
+                record={topic}
+                iconSize={20}
+                parentIsPublic={false}
+                updateMutation={updateTopicMutation}
+              />
+            </div>
+          ) : null}
         </div>
         <div className="flex items-start gap-2">
           <div className="flex h-[20px] w-[24px] items-center justify-center text-neutral-500">
