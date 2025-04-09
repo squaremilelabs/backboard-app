@@ -6,7 +6,7 @@ import {
   GridListItem,
   Heading,
 } from "react-aria-components"
-import { ChevronRight, GripVertical } from "lucide-react"
+import { ChevronRight } from "lucide-react";
 import { useUser } from "@clerk/nextjs"
 import { Task } from "@prisma/client"
 import { twMerge } from "tailwind-merge"
@@ -225,7 +225,6 @@ function UndoneTasks({
       {(task) => (
         <GridListItem className={taskGridListItemClassName} textValue={task.title}>
           <TaskItem task={task} tasklist={tasklist} />
-          <GripVertical size={20} />
         </GridListItem>
       )}
     </GridList>

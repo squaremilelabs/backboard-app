@@ -1,5 +1,5 @@
 import { Prisma, Task, Tasklist } from "@zenstackhq/runtime/models"
-import { CircleArrowUp, Dot, Loader, Square, SquareCheck } from "lucide-react"
+import { Diamond, Loader, Square, SquareCheck } from "lucide-react"
 import { Button } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
 import EditableText from "../common/EditableText"
@@ -26,8 +26,7 @@ export default function TaskItem({ task, tasklist }: { task: Task; tasklist: Tas
     updateTask({ title })
   }
 
-  const CheckboxIcon =
-    task.status === "DONE" ? SquareCheck : task.status === "LATER" ? CircleArrowUp : Square
+  const CheckboxIcon = task.status === "DONE" ? SquareCheck : Square
 
   return (
     <div className="group flex grow items-start gap-2">
@@ -38,14 +37,20 @@ export default function TaskItem({ task, tasklist }: { task: Task; tasklist: Tas
           <CheckboxIcon size={20} />
         </Button>
       ) : (
-        <Dot size={20} />
+        <div className="flex size-[20px] items-center justify-center">
+          <Diamond size={16} className="text-neutral-500" />
+        </div>
       )}
       {task.done_at ? (
-        <p className="inline-flex h-[20px] items-center rounded border bg-neutral-100 px-2 py-0.5 text-xs text-neutral-600">
+        <p
+          className="hidden h-[20px] min-w-fit items-center rounded border bg-neutral-100 px-2 py-0.5 text-xs
+            text-neutral-600 @sm:inline-flex"
+        >
           {formatDate(task.done_at, { withTime: true })}
         </p>
       ) : null}
       <EditableText initialValue={task.title} onSave={handleTitleUpdate} className="bg-canvas" />
+      <div className="grow" />
       <div className="flex min-w-fit items-center gap-2">
         <div className="flex h-[20px] items-center">
           <MetadataPopover

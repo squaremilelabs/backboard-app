@@ -90,8 +90,9 @@ export default function EditableText({
         ref={triggerRef}
         onPress={() => setIsEditing(true)}
         className={twMerge(
-          "flex grow cursor-text justify-start text-start !outline-0",
+          "flex cursor-text justify-start text-start !outline-0",
           "decoration-gold-300 underline-offset-4 focus-visible:underline",
+          isEditing ? "grow" : null,
           className,
           !innerValue ? "text-neutral-500" : null,
           isEditing ? "text-transparent" : null
