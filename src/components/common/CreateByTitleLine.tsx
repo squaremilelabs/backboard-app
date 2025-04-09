@@ -1,11 +1,9 @@
 "use client"
-
 import { useUser } from "@clerk/nextjs"
 import { UseMutationResult } from "@tanstack/react-query"
 import { CircleX, Loader, Plus } from "lucide-react"
-import React, { useRef, useState } from "react"
-import TextareaAutosize from "react-textarea-autosize"
 import { ClassNameValue, twMerge } from "tailwind-merge"
+import EditableText from "./EditableText"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- to allow for any `useCreate` hook to be provided
 type GenericUseMutationResult = UseMutationResult<any, any, any, any>
@@ -21,28 +19,8 @@ export default function CreateByTitleLine<T extends GenericUseMutationResult>({
   placeholder?: string
   className?: ClassNameValue
 }) {
-  const [input, setInput] = useState("")
-  const inputRef = useRef<HTMLTextAreaElement>(null)
-
-  const handleSubmit = () => {
-    if (input) {
-      createMutation.mutate(
-        { data: { title: input, ...additionalData } },
-        { onSuccess: () => setInput("") }
-      )
-    }
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault()
-      handleSubmit()
-    }
-    if (e.key === "Escape") {
-      setInput("")
-      createMutation.reset()
-      inputRef.current?.blur()
-    }
+  const handleSubmit = (value: string) => {
+    createMutation.mutate({ data: { title: value, ...additionalData } })
   }
 
   const errorMessage = createMutation.isError ? createMutation.error.info?.message : null
@@ -70,15 +48,14 @@ export default function CreateByTitleLine<T extends GenericUseMutationResult>({
             createMutation.isError ? "!text-red-600" : null
           )}
         />
-        <TextareaAutosize
-          ref={inputRef}
+        <EditableText
+          initialValue=""
+          onSave={handleSubmit}
           placeholder={placeholder}
-          value={input}
-          disabled={createMutation.isPending}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
+          resetValueAfterSave
           className={twMerge(
-            "grow resize-none text-neutral-950 placeholder-neutral-500 !ring-0 !outline-0"
+            `grow resize-none font-normal !text-neutral-950 !no-underline placeholder-neutral-500 !ring-0
+            !outline-0`
           )}
         />
       </div>

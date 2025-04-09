@@ -9,12 +9,14 @@ import { ClassNameValue, twMerge } from "tailwind-merge"
 export default function EditableText({
   initialValue,
   onSave,
+  resetValueAfterSave,
   className,
   allowEmpty = false,
   placeholder,
 }: {
   initialValue: string
   onSave: (value: string) => void
+  resetValueAfterSave?: boolean
   className?: ClassNameValue
   allowEmpty?: boolean
   placeholder?: string
@@ -62,6 +64,9 @@ export default function EditableText({
     } else {
       if (innerValue !== initialValue) {
         onSave(innerValue)
+        if (resetValueAfterSave) {
+          setInnerValue(initialValue)
+        }
       }
     }
     setIsEditing(false)
