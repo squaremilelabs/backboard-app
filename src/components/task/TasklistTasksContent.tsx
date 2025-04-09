@@ -6,7 +6,7 @@ import {
   GridListItem,
   Heading,
 } from "react-aria-components"
-import { ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react"
 import { useUser } from "@clerk/nextjs"
 import { Task } from "@prisma/client"
 import { twMerge } from "tailwind-merge"
