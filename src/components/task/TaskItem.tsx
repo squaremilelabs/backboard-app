@@ -1,5 +1,5 @@
 import { Prisma, Task, Tasklist } from "@zenstackhq/runtime/models"
-import { CircleArrowUp, Loader, Square, SquareCheck } from "lucide-react"
+import { CircleArrowUp, Dot, Loader, Square, SquareCheck } from "lucide-react"
 import { Button } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
 import EditableText from "../common/EditableText"
@@ -33,10 +33,12 @@ export default function TaskItem({ task, tasklist }: { task: Task; tasklist: Tas
     <div className="group flex grow items-start gap-2">
       {updateTaskMutation.isPending ? (
         <Loader size={20} className="text-gold-500 animate-spin" />
-      ) : (
+      ) : task.status !== "LATER" ? (
         <Button onPress={handleCheck} className={twMerge("text-neutral-500")}>
           <CheckboxIcon size={20} />
         </Button>
+      ) : (
+        <Dot size={20} />
       )}
       {task.done_at ? (
         <p className="inline-flex h-[20px] items-center rounded border bg-neutral-100 px-2 py-0.5 text-xs text-neutral-600">

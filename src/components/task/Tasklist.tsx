@@ -30,8 +30,6 @@ export default function Tasklist({ tasklist, topic }: { tasklist: ITasklist; top
     >
       <Heading className="flex items-start gap-2 p-2">
         <div className="flex grow gap-2 @sm:items-start">
-          {/* Extra space for drag grip */}
-          <div className="size-[20px]"></div>
           <div className="flex grow items-start gap-2">
             <EditableText
               initialValue={tasklist.title}

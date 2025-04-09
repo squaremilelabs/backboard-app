@@ -12,7 +12,7 @@ import {
   Popover,
 } from "react-aria-components"
 import { ClassNameValue, twMerge } from "tailwind-merge"
-import { BookMarked, ChevronDown, GripVertical, Share2 } from "lucide-react"
+import { BookMarked, ChevronDown, Share2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useUser } from "@clerk/nextjs"
 import { Topic } from "@prisma/client"
@@ -72,7 +72,7 @@ export default function TopicsNav() {
                   <TopicsNavList user={userQuery.data} topics={topicsQuery.data} />
                   <CreateByTitleLine
                     createMutation={createTopic}
-                    placeholder="New Topic"
+                    placeholder="Add Topic"
                     className="border-2"
                   />
                 </>
@@ -85,7 +85,7 @@ export default function TopicsNav() {
         {isLoaded ? (
           <>
             <TopicsNavList user={userQuery.data} topics={topicsQuery.data} />
-            <CreateByTitleLine createMutation={createTopic} placeholder="New Topic" />
+            <CreateByTitleLine createMutation={createTopic} placeholder="Add Topic" />
           </>
         ) : null}
       </div>
@@ -138,12 +138,12 @@ function TopicsNavList({ user, topics }: { user: User; topics: Topic[] }) {
               isSelected ? "bg-canvas text-neutral-950" : ""
             )}
           >
-            <Button
+            {/* <Button
               slot="drag"
               className="focus-visible:text-gold-500 cursor-grab text-neutral-500 !outline-0"
             >
               <GripVertical size={16} />
-            </Button>
+            </Button> */}
             <p className="grow truncate group-hover:font-semibold">{topic.title}</p>
             {topic.is_public ? <Share2 size={14} className="text-neutral-500" /> : null}
             <TaskIndicator size="sm" whereClause={{ topic_id: topic.id }} />

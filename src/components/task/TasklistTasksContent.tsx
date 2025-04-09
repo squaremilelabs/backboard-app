@@ -141,7 +141,7 @@ function TaskSection({
             "hover:text-neutral-950",
             "hover:bg-neutral-100 dark:hover:bg-neutral-50",
             expanded
-              ? "border-b pb-2 text-neutral-950 hover:bg-transparent hover:text-neutral-500"
+              ? "rounded-none border-b pb-2 text-neutral-950 hover:bg-transparent hover:text-neutral-500"
               : null
           )}
         >
@@ -151,11 +151,11 @@ function TaskSection({
           />
           <span
             className={twMerge(
-              "inline-flex size-[20px] items-center justify-center rounded-full border text-sm",
+              "inline-flex w-[40px] items-center justify-center rounded-lg border text-sm",
               taskCount > 0 && status === "LATER"
                 ? "border border-neutral-300 bg-neutral-200 text-neutral-950"
                 : null,
-              taskCount > 0 && status === "NOW" ? "bg-gold-500 border-gold-400 text-white" : null
+              taskCount > 0 && status === "NOW" ? "bg-gold-500 border-gold-400 text-canvas" : null
             )}
           >
             {taskCount}
@@ -224,13 +224,8 @@ function UndoneTasks({
     >
       {(task) => (
         <GridListItem className={taskGridListItemClassName} textValue={task.title}>
-          <Button
-            slot="drag"
-            className="focus-visible:text-gold-500 cursor-grab text-neutral-500 !outline-0"
-          >
-            <GripVertical size={20} />
-          </Button>
           <TaskItem task={task} tasklist={tasklist} />
+          <GripVertical size={20} />
         </GridListItem>
       )}
     </GridList>

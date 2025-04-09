@@ -1,11 +1,8 @@
 "use client"
-
 // E: To refactor (implemented drag & drop haphazardly)
 
 import { Tasklist as ITasklist, Topic } from "@zenstackhq/runtime/models"
-import { Button, GridList, GridListItem } from "react-aria-components"
-import { GripVertical } from "lucide-react"
-import { twMerge } from "tailwind-merge"
+import { GridList, GridListItem } from "react-aria-components"
 import CreateByTitleLine from "@/components/common/CreateByTitleLine"
 import { useCreateTasklist, useFindManyTasklist, useUpdateTopic } from "@/database/generated/hooks"
 import useDragAndDropList from "@/hooks/useDragAndDropList"
@@ -26,7 +23,7 @@ export default function TopicTasklists({ topic }: { topic: Topic }) {
       <CreateByTitleLine
         createMutation={createTasklist}
         additionalData={{ topic_id: topic.id, is_public: topic.is_public }}
-        placeholder="New Tasklist"
+        placeholder="Add Tasklist"
       />
     </div>
   )
@@ -60,15 +57,6 @@ function TasklistsGridList({ topic, tasklists }: { topic: Topic; tasklists: ITas
       {(tasklist) => {
         return (
           <GridListItem textValue={tasklist.title}>
-            <Button
-              slot="drag"
-              className={twMerge(
-                "focus-visible:text-gold-500 cursor-grab text-neutral-500 !outline-0",
-                "absolute top-3 left-3 z-10"
-              )}
-            >
-              <GripVertical size={20} />
-            </Button>
             <Tasklist tasklist={tasklist} topic={topic} />
           </GridListItem>
         )

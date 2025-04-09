@@ -35,9 +35,7 @@ export default function TaskIndicator({
       className={twMerge(
         "rounded-full border",
         size === "lg" ? "size-[20px]" : "size-[16px]",
-        displayedCountStatus === "NOW"
-          ? "from-gold-500 to-gold-300 border-gold-200 bg-linear-to-br"
-          : null,
+        displayedCountStatus === "NOW" ? "bg-gold-500 border-gold-200" : null,
         displayedCountStatus === "LATER" ? "border border-neutral-300 bg-neutral-200" : null
       )}
     />
