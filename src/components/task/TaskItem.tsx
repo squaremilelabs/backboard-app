@@ -1,5 +1,5 @@
 import { Prisma, Task, Tasklist } from "@zenstackhq/runtime/models"
-import { Diamond, Loader, Square, SquareCheck } from "lucide-react";
+import { Diamond, Loader, Square, SquareCheck } from "lucide-react"
 import { Button } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
 import EditableText from "../common/EditableText"
