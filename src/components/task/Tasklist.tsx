@@ -1,9 +1,12 @@
+// E: To refactor
+
 import { Button, Disclosure, DisclosurePanel, Heading } from "react-aria-components"
-import { ChevronDown, ListTodo } from "lucide-react"
+import { ChevronDown } from "lucide-react"
 import { useState } from "react"
 import { twMerge } from "tailwind-merge"
 import { Tasklist as ITasklist, Topic } from "@zenstackhq/runtime/models"
 import MetadataPopover from "../common/MetadataPopover"
+import TaskIndicator from "./TaskIndicator"
 import { useUpdateTasklist } from "@/database/generated/hooks"
 import EditableText from "@/components/common/EditableText"
 import TasklistTasksContent from "@/components/task/TasklistTasksContent"
@@ -26,11 +29,10 @@ export default function Tasklist({ tasklist, topic }: { tasklist: ITasklist; top
       onExpandedChange={setIsExpanded}
     >
       <Heading className="flex items-start gap-2 p-2">
-        <div className="flex grow flex-col-reverse gap-2 @sm:flex-row @sm:items-start">
+        <div className="flex grow gap-2 @sm:items-start">
+          {/* Extra space for drag grip */}
+          <div className="size-[20px]"></div>
           <div className="flex grow items-start gap-2">
-            <div className="flex h-[20px] items-center text-neutral-500">
-              <ListTodo size={16} />
-            </div>
             <EditableText
               initialValue={tasklist.title}
               onSave={handleTitleUpdate}
@@ -39,6 +41,7 @@ export default function Tasklist({ tasklist, topic }: { tasklist: ITasklist; top
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <TaskIndicator whereClause={{ tasklist_id: tasklist.id }} />
           <div className="gap flex h-[20px] items-center">
             <MetadataPopover
               recordType="Tasklist"

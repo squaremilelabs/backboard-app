@@ -1,5 +1,7 @@
 "use client"
 
+// E: To refactor (implemented drag & drop haphazardly)
+
 import { useParams, usePathname } from "next/navigation"
 import {
   Button,
@@ -10,20 +12,38 @@ import {
   Popover,
 } from "react-aria-components"
 import { ClassNameValue, twMerge } from "tailwind-merge"
-import { BookMarked, ChevronDown, Share2 } from "lucide-react"
+import { BookMarked, ChevronDown, GripVertical, Share2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useUser } from "@clerk/nextjs"
+import { Topic } from "@prisma/client"
+import { User } from "@zenstackhq/runtime/models"
 import CreateByTitleLine from "@/components/common/CreateByTitleLine"
-import { useCreateTopic, useFindManyTopic } from "@/database/generated/hooks"
+import {
+  useCreateTopic,
+  useFindManyTopic,
+  useFindUniqueUser,
+  useUpdateUser,
+} from "@/database/generated/hooks"
+import useDragAndDropList from "@/hooks/useDragAndDropList"
+import TaskIndicator from "@/components/task/TaskIndicator"
 
 export default function TopicsNav() {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
-  const createTopic = useCreateTopic()
-
   useEffect(() => {
     setIsOpen(false)
   }, [pathname])
+
+  const { user: authUser } = useUser()
+  const userQuery = useFindUniqueUser({
+    where: { id: authUser?.id ?? "NO_USER" },
+  })
+  const topicsQuery = useFindManyTopic({
+    where: { archived_at: null, created_by_id: authUser?.id ?? "NO_USER" },
+  })
+
+  const isLoaded = userQuery.data && topicsQuery.data
+  const createTopic = useCreateTopic()
 
   return (
     <div className="flex w-full flex-col">
@@ -47,42 +67,57 @@ export default function TopicsNav() {
               className="flex w-[80dvw] max-w-[360px] flex-col gap-1 rounded-lg border-2 border-neutral-300 bg-neutral-100/50
                 p-1 !outline-0 backdrop-blur-xl"
             >
-              <TopicsNavList />
-              <CreateByTitleLine
-                createMutation={createTopic}
-                placeholder="New Topic"
-                className="border-2"
-              />
+              {isLoaded ? (
+                <>
+                  <TopicsNavList user={userQuery.data} topics={topicsQuery.data} />
+                  <CreateByTitleLine
+                    createMutation={createTopic}
+                    placeholder="New Topic"
+                    className="border-2"
+                  />
+                </>
+              ) : null}
             </Dialog>
           </Popover>
         </DialogTrigger>
       </div>
       <div className="hidden w-full flex-col gap-2 md:flex">
-        <TopicsNavList />
-        <CreateByTitleLine createMutation={createTopic} placeholder="New Topic" />
+        {isLoaded ? (
+          <>
+            <TopicsNavList user={userQuery.data} topics={topicsQuery.data} />
+            <CreateByTitleLine createMutation={createTopic} placeholder="New Topic" />
+          </>
+        ) : null}
       </div>
     </div>
   )
 }
 
-function TopicsNavList() {
+function TopicsNavList({ user, topics }: { user: User; topics: Topic[] }) {
   const pathname = usePathname()
   const params = useParams<{ id: string }>()
   const selectedId = pathname.startsWith("/topic/") ? params.id : null
-  const { user } = useUser()
-  const { data, isLoading } = useFindManyTopic({
-    where: { archived_at: null, created_by_id: user?.id ?? "NO_USER" },
-    orderBy: { title: "asc" },
+
+  const updateUser = useUpdateUser()
+
+  const { dragAndDropHooks, list } = useDragAndDropList({
+    itemType: "topic",
+    items: topics,
+    savedOrder: user.topic_order,
+    handleOrderChange: (newOrder) => {
+      updateUser.mutate({
+        where: { id: user.id },
+        data: { topic_order: newOrder },
+      })
+    },
   })
 
   return (
     <GridList
       aria-label="My Topics"
-      items={data}
+      items={list.items}
       dependencies={[selectedId]}
-      renderEmptyState={() => (
-        <div className="p-2 text-neutral-500">{isLoading ? "Loading..." : "None"}</div>
-      )}
+      dragAndDropHooks={dragAndDropHooks}
       className={twMerge(
         "w-full divide-y rounded-lg border-2",
         selectedId ? "bg-neutral-100" : "bg-transparent"
@@ -103,8 +138,15 @@ function TopicsNavList() {
               isSelected ? "bg-canvas text-neutral-950" : ""
             )}
           >
+            <Button
+              slot="drag"
+              className="focus-visible:text-gold-500 cursor-grab text-neutral-500 !outline-0"
+            >
+              <GripVertical size={16} />
+            </Button>
             <p className="grow truncate group-hover:font-semibold">{topic.title}</p>
             {topic.is_public ? <Share2 size={14} className="text-neutral-500" /> : null}
+            <TaskIndicator size="sm" whereClause={{ topic_id: topic.id }} />
           </GridListItem>
         )
       }}

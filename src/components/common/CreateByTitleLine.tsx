@@ -55,7 +55,7 @@ export default function CreateByTitleLine<T extends GenericUseMutationResult>({
     <div className="flex flex-col gap-1">
       <div
         className={twMerge(
-          "group",
+          "group/cbtl",
           "flex items-start gap-2 rounded-lg bg-transparent p-2",
           "focus-within:bg-canvas focus-within:ring-gold-500 focus-within:ring-2",
           "hover:bg-canvas ring-neutral-200 hover:ring-2",
@@ -65,7 +65,7 @@ export default function CreateByTitleLine<T extends GenericUseMutationResult>({
         <Icon
           size={20}
           className={twMerge(
-            "text-neutral-500 group-focus-within:text-neutral-950",
+            "text-neutral-500 group-focus-within/cbtl:text-neutral-950",
             createMutation.isPending ? "!text-gold-500 animate-spin" : null,
             createMutation.isError ? "!text-red-600" : null
           )}

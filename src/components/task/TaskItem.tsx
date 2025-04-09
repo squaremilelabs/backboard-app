@@ -1,5 +1,5 @@
 import { Prisma, Task, Tasklist } from "@zenstackhq/runtime/models"
-import { Loader, Square, SquareCheck } from "lucide-react"
+import { Diamond, Loader, Square, SquareCheck } from "lucide-react";
 import { Button } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
 import EditableText from "../common/EditableText"
@@ -15,9 +15,10 @@ export default function TaskItem({ task, tasklist }: { task: Task; tasklist: Tas
   }
 
   const handleCheck = () => {
+    const nextStatus = task.status === "LATER" ? "NOW" : task.status === "NOW" ? "DONE" : "NOW"
     updateTask({
-      done_at: task.done_at ? null : new Date(),
-      status: task.done_at ? "NOW" : "DONE",
+      done_at: nextStatus === "DONE" ? new Date() : null,
+      status: nextStatus,
     })
   }
 
@@ -25,7 +26,8 @@ export default function TaskItem({ task, tasklist }: { task: Task; tasklist: Tas
     updateTask({ title })
   }
 
-  const CheckboxIcon = task.done_at ? SquareCheck : Square
+  const CheckboxIcon =
+    task.status === "DONE" ? SquareCheck : task.status === "LATER" ? Diamond : Square
 
   return (
     <div className="group flex grow items-start gap-2">
@@ -36,13 +38,13 @@ export default function TaskItem({ task, tasklist }: { task: Task; tasklist: Tas
           <CheckboxIcon size={20} />
         </Button>
       )}
+      {task.done_at ? (
+        <p className="inline-flex h-[20px] items-center rounded border bg-neutral-100 px-2 py-0.5 text-xs text-neutral-600">
+          {formatDate(task.done_at, { withTime: true })}
+        </p>
+      ) : null}
       <EditableText initialValue={task.title} onSave={handleTitleUpdate} className="bg-canvas" />
       <div className="flex min-w-fit items-center gap-2">
-        {task.done_at ? (
-          <p className="bg-neutral-100 px-2 py-0.5 text-xs text-neutral-600">
-            {formatDate(task.done_at, { withTime: true })}
-          </p>
-        ) : null}
         <div className="flex h-[20px] items-center">
           <MetadataPopover
             record={task}

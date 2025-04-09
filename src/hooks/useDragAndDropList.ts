@@ -1,6 +1,6 @@
 import { isTextDropItem, useDragAndDrop } from "react-aria-components"
 import { useListData } from "react-stately"
-import { useEffect } from "react"
+import { useEffect, JSX } from "react"
 import { isEqualStringArrays } from "@/lib/utils"
 import { GenericRecord } from "@/lib/types"
 
@@ -17,12 +17,14 @@ export default function useDragAndDropList<T extends GenericRecord>({
   savedOrder,
   handleOrderChange,
   handleInsert,
+  renderDragPreview,
 }: {
   itemType: string
   items: T[]
   savedOrder: string[]
   handleOrderChange: (order: string[]) => void
   handleInsert?: (items: T[]) => void
+  renderDragPreview?: (items: T[]) => JSX.Element
 }) {
   const list = useListData({
     initialItems: items.sort((a, b) => {
@@ -89,6 +91,16 @@ export default function useDragAndDropList<T extends GenericRecord>({
     },
     acceptedDragTypes: handleInsert ? [itemType] : undefined,
     getDropOperation: () => "move",
+    renderDragPreview: renderDragPreview
+      ? (dragItems) => {
+          const processedItems: T[] = dragItems
+            .filter((item) => item[itemType])
+            .map((item) => {
+              return JSON.parse(item[itemType])
+            })
+          return renderDragPreview(processedItems)
+        }
+      : undefined,
     onReorder: (e) => {
       if (e.target.dropPosition === "before") {
         list.moveBefore(e.target.key, e.keys)
