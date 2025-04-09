@@ -1,5 +1,5 @@
 import { Prisma, Task, Tasklist } from "@zenstackhq/runtime/models"
-import { Diamond, Loader, Square, SquareCheck } from "lucide-react"
+import { CircleArrowUp, Loader, Square, SquareCheck } from "lucide-react"
 import { Button } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
 import EditableText from "../common/EditableText"
@@ -27,7 +27,7 @@ export default function TaskItem({ task, tasklist }: { task: Task; tasklist: Tas
   }
 
   const CheckboxIcon =
-    task.status === "DONE" ? SquareCheck : task.status === "LATER" ? Diamond : Square
+    task.status === "DONE" ? SquareCheck : task.status === "LATER" ? CircleArrowUp : Square
 
   return (
     <div className="group flex grow items-start gap-2">

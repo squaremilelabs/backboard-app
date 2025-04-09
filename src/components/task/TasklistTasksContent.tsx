@@ -11,7 +11,7 @@ import { useUser } from "@clerk/nextjs"
 import { Task } from "@prisma/client"
 import { twMerge } from "tailwind-merge"
 import { Tasklist, TaskStatus } from "@zenstackhq/runtime/models"
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import {
   useCreateTask,
   useFindManyTask,
@@ -91,16 +91,15 @@ export default function TasklistTasksContent({ tasklist }: { tasklist: Tasklist 
 function TaskSection({
   status,
   tasklist,
-  defaultExpanded,
   children,
   taskCount,
 }: {
   status: TaskStatus
   tasklist: Tasklist
-  defaultExpanded?: boolean
   children: React.ReactNode
   taskCount: number
 }) {
+  const [expanded, setExpanded] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   const statusUI = TASK_STATUS_UI_MAP[status]
 
@@ -122,7 +121,8 @@ function TaskSection({
   })
   return (
     <Disclosure
-      defaultExpanded={defaultExpanded}
+      isExpanded={expanded}
+      onExpandedChange={setExpanded}
       className={({ isExpanded }) =>
         twMerge(
           "group/task-section rounded-lg",
@@ -135,37 +135,34 @@ function TaskSection({
         <Button
           slot="trigger"
           className={twMerge(
-            "flex w-full items-center gap-2 p-1 !outline-0",
+            "flex w-full items-center gap-2 rounded-lg p-1 !outline-0",
             "!opacity-100",
             "text-neutral-500",
             "hover:text-neutral-950",
-            "group-data-expanded/task-section:text-neutral-950",
-            "group-data-expanded/task-section:hover:text-neutral-500",
-            "group-data-expanded/task-section:border-b",
-            "group-data-expanded/task-section:pb-2"
+            "hover:bg-neutral-100 dark:hover:bg-neutral-50",
+            expanded
+              ? "border-b pb-2 text-neutral-950 hover:bg-transparent hover:text-neutral-500"
+              : null
           )}
         >
           <ChevronRight
             size={16}
             className="transition-transform group-data-expanded/task-section:rotate-90"
           />
-          <p className="grow text-left underline-offset-4 group-data-expanded/task-section:font-semibold">
+          <span
+            className={twMerge(
+              "inline-flex size-[20px] items-center justify-center rounded-full border text-sm",
+              taskCount > 0 && status === "LATER"
+                ? "border border-neutral-300 bg-neutral-200 text-neutral-950"
+                : null,
+              taskCount > 0 && status === "NOW" ? "bg-gold-500 border-gold-400 text-white" : null
+            )}
+          >
+            {taskCount}
+          </span>
+          <p className="text-left underline-offset-4 group-data-expanded/task-section:font-semibold">
             {statusUI.label}
           </p>
-          {status !== "DONE" ? (
-            <span
-              className={twMerge(
-                "inline-flex size-[20px] items-center justify-center rounded-full border text-sm",
-                taskCount > 0 ? "bg-neutral-100" : null,
-                taskCount > 0 && status === "NOW"
-                  ? "from-gold-500 to-gold-300 text-canvas border-gold-400 bg-linear-to-br"
-                  : null,
-                taskCount === 0 ? "bg-transparent" : null
-              )}
-            >
-              {taskCount}
-            </span>
-          ) : null}
         </Button>
       </Heading>
       <DisclosurePanel
