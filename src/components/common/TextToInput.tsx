@@ -81,7 +81,7 @@ export default function TextToInput({
     <DialogTrigger isOpen={isActive} onOpenChange={setIsActive}>
       <Button
         className={twMerge(
-          "inline-flex cursor-text justify-start !outline-0",
+          "inline-flex cursor-text justify-start text-left !outline-0",
           appliedClassName("button"),
           isActive ? "text-transparent" : null
         )}
