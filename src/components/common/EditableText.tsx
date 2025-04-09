@@ -1,131 +1,73 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
-import { FocusScope } from "react-aria"
-import { Button, Dialog, DialogTrigger, Popover } from "react-aria-components"
-import TextareaAutosize from "react-textarea-autosize"
+import { useEffect, useState } from "react"
 import { ClassNameValue, twMerge } from "tailwind-merge"
+import TextToInput, { TextToInputCallbackParams } from "./TextToInput"
 
 export default function EditableText({
   initialValue,
   onSave,
-  resetValueAfterSave,
   className,
   allowEmpty = false,
   placeholder,
 }: {
   initialValue: string
   onSave: (value: string) => void
-  resetValueAfterSave?: boolean
   className?: ClassNameValue
   allowEmpty?: boolean
   placeholder?: string
 }) {
-  const [isEditing, setIsEditing] = useState(false)
   const [innerValue, setInnerValue] = useState("")
 
   useEffect(() => {
     setInnerValue(initialValue)
   }, [initialValue])
 
-  useEffect(() => {
+  const handleActiveChange = (isActive: boolean) => {
     // Handle resetting innerValue if leaving edit mode and left empty
-    if (!allowEmpty && !isEditing && !innerValue) {
-      setInnerValue(initialValue)
-    }
-  }, [allowEmpty, isEditing, initialValue, innerValue])
-
-  const triggerRef = useRef<HTMLButtonElement>(null)
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
-
-  // Implemented to match width of textarea popover with width of the trigger button
-  const [triggerWidth, setTriggerWidth] = useState<number>(0)
-  useEffect(() => {
-    if (!triggerRef.current) return
-    const observer = new ResizeObserver((entries) => {
-      setTriggerWidth(entries[0].contentRect.width)
-    })
-    observer.observe(triggerRef.current)
-    return () => observer.disconnect()
-  }, [])
-
-  // Implemented to focus the cursor of the textarea popover at the end of the text
-  const handleFocus = () => {
-    const textarea = textareaRef.current
-    if (textarea) {
-      textarea.focus()
-      textarea.setSelectionRange(textarea.value.length, textarea.value.length)
+    if (!isActive) {
+      if (!innerValue && !allowEmpty) {
+        setInnerValue(initialValue)
+      }
     }
   }
 
-  const handleSubmitOrReset = () => {
+  const handleSubmitOrReset = ({ setIsActive }: TextToInputCallbackParams) => {
     if (!innerValue && !allowEmpty) {
       setInnerValue(initialValue)
     } else {
       if (innerValue !== initialValue) {
         onSave(innerValue)
-        if (resetValueAfterSave) {
-          setInnerValue(initialValue)
-        }
       }
     }
-    setIsEditing(false)
+    setIsActive(false)
   }
 
-  const handleReset = () => {
+  const handleReset = ({ setIsActive }: TextToInputCallbackParams) => {
     setInnerValue(initialValue)
-    setIsEditing(false)
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault()
-      handleSubmitOrReset()
-    }
-    if (e.key === "Escape") {
-      handleReset()
-    }
+    setIsActive(false)
   }
 
   const hasChanges = innerValue !== initialValue
 
   return (
-    <DialogTrigger isOpen={isEditing} onOpenChange={setIsEditing}>
-      <Button
-        ref={triggerRef}
-        onPress={() => setIsEditing(true)}
-        className={twMerge(
-          "flex cursor-text justify-start text-start !outline-0",
-          "decoration-gold-300 underline-offset-4 focus-visible:underline",
-          isEditing ? "grow" : null,
+    <TextToInput
+      value={innerValue}
+      onValueChange={setInnerValue}
+      onPressEnter={handleSubmitOrReset}
+      onPressEscape={handleReset}
+      onActiveChange={handleActiveChange}
+      placeholder={placeholder}
+      className={({ isActive, isInput, isButton }) =>
+        twMerge(
+          isActive ? "grow" : null,
+          isButton ? "decoration-gold-300 underline-offset-4 focus-visible:underline" : null,
+          !innerValue && isButton ? "text-neutral-500" : null,
+          !innerValue && isInput ? "placeholder-neutral-500" : null,
           className,
-          !innerValue ? "text-neutral-500" : null,
-          isEditing ? "text-transparent" : null
-        )}
-      >
-        {innerValue || placeholder}
-      </Button>
-      <Popover placement="left top" offset={-triggerWidth} style={{ width: triggerWidth }}>
-        <Dialog className="w-full !outline-0">
-          <FocusScope autoFocus>
-            <TextareaAutosize
-              ref={textareaRef}
-              value={innerValue}
-              onChange={(e) => setInnerValue(e.target.value)}
-              onFocus={handleFocus}
-              onKeyDown={handleKeyDown}
-              onBlur={handleSubmitOrReset}
-              className={twMerge(
-                "w-full resize-none !outline-0",
-                className,
-                hasChanges ? "text-gold-600" : null
-              )}
-              spellCheck={false}
-              placeholder={placeholder}
-            />
-          </FocusScope>
-        </Dialog>
-      </Popover>
-    </DialogTrigger>
+          hasChanges && isInput ? "text-gold-600" : null
+        )
+      }
+    />
   )
 }

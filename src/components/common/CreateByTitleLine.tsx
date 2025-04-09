@@ -2,8 +2,9 @@
 import { useUser } from "@clerk/nextjs"
 import { UseMutationResult } from "@tanstack/react-query"
 import { CircleX, Loader, Plus } from "lucide-react"
+import { useState } from "react"
 import { ClassNameValue, twMerge } from "tailwind-merge"
-import EditableText from "./EditableText"
+import TextToInput, { TextToInputCallbackParams } from "./TextToInput"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- to allow for any `useCreate` hook to be provided
 type GenericUseMutationResult = UseMutationResult<any, any, any, any>
@@ -19,8 +20,21 @@ export default function CreateByTitleLine<T extends GenericUseMutationResult>({
   placeholder?: string
   className?: ClassNameValue
 }) {
-  const handleSubmit = (value: string) => {
-    createMutation.mutate({ data: { title: value, ...additionalData } })
+  const [input, setInput] = useState("")
+  const [isFocused, setIsFocused] = useState(false)
+
+  const handleSubmit = ({ setIsActive }: TextToInputCallbackParams) => {
+    if (input) {
+      createMutation.mutate({ data: { title: input, ...additionalData } })
+      setInput("")
+      setIsActive(false)
+    }
+  }
+
+  const handleReset = ({ setIsActive }: TextToInputCallbackParams) => {
+    setInput("")
+    createMutation.reset()
+    setIsActive(false)
   }
 
   const errorMessage = createMutation.isError ? createMutation.error.info?.message : null
@@ -33,30 +47,35 @@ export default function CreateByTitleLine<T extends GenericUseMutationResult>({
     <div className="flex flex-col gap-1">
       <div
         className={twMerge(
-          "group/cbtl",
           "flex items-start gap-2 rounded-lg bg-transparent p-2",
-          "focus-within:bg-canvas focus-within:ring-gold-500 focus-within:ring-2",
           "hover:bg-canvas ring-neutral-200 hover:ring-2",
+          isFocused ? "bg-canvas ring-gold-500 ring-2" : null,
           className
         )}
       >
         <Icon
           size={20}
           className={twMerge(
-            "text-neutral-500 group-focus-within/cbtl:text-neutral-950",
+            "text-neutral-500",
+            isFocused ? "text-neutral-950" : null,
             createMutation.isPending ? "!text-gold-500 animate-spin" : null,
             createMutation.isError ? "!text-red-600" : null
           )}
         />
-        <EditableText
-          initialValue=""
-          onSave={handleSubmit}
+        <TextToInput
+          value={input}
           placeholder={placeholder}
-          resetValueAfterSave
-          className={twMerge(
-            `grow resize-none font-normal !text-neutral-950 !no-underline placeholder-neutral-500 !ring-0
-            !outline-0`
-          )}
+          onValueChange={setInput}
+          onActiveChange={setIsFocused}
+          onPressEnter={handleSubmit}
+          onPressEscape={handleReset}
+          className={({ isButton, isInput }) =>
+            twMerge(
+              "grow text-neutral-950",
+              isButton && !input ? "text-neutral-500" : null,
+              isInput ? "placeholder-neutral-500" : null
+            )
+          }
         />
       </div>
       {errorMessage ? <div className="px-2 text-sm text-red-600">{errorMessage}</div> : null}
