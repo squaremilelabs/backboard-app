@@ -60,7 +60,7 @@ export default function TextToInput({
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    if (e.key === "Enter") {
       e.preventDefault()
       if (onPressEnter) onPressEnter({ isActive, setIsActive })
     }
