@@ -141,7 +141,11 @@ function TaskSection({
             "hover:text-neutral-950",
             "hover:bg-neutral-100 dark:hover:bg-neutral-50",
             expanded
-              ? "rounded-none border-b pb-2 text-neutral-950 hover:bg-transparent hover:text-neutral-500"
+              ? [
+                  "rounded-none p-2 text-neutral-950",
+                  "bg-neutral-100 dark:bg-neutral-50",
+                  "rounded-lg border",
+                ]
               : null
           )}
         >
@@ -152,10 +156,16 @@ function TaskSection({
           <span
             className={twMerge(
               "inline-flex w-[40px] items-center justify-center rounded-lg border text-sm",
+              expanded ? "border-neutral-300" : null,
               taskCount > 0 && status === "LATER"
-                ? "border border-neutral-300 bg-neutral-200 text-neutral-950"
+                ? [
+                    "border-neutral-300 bg-neutral-200 text-neutral-950",
+                    expanded ? "border-neutral-400" : "",
+                  ]
                 : null,
-              taskCount > 0 && status === "NOW" ? "bg-gold-500 border-gold-400 text-canvas" : null
+              taskCount > 0 && status === "NOW"
+                ? ["bg-gold-500 border-gold-400 text-canvas", expanded ? "border-gold-700" : ""]
+                : null
             )}
           >
             {taskCount}
@@ -167,8 +177,9 @@ function TaskSection({
       </Heading>
       <DisclosurePanel
         className={twMerge(
-          "flex flex-col group-data-expanded/task-section:pt-2",
-          taskCount > 0 ? "gap-2" : null
+          "flex flex-col",
+          expanded ? "pt-2 pl-2" : null
+          // taskCount > 0 ? "gap-2" : null
         )}
       >
         {children}
