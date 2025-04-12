@@ -12,21 +12,21 @@ export interface TextToInputCallbackParams {
 export default function TextToInput({
   value,
   onValueChange,
-  onActiveChange,
   placeholder,
   className,
+  onActiveChange,
   onPressEnter,
   onPressEscape,
 }: {
   value: string
   onValueChange: (value: string) => void
-  onActiveChange?: (isActive: boolean) => void
   placeholder?: string
   className?:
     | ClassNameValue
     | ((
         params: TextToInputCallbackParams & { isButton: boolean; isInput: boolean }
       ) => ClassNameValue)
+  onActiveChange?: (isActive: boolean) => void
   onPressEnter?: (params: TextToInputCallbackParams) => void
   onPressEscape?: (params: TextToInputCallbackParams) => void
 }) {

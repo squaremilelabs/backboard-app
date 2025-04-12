@@ -1,5 +1,4 @@
 "use client"
-
 // E: To refactor (implemented drag & drop haphazardly)
 
 import { useParams, usePathname } from "next/navigation"
@@ -15,8 +14,6 @@ import { ClassNameValue, twMerge } from "tailwind-merge"
 import { BookMarked, ChevronDown, Share2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useUser } from "@clerk/nextjs"
-import { Topic } from "@prisma/client"
-import { User } from "@zenstackhq/runtime/models"
 import CreateByTitleLine from "@/components/common/CreateByTitleLine"
 import {
   useCreateTopic,
@@ -34,15 +31,6 @@ export default function TopicsNav() {
     setIsOpen(false)
   }, [pathname])
 
-  const { user: authUser } = useUser()
-  const userQuery = useFindUniqueUser({
-    where: { id: authUser?.id ?? "NO_USER" },
-  })
-  const topicsQuery = useFindManyTopic({
-    where: { archived_at: null, created_by_id: authUser?.id ?? "NO_USER" },
-  })
-
-  const isLoaded = userQuery.data && topicsQuery.data
   const createTopic = useCreateTopic()
 
   return (
@@ -67,48 +55,54 @@ export default function TopicsNav() {
               className="flex w-[80dvw] max-w-[360px] flex-col gap-1 rounded-lg border-2 border-neutral-300 bg-neutral-100/50
                 p-1 !outline-0 backdrop-blur-xl"
             >
-              {isLoaded ? (
-                <>
-                  <TopicsNavList user={userQuery.data} topics={topicsQuery.data} />
-                  <CreateByTitleLine
-                    createMutation={createTopic}
-                    placeholder="Add Topic"
-                    className="border-2"
-                  />
-                </>
-              ) : null}
+              <TopicsNavList />
+              <CreateByTitleLine
+                createMutation={createTopic}
+                placeholder="Add Topic"
+                className="border-2"
+              />
             </Dialog>
           </Popover>
         </DialogTrigger>
       </div>
       <div className="hidden w-full flex-col gap-2 md:flex">
-        {isLoaded ? (
-          <>
-            <TopicsNavList user={userQuery.data} topics={topicsQuery.data} />
-            <CreateByTitleLine createMutation={createTopic} placeholder="Add Topic" />
-          </>
-        ) : null}
+        <TopicsNavList />
+        <CreateByTitleLine createMutation={createTopic} placeholder="Add Topic" />
       </div>
     </div>
   )
 }
 
-function TopicsNavList({ user, topics }: { user: User; topics: Topic[] }) {
+function TopicsNavList() {
   const pathname = usePathname()
   const params = useParams<{ id: string }>()
   const selectedId = pathname.startsWith("/topic/") ? params.id : null
-
   const updateUser = useUpdateUser()
+
+  const { user: authUser } = useUser()
+  const userQuery = useFindUniqueUser({
+    where: { id: authUser?.id ?? "NO_USER" },
+  })
+  const user = userQuery.data
+  const topicsQuery = useFindManyTopic({
+    where: { archived_at: null, created_by_id: authUser?.id ?? "NO_USER" },
+  })
+
+  const isLoading = userQuery.isLoading || topicsQuery.isLoading
+  const isFetched = userQuery.isFetched && topicsQuery.isFetched
 
   const { dragAndDropHooks, list } = useDragAndDropList({
     itemType: "topic",
-    items: topics,
-    savedOrder: user.topic_order,
+    items: topicsQuery.data,
+    isInitialized: isFetched,
+    savedOrder: user?.topic_order,
     handleOrderChange: (newOrder) => {
-      updateUser.mutate({
-        where: { id: user.id },
-        data: { topic_order: newOrder },
-      })
+      if (user) {
+        updateUser.mutate({
+          where: { id: user.id },
+          data: { topic_order: newOrder },
+        })
+      }
     },
   })
 
@@ -121,6 +115,11 @@ function TopicsNavList({ user, topics }: { user: User; topics: Topic[] }) {
       className={twMerge(
         "w-full divide-y rounded-lg border-2",
         selectedId ? "bg-neutral-100" : "bg-transparent"
+      )}
+      renderEmptyState={() => (
+        <div className="flex h-full w-full items-center p-2 text-neutral-500">
+          {isLoading ? "Loading..." : "None"}
+        </div>
       )}
     >
       {(topic) => {

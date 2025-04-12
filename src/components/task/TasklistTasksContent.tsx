@@ -52,9 +52,12 @@ export default function TasklistTasksContent({ tasklist }: { tasklist: Tasklist 
   return (
     <div className="bg-canvas flex flex-col gap-2 rounded-lg border p-4">
       <TaskSection status="NOW" tasklist={tasklist} taskCount={nowTaskCount}>
-        {nowTasksQuery.isFetched ? (
-          <UndoneTasks tasks={nowTasks} tasklist={tasklist} status="NOW" />
-        ) : null}
+        <UndoneTasks
+          tasks={nowTasks}
+          tasklist={tasklist}
+          status="NOW"
+          isFetched={nowTasksQuery.isFetched}
+        />
         <CreateByTitleLine
           createMutation={createTask}
           placeholder="Add"
@@ -67,9 +70,12 @@ export default function TasklistTasksContent({ tasklist }: { tasklist: Tasklist 
         />
       </TaskSection>
       <TaskSection status="LATER" taskCount={laterTaskCount} tasklist={tasklist}>
-        {laterTasksQuery.isFetched ? (
-          <UndoneTasks tasks={laterTasks} tasklist={tasklist} status="LATER" />
-        ) : null}
+        <UndoneTasks
+          tasks={laterTasks}
+          tasklist={tasklist}
+          status="LATER"
+          isFetched={laterTasksQuery.isFetched}
+        />
         <CreateByTitleLine
           createMutation={createTask}
           placeholder="Add"
@@ -196,16 +202,19 @@ function UndoneTasks({
   tasklist,
   tasks,
   status,
+  isFetched,
 }: {
   tasklist: Tasklist
   tasks: Task[]
   status: TaskStatus
+  isFetched: boolean
 }) {
   const updateTaskList = useUpdateTasklist()
   const updateTask = useUpdateTask()
   const { list, dragAndDropHooks } = useDragAndDropList({
     itemType: "task",
     items: tasks,
+    isInitialized: isFetched,
     savedOrder: status === "NOW" ? tasklist.now_task_order : tasklist.later_task_order,
     handleOrderChange: (newOrder) => {
       updateTaskList.mutate({

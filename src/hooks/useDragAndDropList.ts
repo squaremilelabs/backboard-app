@@ -1,6 +1,6 @@
 import { isTextDropItem, useDragAndDrop } from "react-aria-components"
 import { useListData } from "react-stately"
-import { useEffect, JSX } from "react"
+import { useEffect, JSX, useState } from "react"
 import { isEqualStringArrays } from "@/lib/utils"
 import { GenericRecord } from "@/lib/types"
 
@@ -15,32 +15,46 @@ export default function useDragAndDropList<T extends GenericRecord>({
   itemType,
   items,
   savedOrder,
+  isInitialized = false,
   handleOrderChange,
   handleInsert,
   renderDragPreview,
 }: {
   itemType: string
-  items: T[]
-  savedOrder: string[]
+  items: T[] | null | undefined
+  savedOrder: string[] | null | undefined
+  isInitialized: boolean
   handleOrderChange: (order: string[]) => void
   handleInsert?: (items: T[]) => void
   renderDragPreview?: (items: T[]) => JSX.Element
 }) {
-  const list = useListData({
-    initialItems: items.sort((a, b) => {
-      const aIndex = savedOrder.indexOf(a.id)
-      const bIndex = savedOrder.indexOf(b.id)
-      if (aIndex !== -1 && bIndex === -1) return -1
-      if (aIndex === -1 && bIndex !== -1) return 1
-      if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex
-      if (a.created_at < b.created_at) return -1
-      if (a.created_at > b.created_at) return 1
-      return 0
-    }),
+  const [internalInitialized, setInternalInitialized] = useState(false)
+
+  // List starts as empty until isLoading becomes false
+  const list = useListData<T>({
+    initialItems: [],
   })
 
-  // Synchronizes list changes outside of drag and drop operations
   useEffect(() => {
+    // Effect should only run on first initialization
+    if (internalInitialized) return
+
+    // If is initialized and both items & saved order have been provided, initialize the list
+    if (isInitialized && items && savedOrder) {
+      setInternalInitialized(true)
+      const listItems = sortItemsByOrder(items, savedOrder)
+      list.append(...listItems)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only runs for when all items are loaded
+  }, [isInitialized, items, savedOrder])
+
+  // Synchronizes list changes outside of drag and drop operations (only after list has been initialized)
+  useEffect(() => {
+    // Effect should not run if not yet initialized
+    if (!isInitialized) return
+    if (!internalInitialized) return
+    if (!items) return
+
     const incomingItems = [...items]
     const incomingListItemIds = incomingItems.map(({ id }) => id)
     const currentListItemIds = list.items.map(({ id }) => id)
@@ -74,7 +88,7 @@ export default function useDragAndDropList<T extends GenericRecord>({
   }, [items])
 
   const saveOrderIfChanged = (newOrder: string[]) => {
-    if (!isEqualStringArrays(newOrder, savedOrder)) {
+    if (!isEqualStringArrays(newOrder, savedOrder ?? [])) {
       handleOrderChange(newOrder)
     }
   }
@@ -163,4 +177,17 @@ export default function useDragAndDropList<T extends GenericRecord>({
   })
 
   return { list, dragAndDropHooks }
+}
+
+function sortItemsByOrder<T extends GenericRecord>(items: T[], order: string[]) {
+  return items.sort((a, b) => {
+    const aIndex = order.indexOf(a.id)
+    const bIndex = order.indexOf(b.id)
+    if (aIndex !== -1 && bIndex === -1) return -1
+    if (aIndex === -1 && bIndex !== -1) return 1
+    if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex
+    if (a.created_at < b.created_at) return -1
+    if (a.created_at > b.created_at) return 1
+    return 0
+  })
 }
