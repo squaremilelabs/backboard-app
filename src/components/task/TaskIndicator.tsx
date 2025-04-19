@@ -1,3 +1,5 @@
+"use client"
+
 import { TaskStatus } from "@prisma/client"
 import { Prisma } from "@zenstackhq/runtime/models"
 import { twMerge } from "tailwind-merge"
