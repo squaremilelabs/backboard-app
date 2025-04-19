@@ -11,7 +11,7 @@ import {
   Popover,
 } from "react-aria-components"
 import { ClassNameValue, twMerge } from "tailwind-merge"
-import { BookMarked, ChevronDown, GripVertical, Share2 } from "lucide-react"
+import { ChevronDown, GripVertical, Menu, Share2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useUser } from "@clerk/nextjs"
 import CreateByTitleLine from "@/components/common/CreateByTitleLine"
@@ -156,8 +156,7 @@ function TopicsNavList() {
 function TopicsNavTitle({ className }: { className?: ClassNameValue }) {
   return (
     <div className={twMerge("flex items-center gap-1 text-sm", className)}>
-      <BookMarked size={14} />
-      Topics
+      <Menu size={16} className="text-neutral-500" />
     </div>
   )
 }

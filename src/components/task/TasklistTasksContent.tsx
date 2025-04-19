@@ -64,7 +64,7 @@ export default function TasklistTasksContent({ tasklist }: { tasklist: Tasklist 
       : true
 
   return (
-    <div className="bg-canvas flex flex-col gap-2 rounded-lg border p-4">
+    <div className="bg-canvas flex flex-col gap-2 rounded-lg border p-2 @sm:p-4">
       <TaskSection
         status="NOW"
         tasklist={tasklist}
@@ -164,7 +164,7 @@ function TaskSection({
       className={({ isExpanded }) =>
         twMerge(
           "group/task-section rounded-lg",
-          isExpanded ? "mb-2 p-2" : null,
+          isExpanded ? "mb-2" : null,
           isDropTarget ? "outline-2" : null
         )
       }
@@ -180,7 +180,7 @@ function TaskSection({
             "hover:bg-neutral-100 dark:hover:bg-neutral-50",
             expanded
               ? [
-                  "rounded-b-none border-b p-2 text-neutral-950",
+                  "rounded-b-none border-b py-2 text-neutral-950",
                   status === "NOW" ? "border-gold-300" : null,
                   status === "LATER" ? "border-blue-300" : null,
                 ]

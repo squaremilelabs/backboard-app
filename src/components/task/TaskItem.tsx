@@ -38,12 +38,15 @@ export default function TaskItem({ task, tasklist }: { task: Task; tasklist: Tas
       {updateTaskMutation.isPending ? (
         <Loader size={20} className="text-gold-500 animate-spin" />
       ) : task.status !== "LATER" ? (
-        <Button onPress={handleCheck} className={twMerge("text-neutral-500")}>
+        <Button
+          onPress={handleCheck}
+          className={twMerge("text-neutral-500", task.status === "NOW" ? "text-gold-600" : "")}
+        >
           <CheckboxIcon size={20} />
         </Button>
       ) : (
         <div className="flex size-[20px] items-center justify-center">
-          <Diamond size={16} className="text-neutral-500" />
+          <Diamond size={18} className="text-blue-600" />
         </div>
       )}
       {task.done_at ? (

@@ -15,7 +15,7 @@ export default function TaskIndicator({
 }) {
   const taskStatsQuery = useGroupByTask({
     by: "status",
-    where: { ...whereClause, archived_at: null },
+    where: { ...whereClause, archived_at: null, tasklist: { archived_at: null } },
     _count: true,
   })
 
