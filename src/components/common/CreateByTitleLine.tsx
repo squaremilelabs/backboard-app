@@ -13,12 +13,14 @@ export default function CreateByTitleLine<T extends GenericUseMutationResult>({
   createMutation,
   additionalData,
   placeholder = "New",
+  accentColor,
   className,
 }: {
   createMutation: T
   additionalData?: T["variables"]["data"]
   placeholder?: string
   className?: ClassNameValue
+  accentColor?: "gold" | "blue"
 }) {
   const [input, setInput] = useState("")
   const [isFocused, setIsFocused] = useState(false)
@@ -49,7 +51,13 @@ export default function CreateByTitleLine<T extends GenericUseMutationResult>({
         className={twMerge(
           "flex items-start gap-2 rounded-lg bg-transparent p-2",
           "hover:bg-canvas ring-neutral-200 hover:ring-2",
-          isFocused ? "bg-canvas ring-gold-500 ring-2" : null,
+          isFocused
+            ? [
+                "bg-canvas ring-2 ring-neutral-500",
+                accentColor === "gold" ? "ring-gold-300" : null,
+                accentColor === "blue" ? "ring-blue-300" : null,
+              ]
+            : null,
           className
         )}
       >
@@ -57,8 +65,16 @@ export default function CreateByTitleLine<T extends GenericUseMutationResult>({
           size={20}
           className={twMerge(
             "text-neutral-500",
-            isFocused ? "text-neutral-950" : null,
-            createMutation.isPending ? "!text-gold-500 animate-spin" : null,
+            accentColor === "gold" ? "text-gold-600" : null,
+            accentColor === "blue" ? "text-blue-600" : null,
+            isFocused
+              ? [
+                  "text-neutral-950",
+                  accentColor === "gold" ? "text-gold-600" : null,
+                  accentColor === "blue" ? "text-blue-600" : null,
+                ]
+              : null,
+            createMutation.isPending ? "animate-spin" : null,
             createMutation.isError ? "!text-red-600" : null
           )}
         />

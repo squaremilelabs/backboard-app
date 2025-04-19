@@ -48,7 +48,10 @@ export default function TopicTasklists({ topic }: { topic: Topic }) {
       >
         {(tasklist) => {
           return (
-            <GridListItem textValue={tasklist.title}>
+            <GridListItem
+              textValue={tasklist.title}
+              className="rounded-lg !outline-0 focus-visible:ring-2"
+            >
               <div className="flex items-start">
                 <div className="absolute top-0 left-2 z-20 flex h-[45px] items-center">
                   <Button

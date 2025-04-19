@@ -4,7 +4,7 @@ import { TaskStatus } from "@prisma/client"
 import { Prisma } from "@zenstackhq/runtime/models"
 import { twMerge } from "tailwind-merge"
 import { useGroupByTask } from "@/database/generated/hooks"
-import { taskStatusBadge } from "@/lib/class-names"
+import { taskStatusBadge } from "@/styles/class-names"
 
 export default function TaskIndicator({
   whereClause,
@@ -43,7 +43,7 @@ export default function TaskIndicator({
             key={status}
             className={twMerge(
               className,
-              taskStatsQuery.isLoading ? "animate-pulse bg-neutral-300" : ""
+              taskStatsQuery.isLoading ? "animate-pulse !bg-neutral-100" : ""
             )}
           >
             {count}

@@ -24,11 +24,12 @@ import TaskItem from "@/components/task/TaskItem"
 import useDragAndDropList from "@/hooks/useDragAndDropList"
 import useDroppable from "@/hooks/useDroppable"
 import { TASK_STATUS_UI_MAP } from "@/lib/constants"
-import { taskStatusBadge } from "@/lib/class-names"
+import { taskStatusBadge } from "@/styles/class-names"
 
 export default function TasklistTasksContent({ tasklist }: { tasklist: Tasklist }) {
   const { user } = useUser()
-  const createTask = useCreateTask()
+  const createNowTask = useCreateTask()
+  const createLaterTask = useCreateTask()
 
   const nowTasksQuery = useFindManyTask({
     where: { tasklist_id: tasklist.id, status: "NOW", archived_at: null },
@@ -78,8 +79,9 @@ export default function TasklistTasksContent({ tasklist }: { tasklist: Tasklist 
           isFetched={nowTasksQuery.isFetched}
         />
         <CreateByTitleLine
-          createMutation={createTask}
+          createMutation={createNowTask}
           placeholder="Add"
+          accentColor="gold"
           additionalData={{
             topic: { connect: { id: tasklist.topic_id } },
             tasklist: { connect: { id: tasklist.id, topic_id: tasklist.topic_id } },
@@ -101,8 +103,9 @@ export default function TasklistTasksContent({ tasklist }: { tasklist: Tasklist 
           isFetched={laterTasksQuery.isFetched}
         />
         <CreateByTitleLine
-          createMutation={createTask}
+          createMutation={createLaterTask}
           placeholder="Add"
+          accentColor="blue"
           additionalData={{
             topic: { connect: { id: tasklist.topic_id } },
             tasklist: { connect: { id: tasklist.id, topic_id: tasklist.topic_id } },
