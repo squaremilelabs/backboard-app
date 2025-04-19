@@ -2,7 +2,8 @@
 // E: To refactor (implemented drag & drop haphazardly)
 
 import { Topic } from "@zenstackhq/runtime/models"
-import { GridList, GridListItem } from "react-aria-components"
+import { Button, GridList, GridListItem } from "react-aria-components"
+import { GripVertical } from "lucide-react"
 import CreateByTitleLine from "@/components/common/CreateByTitleLine"
 import { useCreateTasklist, useFindManyTasklist, useUpdateTopic } from "@/database/generated/hooks"
 import useDragAndDropList from "@/hooks/useDragAndDropList"
@@ -39,11 +40,28 @@ export default function TopicTasklists({ topic }: { topic: Topic }) {
         items={list.items}
         dragAndDropHooks={dragAndDropHooks}
         className="flex flex-col gap-2"
+        renderEmptyState={() =>
+          tasklistsQuery.isLoading ? (
+            <div className="flex w-full items-center p-2 text-neutral-500">Loading...</div>
+          ) : null
+        }
       >
         {(tasklist) => {
           return (
             <GridListItem textValue={tasklist.title}>
-              <Tasklist tasklist={tasklist} topic={topic} />
+              <div className="flex items-start">
+                <div className="absolute top-0 left-2 z-20 flex h-[45px] items-center">
+                  <Button
+                    slot="drag"
+                    className="focus-visible:text-gold-500 cursor-grab text-neutral-500 !outline-0"
+                  >
+                    <GripVertical size={20} />
+                  </Button>
+                </div>
+                <div className="grow">
+                  <Tasklist tasklist={tasklist} topic={topic} />
+                </div>
+              </div>
             </GridListItem>
           )
         }}

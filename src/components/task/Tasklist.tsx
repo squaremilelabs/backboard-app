@@ -28,13 +28,14 @@ export default function Tasklist({ tasklist, topic }: { tasklist: ITasklist; top
       isExpanded={isExpanded}
       onExpandedChange={setIsExpanded}
     >
-      <Heading className="flex items-start gap-2 p-2">
+      <Heading className="flex items-start gap-2 p-2 pl-0">
         <div className="flex grow gap-2 @sm:items-start">
+          <div className="w-[20px]" />
           <div className="flex grow items-start gap-2">
             <EditableText
               initialValue={tasklist.title}
               onSave={handleTitleUpdate}
-              className="bg-neutral-100"
+              className="bg-neutral-100 leading-[20px]"
             />
           </div>
         </div>

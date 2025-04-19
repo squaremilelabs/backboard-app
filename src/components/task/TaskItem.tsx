@@ -1,5 +1,5 @@
 import { Prisma, Task, Tasklist } from "@zenstackhq/runtime/models"
-import { Diamond, Loader, Square, SquareCheck } from "lucide-react"
+import { Diamond, GripVertical, Loader, Square, SquareCheck } from "lucide-react"
 import { Button } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
 import EditableText from "../common/EditableText"
@@ -30,6 +30,11 @@ export default function TaskItem({ task, tasklist }: { task: Task; tasklist: Tas
 
   return (
     <div className="group flex grow items-start gap-2">
+      {task.status !== "DONE" ? (
+        <Button slot="drag" className="text-neutral-500">
+          <GripVertical size={20} />
+        </Button>
+      ) : null}
       {updateTaskMutation.isPending ? (
         <Loader size={20} className="text-gold-500 animate-spin" />
       ) : task.status !== "LATER" ? (

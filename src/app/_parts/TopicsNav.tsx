@@ -11,7 +11,7 @@ import {
   Popover,
 } from "react-aria-components"
 import { ClassNameValue, twMerge } from "tailwind-merge"
-import { BookMarked, ChevronDown, Share2 } from "lucide-react"
+import { BookMarked, ChevronDown, GripVertical, Share2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useUser } from "@clerk/nextjs"
 import CreateByTitleLine from "@/components/common/CreateByTitleLine"
@@ -137,12 +137,12 @@ function TopicsNavList() {
               isSelected ? "bg-canvas text-neutral-950" : ""
             )}
           >
-            {/* <Button
+            <Button
               slot="drag"
               className="focus-visible:text-gold-500 cursor-grab text-neutral-500 !outline-0"
             >
               <GripVertical size={16} />
-            </Button> */}
+            </Button>
             <p className="grow truncate group-hover:font-semibold">{topic.title}</p>
             {topic.is_public ? <Share2 size={14} className="text-neutral-500" /> : null}
             <TaskIndicator size="sm" whereClause={{ topic_id: topic.id }} />

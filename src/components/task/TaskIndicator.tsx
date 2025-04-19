@@ -2,6 +2,7 @@ import { TaskStatus } from "@prisma/client"
 import { Prisma } from "@zenstackhq/runtime/models"
 import { twMerge } from "tailwind-merge"
 import { useGroupByTask } from "@/database/generated/hooks"
+import { taskStatusBadge } from "@/lib/class-names"
 
 export default function TaskIndicator({
   whereClause,
@@ -24,20 +25,29 @@ export default function TaskIndicator({
     { NOW: 0, LATER: 0, DONE: 0 }
   ) ?? { NOW: 0, LATER: 0, DONE: 0 }
 
-  const displayedCountStatus: TaskStatus | null =
-    taskCountsByStatus.NOW > 0 ? "NOW" : taskCountsByStatus.LATER > 0 ? "LATER" : null
+  const displayedStatuses: TaskStatus[] = ["NOW", "LATER"]
 
-  const displayedCount =
-    displayedCountStatus === null ? null : taskCountsByStatus[displayedCountStatus]
-
-  return displayedCount === null ? null : (
-    <div
-      className={twMerge(
-        "rounded-full border",
-        size === "lg" ? "size-[20px]" : "size-[16px]",
-        displayedCountStatus === "NOW" ? "bg-gold-500 border-gold-200" : null,
-        displayedCountStatus === "LATER" ? "border border-neutral-300 bg-neutral-200" : null
-      )}
-    />
+  return (
+    <div className={twMerge("flex items-center", size === "sm" ? "gap-1" : "gap-2")}>
+      {displayedStatuses.map((status) => {
+        const count = taskCountsByStatus[status]
+        const className = taskStatusBadge({
+          status: status as "NOW" | "LATER",
+          size,
+          hasCount: count > 0,
+        })
+        return (
+          <div
+            key={status}
+            className={twMerge(
+              className,
+              taskStatsQuery.isLoading ? "animate-pulse bg-neutral-300" : ""
+            )}
+          >
+            {count}
+          </div>
+        )
+      })}
+    </div>
   )
 }

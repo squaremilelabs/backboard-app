@@ -11,7 +11,8 @@ import { useUser } from "@clerk/nextjs"
 import { Task } from "@prisma/client"
 import { twMerge } from "tailwind-merge"
 import { Tasklist, TaskStatus } from "@zenstackhq/runtime/models"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
+import { FocusScope } from "react-aria"
 import {
   useCreateTask,
   useFindManyTask,
@@ -23,6 +24,7 @@ import TaskItem from "@/components/task/TaskItem"
 import useDragAndDropList from "@/hooks/useDragAndDropList"
 import useDroppable from "@/hooks/useDroppable"
 import { TASK_STATUS_UI_MAP } from "@/lib/constants"
+import { taskStatusBadge } from "@/lib/class-names"
 
 export default function TasklistTasksContent({ tasklist }: { tasklist: Tasklist }) {
   const { user } = useUser()
@@ -49,9 +51,26 @@ export default function TasklistTasksContent({ tasklist }: { tasklist: Tasklist 
   const laterTaskCount = laterTasks.length
   const doneTaskCount = doneTasks.length
 
+  const countsLoading =
+    nowTasksQuery.isLoading || laterTasksQuery.isLoading || doneTasksQuery.isLoading
+
+  const openTaskCount = nowTaskCount + laterTaskCount
+
+  const nowDefaultExpanded = countsLoading ? false : openTaskCount > 0 ? nowTaskCount > 0 : true
+  const laterDefaultExpanded = countsLoading
+    ? false
+    : openTaskCount > 0
+      ? laterTaskCount > 0 && nowTaskCount === 0
+      : true
+
   return (
     <div className="bg-canvas flex flex-col gap-2 rounded-lg border p-4">
-      <TaskSection status="NOW" tasklist={tasklist} taskCount={nowTaskCount}>
+      <TaskSection
+        status="NOW"
+        tasklist={tasklist}
+        taskCount={nowTaskCount}
+        defaultExpanded={nowDefaultExpanded}
+      >
         <UndoneTasks
           tasks={nowTasks}
           tasklist={tasklist}
@@ -69,7 +88,12 @@ export default function TasklistTasksContent({ tasklist }: { tasklist: Tasklist 
           }}
         />
       </TaskSection>
-      <TaskSection status="LATER" taskCount={laterTaskCount} tasklist={tasklist}>
+      <TaskSection
+        status="LATER"
+        taskCount={laterTaskCount}
+        tasklist={tasklist}
+        defaultExpanded={laterDefaultExpanded}
+      >
         <UndoneTasks
           tasks={laterTasks}
           tasklist={tasklist}
@@ -99,15 +123,23 @@ function TaskSection({
   tasklist,
   children,
   taskCount,
+  defaultExpanded,
 }: {
   status: TaskStatus
   tasklist: Tasklist
   children: React.ReactNode
   taskCount: number
+  defaultExpanded?: boolean
 }) {
   const [expanded, setExpanded] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   const statusUI = TASK_STATUS_UI_MAP[status]
+
+  useEffect(() => {
+    if (defaultExpanded) {
+      setExpanded(defaultExpanded)
+    }
+  }, [defaultExpanded])
 
   const updateTask = useUpdateTask()
   const { dropProps, isDropTarget } = useDroppable<Task>({
@@ -141,16 +173,16 @@ function TaskSection({
         <Button
           slot="trigger"
           className={twMerge(
-            "flex w-full items-center gap-2 rounded-lg p-1 !outline-0",
-            "!opacity-100",
+            "flex w-full items-center gap-2 rounded-lg p-1",
+            "!opacity-100 !outline-0",
             "text-neutral-500",
             "hover:text-neutral-950",
             "hover:bg-neutral-100 dark:hover:bg-neutral-50",
             expanded
               ? [
-                  "rounded-none p-2 text-neutral-950",
-                  "bg-neutral-100 dark:bg-neutral-50",
-                  "rounded-lg border",
+                  "rounded-b-none border-b p-2 text-neutral-950",
+                  status === "NOW" ? "border-gold-300" : null,
+                  status === "LATER" ? "border-blue-300" : null,
                 ]
               : null
           )}
@@ -161,17 +193,13 @@ function TaskSection({
           />
           <span
             className={twMerge(
-              "inline-flex w-[40px] items-center justify-center rounded-lg border text-sm",
+              "bg-canvas inline-flex items-center justify-center rounded-lg border text-sm",
               expanded ? "border-neutral-300" : null,
-              taskCount > 0 && status === "LATER"
-                ? [
-                    "border-neutral-300 bg-neutral-200 text-neutral-950",
-                    expanded ? "border-neutral-400" : "",
-                  ]
-                : null,
-              taskCount > 0 && status === "NOW"
-                ? ["bg-gold-500 border-gold-400 text-canvas", expanded ? "border-gold-700" : ""]
-                : null
+              taskStatusBadge({
+                status,
+                size: "lg",
+                hasCount: taskCount > 0,
+              })
             )}
           >
             {taskCount}
@@ -184,7 +212,7 @@ function TaskSection({
       <DisclosurePanel
         className={twMerge(
           "flex flex-col",
-          expanded ? "pt-2 pl-2" : null
+          expanded ? "pt-2" : null
           // taskCount > 0 ? "gap-2" : null
         )}
       >
@@ -237,28 +265,32 @@ function UndoneTasks({
     },
   })
   return (
-    <GridList
-      aria-label="Reorderable To-Do Tasks"
-      items={list.items}
-      dragAndDropHooks={dragAndDropHooks}
-    >
-      {(task) => (
-        <GridListItem className={taskGridListItemClassName} textValue={task.title}>
-          <TaskItem task={task} tasklist={tasklist} />
-        </GridListItem>
-      )}
-    </GridList>
+    <FocusScope>
+      <GridList
+        aria-label="Reorderable To-Do Tasks"
+        items={list.items}
+        dragAndDropHooks={dragAndDropHooks}
+      >
+        {(task) => (
+          <GridListItem className={taskGridListItemClassName} textValue={task.title}>
+            <TaskItem task={task} tasklist={tasklist} />
+          </GridListItem>
+        )}
+      </GridList>
+    </FocusScope>
   )
 }
 
 function DoneTasks({ tasklist, tasks }: { tasklist: Tasklist; tasks: Task[] }) {
   return (
-    <GridList aria-label="Done Tasks by Done Date" className="flex flex-col" items={tasks}>
-      {(task) => (
-        <GridListItem className={taskGridListItemClassName} textValue={task.title}>
-          <TaskItem task={task} tasklist={tasklist} />
-        </GridListItem>
-      )}
-    </GridList>
+    <FocusScope>
+      <GridList aria-label="Done Tasks by Done Date" className="flex flex-col" items={tasks}>
+        {(task) => (
+          <GridListItem className={taskGridListItemClassName} textValue={task.title}>
+            <TaskItem task={task} tasklist={tasklist} />
+          </GridListItem>
+        )}
+      </GridList>
+    </FocusScope>
   )
 }
