@@ -207,7 +207,9 @@ function TaskSection({
           >
             {taskCount}
           </span>
-          <p className="text-left underline-offset-4 group-data-expanded/task-section:font-semibold">
+          <p
+            className={twMerge("text-left underline-offset-4", expanded ? ["font-semibold"] : null)}
+          >
             {statusUI.label}
           </p>
         </Button>
