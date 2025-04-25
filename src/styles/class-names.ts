@@ -1,20 +1,36 @@
 import { tv } from "tailwind-variants"
 
-export const taskStatusBadge = tv({
-  base: "flex items-center justify-center box-content border rounded-sm",
+export const cell = tv({
+  base: "flex items-center rounded-md",
   variants: {
     size: {
-      sm: "h-[16px] min-w-[16px] px-[1px] text-xs",
-      lg: "h-[20px] min-w-[20px] px-[2px] text-sm",
+      compact: "p-2 min-h-24",
+      default: "p-4 min-h-28",
     },
-    status: {
-      NOW: "bg-gold-100 text-gold-600 border-gold-500",
-      LATER: "border-blue-500 bg-blue-100 text-blue-600",
-      DONE: "bg-neutral-100 text-neutral-600 border-neutral-300",
+    interactive: {
+      true: ["hover:bg-neutral-200", "cursor-pointer"],
     },
-    hasCount: {
-      true: "font-semibold",
-      false: "!bg-canvas !text-neutral-400 !border-neutral-300",
+    disabled: {
+      true: ["cursor-not-allowed", "opacity-50"],
+    },
+  },
+  defaultVariants: {
+    size: "default",
+  },
+})
+
+export const panel = tv({
+  base: ["flex flex-col gap-16 p-16", "bg-canvas border-2 border-neutral-300", "rounded-lg"],
+})
+
+export const box = tv({
+  base: "flex items-center",
+  variants: {
+    size: {
+      small: "px-4 h-28",
+      medium: "px-8 h-36",
+      large: "px-12 h-44",
+      xlarge: "px-16 h-52",
     },
   },
 })

@@ -22,3 +22,16 @@ export function formatDate(
 export function isEqualStringArrays(arr1: string[], arr2: string[]) {
   return arr1.every((value, index) => value === arr2[index])
 }
+
+export function formatMinutes(minutes: number | null | undefined): string {
+  if (minutes === null || minutes === undefined) return "-"
+  const hours = Math.floor(minutes / 60)
+  const remainingMinutes = minutes % 60
+  if (hours === 0) {
+    return `${remainingMinutes}m`
+  }
+  if (remainingMinutes === 0) {
+    return `${hours}h`
+  }
+  return `${hours}h ${remainingMinutes}m`
+}

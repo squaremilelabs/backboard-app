@@ -1,8 +1,12 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { ClassNameValue, twMerge } from "tailwind-merge"
-import TextToInput, { TextToInputCallbackParams } from "./TextToInput"
+import { twMerge } from "tailwind-merge"
+import TextToInput, {
+  TextToInputCallbackParams,
+  TextToInputClassNameCallbackParams,
+  TextToInputClassNameProp,
+} from "./text-to-input"
 
 export default function EditableText({
   initialValue,
@@ -10,12 +14,16 @@ export default function EditableText({
   className,
   allowEmpty = false,
   placeholder,
+  onActiveChange,
+  isMultiline,
 }: {
   initialValue: string
   onSave: (value: string) => void
-  className?: ClassNameValue
+  className?: TextToInputClassNameProp
   allowEmpty?: boolean
   placeholder?: string
+  onActiveChange?: (isActive: boolean) => void
+  isMultiline?: boolean
 }) {
   const [innerValue, setInnerValue] = useState("")
 
@@ -29,6 +37,9 @@ export default function EditableText({
       if (!innerValue && !allowEmpty) {
         setInnerValue(initialValue)
       }
+    }
+    if (onActiveChange) {
+      onActiveChange(isActive)
     }
   }
 
@@ -48,7 +59,8 @@ export default function EditableText({
     setIsActive(false)
   }
 
-  const hasChanges = innerValue !== initialValue
+  const appliedClassName = (params: TextToInputClassNameCallbackParams) =>
+    typeof className === "function" ? className(params) : className
 
   return (
     <TextToInput
@@ -58,14 +70,14 @@ export default function EditableText({
       onPressEscape={handleReset}
       onActiveChange={handleActiveChange}
       placeholder={placeholder}
-      className={({ isActive, isInput, isButton }) =>
+      isMultiline={isMultiline}
+      className={(params) =>
         twMerge(
-          isActive ? "grow" : null,
-          isButton ? "decoration-gold-300 underline-offset-4 focus-visible:underline" : null,
-          !innerValue && isButton ? "text-neutral-500" : null,
-          !innerValue && isInput ? "placeholder-neutral-500" : null,
-          className,
-          hasChanges && isInput ? "text-gold-600" : null
+          params.isActive ? "w-full grow" : null,
+          params.isButton ? "cursor-text" : null,
+          !innerValue && params.isButton ? "text-neutral-500" : null,
+          !innerValue && params.isInput ? "placeholder-neutral-500" : null,
+          appliedClassName(params)
         )
       }
     />

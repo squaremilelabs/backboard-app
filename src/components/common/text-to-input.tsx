@@ -1,3 +1,5 @@
+"use client"
+
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "react"
 import { FocusScope } from "react-aria"
 import { Button, Dialog, DialogTrigger, Popover } from "react-aria-components"
@@ -9,6 +11,16 @@ export interface TextToInputCallbackParams {
   setIsActive: Dispatch<SetStateAction<boolean>>
 }
 
+export interface TextToInputClassNameCallbackParams
+  extends Omit<TextToInputCallbackParams, "setIsActive"> {
+  isButton: boolean
+  isInput: boolean
+}
+
+export type TextToInputClassNameProp =
+  | ClassNameValue
+  | ((params: TextToInputClassNameCallbackParams) => ClassNameValue)
+
 export default function TextToInput({
   value,
   onValueChange,
@@ -17,18 +29,16 @@ export default function TextToInput({
   onActiveChange,
   onPressEnter,
   onPressEscape,
+  isMultiline,
 }: {
   value: string
   onValueChange: (value: string) => void
   placeholder?: string
-  className?:
-    | ClassNameValue
-    | ((
-        params: TextToInputCallbackParams & { isButton: boolean; isInput: boolean }
-      ) => ClassNameValue)
+  className?: TextToInputClassNameProp
   onActiveChange?: (isActive: boolean) => void
   onPressEnter?: (params: TextToInputCallbackParams) => void
   onPressEscape?: (params: TextToInputCallbackParams) => void
+  isMultiline?: boolean
 }) {
   const [isActive, setIsActive] = useState(false)
   const triggerRef = useRef<HTMLButtonElement>(null)
@@ -45,7 +55,7 @@ export default function TextToInput({
   useEffect(() => {
     if (!triggerRef.current) return
     const observer = new ResizeObserver((entries) => {
-      setTriggerWidth(entries[0].contentRect.width)
+      setTriggerWidth(entries[0].borderBoxSize[0].inlineSize)
     })
     observer.observe(triggerRef.current)
     return () => observer.disconnect()
@@ -61,6 +71,7 @@ export default function TextToInput({
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter") {
+      if (isMultiline && e.shiftKey) return
       e.preventDefault()
       if (onPressEnter) onPressEnter({ isActive, setIsActive })
     }
@@ -74,14 +85,14 @@ export default function TextToInput({
 
   const appliedClassName = (slot: "button" | "input") =>
     typeof className === "function"
-      ? className({ isActive, setIsActive, isButton: slot === "button", isInput: slot === "input" })
+      ? className({ isActive, isButton: slot === "button", isInput: slot === "input" })
       : className
 
   return (
     <DialogTrigger isOpen={isActive} onOpenChange={setIsActive}>
       <Button
         className={twMerge(
-          "inline-flex cursor-text justify-start text-left !outline-0",
+          "inline-flex cursor-text justify-start text-left whitespace-pre-wrap",
           appliedClassName("button"),
           isActive ? "text-transparent" : null
         )}
@@ -100,7 +111,11 @@ export default function TextToInput({
               onChange={(e) => onValueChange(e.target.value)}
               onFocus={handleFocus}
               onKeyDown={handleKeyDown}
-              className={twMerge("w-full resize-none !outline-0", appliedClassName("input"))}
+              className={twMerge(
+                "w-full resize-none whitespace-pre-wrap !outline-0",
+                appliedClassName("input")
+              )}
+              spellCheck={false}
             />
           </FocusScope>
         </Dialog>

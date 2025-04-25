@@ -8,19 +8,25 @@
   --font-serif: var(--font-serif);
   --font-mono: var(--font-mono);
 
+  --spacing: 1px;
+
   --text-*: initial;
   --text-xs: 10px;
-  --text-xs--line-height: calc(1 / 0.625);
+  --text-xs--line-height: 14px;
   --text-sm: 12px;
-  --text-sm--line-height: calc(1 / 0.75);
+  --text-sm--line-height: 16px;
   --text-base: 14px;
-  --text-base--line-height: calc(1.25 / 0.875);
+  --text-base--line-height: 20px;
   --text-lg: 16px;
-  --text-lg--line-height: calc(1.5 / 1);
+  --text-lg--line-height: 20px;
   --text-xl: 20px;
-  --text-xl--line-height: calc(1.75 / 1.125);
-  --text-2xl: 24px;
-  --text-2xl--line-height: calc(1.75 / 1.25);
+  --text-xl--line-height: 24px;
+
+  --radius-*: initial;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-xl: 16px;
 
   --breakpoint-*: initial;
   --breakpoint-sm: 576px;
@@ -39,25 +45,28 @@
 html {
   @apply bg-neutral-50;
   @apply text-neutral-950;
+  @apply box-border;
 }
 
 @layer base {
   * {
-    @apply text-base;
     @apply relative;
-    @apply outline-neutral-500 ring-neutral-500;
-  }
-  button {
-    @apply cursor-pointer hover:opacity-60;
+    @apply text-base;
+    @apply outline-neutral-700;
+    @apply outline-offset-2;
+    @apply box-border;
   }
   /*  As of Tailwind V4, border-color defaulted to currentColor. Modified here. */
   *, ::after, ::before, ::backdrop, ::file-selector-button {
     @apply border-neutral-200;
   }
+}
 
+@layer components {
   .react-aria-DropIndicator {
     &[data-drop-target] {
-      border: 1px solid var(--color-neutral-500);
+      height: 2px;
+      background: var(--color-neutral-300);
     }
   
     @supports not selector(:has(.foo)) {
@@ -66,4 +75,3 @@ html {
     }
   }
 }
-

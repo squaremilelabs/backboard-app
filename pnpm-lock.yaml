@@ -11,6 +11,9 @@ importers:
       '@clerk/nextjs':
         specifier: ^6.11.2
         version: 6.16.0(next@15.1.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(svix@1.64.1)
+      '@paralleldrive/cuid2':
+        specifier: ^2.2.2
+        version: 2.2.2
       '@prisma/client':
         specifier: 6.3.x
         version: 6.3.1(prisma@6.3.1(typescript@5.8.3))(typescript@5.8.3)

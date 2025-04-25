@@ -328,7 +328,7 @@ export function useSuspenseCountTasklist<TArgs extends Prisma.TasklistCountArgs,
     return useSuspenseModelQuery<TQueryFnData, TData, TError>('Tasklist', `${endpoint}/tasklist/count`, args, options, fetch);
 }
 
-export function useCheckTasklist<TError = DefaultError>(args: { operation: PolicyCrudKind; where?: { id?: string; created_by_id?: string; title?: string; description?: string; is_public?: boolean; topic_id?: string; parent_tasklist_id?: string; parent_tasklist_topic_id?: string; now_task_order?: string; later_task_order?: string; sub_tasklist_order?: string }; }, options?: (Omit<UseQueryOptions<boolean, TError, boolean>, 'queryKey'> & ExtraQueryOptions)) {
+export function useCheckTasklist<TError = DefaultError>(args: { operation: PolicyCrudKind; where?: { id?: string; created_by_id?: string; title?: string; content?: string; task_order?: string }; }, options?: (Omit<UseQueryOptions<boolean, TError, boolean>, 'queryKey'> & ExtraQueryOptions)) {
     const { endpoint, fetch } = getHooksContext();
     return useModelQuery<boolean, boolean, TError>('Tasklist', `${endpoint}/tasklist/check`, args, options, fetch);
 }
