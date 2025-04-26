@@ -1,3 +1,5 @@
+"use client"
+
 import { Task } from "@zenstackhq/runtime/models"
 import { useListData } from "react-stately"
 import { createId } from "@paralleldrive/cuid2"
@@ -14,13 +16,13 @@ import { ChevronDownIcon, GripVerticalIcon } from "lucide-react"
 import { TaskStatus } from "@prisma/client"
 import { useSessionStorage } from "usehooks-ts"
 import { useRef } from "react"
-import TaskCreateInput, { TaskCreateValues } from "./internal/task-create-input"
-import TaskItem, { TaskItemValues } from "./internal/task-item"
-import TaskSummary from "./internal/task-summary"
+import TaskSummary from "../task-summary"
+import TaskListPanelCreate, { TaskCreateValues } from "./internal/task-list-panel-create"
+import TaskListPanelItem, { TaskItemValues } from "./internal/task-list-panel-item"
 import { sortItemsByOrder } from "@/lib/utils"
 import { useDragAndDropHooks, useDroppableProps } from "@/lib/common/drag-and-drop"
 
-export default function TaskList({
+export default function TaskListPanel({
   uid,
   tasks,
   order,
@@ -113,6 +115,8 @@ export default function TaskList({
     },
   })
 
+  const isEmpty = !isLoading && list.items.length === 0
+
   const [isExpanded, setIsExpanded] = useSessionStorage(
     `expanded/task-list-${uid}`,
     isCollapsible ? false : true
@@ -125,8 +129,8 @@ export default function TaskList({
       className={twMerge(
         "group",
         "flex flex-col",
-        "rounded-xl border bg-neutral-100",
-        "data-expanded:border-2 data-expanded:p-4",
+        "rounded-lg border bg-neutral-100",
+        "data-expanded:rounded-xl data-expanded:border-2 data-expanded:p-4",
         "box-content",
         isDropTarget ? "outline" : null
       )}
@@ -138,7 +142,7 @@ export default function TaskList({
         {...dropProps}
         className={twMerge(
           "flex grow items-center px-8 py-4",
-          "gap-4",
+          "gap-4 rounded-xl",
           "group-data-expanded:outline-0"
         )}
       >
@@ -164,12 +168,22 @@ export default function TaskList({
         ) : null}
       </Heading>
       <DisclosurePanel>
-        <div className="bg-canvas flex flex-col gap-8 rounded-[12px] border p-16">
+        <div
+          className={twMerge(
+            "bg-canvas flex flex-col rounded-[12px] border p-16",
+            isEmpty ? "gap-0" : "gap-8"
+          )}
+        >
           {isLoading ? (
             "Loading..."
           ) : (
             <>
-              <TaskCreateInput onSubmit={handleCreate} disabledStatuses={disabledStatuses} />
+              <TaskListPanelCreate
+                onSubmit={handleCreate}
+                disabledStatuses={disabledStatuses}
+                tasklistUid={uid}
+                tasklistIsEmpty={isEmpty}
+              />
               <GridList
                 aria-label="Task List"
                 items={list.items}
@@ -194,7 +208,7 @@ export default function TaskList({
                       >
                         <GripVerticalIcon size={16} />
                       </Button>
-                      <TaskItem
+                      <TaskListPanelItem
                         task={task}
                         onUpdate={(values) => handleUpdate(task.id, values)}
                         onDelete={() => handleDelete(task.id)}

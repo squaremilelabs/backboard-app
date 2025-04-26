@@ -2,7 +2,7 @@ import { TaskStatus } from "@prisma/client"
 import { useEffect, useState } from "react"
 import { Button, ListBox, ListBoxItem, Popover, Select, SelectValue } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
-import { taskStatuses, taskStatusUIMap } from "./constants"
+import { taskStatuses, taskStatusUIMap } from "./utilities"
 
 export function TaskStatusSelect({
   value,
@@ -42,7 +42,7 @@ export function TaskStatusSelect({
       </Button>
       <Popover
         offset={4}
-        className={twMerge("bg-canvas/30 rounded-xl border-2 px-4 py-6 backdrop-blur-lg")}
+        className={twMerge("bg-canvas/30 rounded-xl border-2 p-4 backdrop-blur-lg")}
       >
         <ListBox className="flex flex-col gap-4">
           {taskStatuses.map((status) => {
@@ -53,9 +53,10 @@ export function TaskStatusSelect({
                 id={status}
                 textValue={optionUI.label}
                 className={twMerge(
-                  "flex items-center gap-2 rounded-full border px-4 py-1",
+                  "flex items-center gap-2 rounded-full border px-8 py-4",
                   "cursor-pointer hover:opacity-70",
-                  "data-disabled:cursor-not-allowed data-disabled:opacity-50"
+                  "data-disabled:cursor-not-allowed data-disabled:opacity-50",
+                  "data-selected:outline-2"
                 )}
                 style={{
                   color: `var(--bb-${optionUI.color}-500)`,
@@ -64,7 +65,7 @@ export function TaskStatusSelect({
                 }}
               >
                 <optionUI.Icon size={14} />
-                <span className="grow text-center text-sm font-medium">{optionUI.label}</span>
+                <span className="grow text-center font-medium">{optionUI.label}</span>
               </ListBoxItem>
             )
           })}

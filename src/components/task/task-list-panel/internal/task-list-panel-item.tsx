@@ -1,8 +1,9 @@
 import { Task, TaskStatus } from "@prisma/client"
-import { ChevronDownIcon, CornerDownRightIcon, DeleteIcon } from "lucide-react"
+import { ChevronDownIcon, DeleteIcon, TextIcon } from "lucide-react"
 import { Button, Disclosure, DisclosurePanel, Heading } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
 import { useSessionStorage } from "usehooks-ts"
+import { useState } from "react"
 import { TaskStatusSelect } from "../../task-status"
 import { TaskSizeSelect } from "../../task-size"
 import EditableText from "@/components/common/editable-text"
@@ -15,7 +16,7 @@ export interface TaskItemValues {
   size_minutes?: number
 }
 
-export default function TaskItem({
+export default function TaskListPanelItem({
   task,
   onUpdate,
   onDelete,
@@ -27,6 +28,10 @@ export default function TaskItem({
   disabledStatuses?: TaskStatus[]
 }) {
   const [isExpanded, setIsExpanded] = useSessionStorage(`expanded/task-${task.id}`, false)
+
+  const [isTitleEditActive, setIsTitleEditActive] = useState(false)
+  const [isContentEditActive, setIsContentEditActive] = useState(false)
+
   return (
     <Disclosure
       isExpanded={isExpanded}
@@ -40,10 +45,17 @@ export default function TaskItem({
           disabledStatuses={disabledStatuses}
         />
         <EditableText
+          isActive={isTitleEditActive}
+          onActiveChange={setIsTitleEditActive}
           initialValue={task.title}
           onSave={(title) => onUpdate({ title })}
-          className={({}) =>
-            twMerge("grow", task.status === "DONE" ? "text-neutral-500 line-through" : "")
+          className={({ isButton }) =>
+            twMerge(
+              "grow",
+              task.status === "DONE" && isButton && !isTitleEditActive
+                ? "text-neutral-500 line-through"
+                : ""
+            )
           }
         />
         <Button
@@ -73,16 +85,18 @@ export default function TaskItem({
             "focus-within:outline has-[button[data-pressed]]:outline"
           )}
         >
-          <div className="flex h-20 min-w-fit items-center text-neutral-400">
-            <CornerDownRightIcon size={14} />
+          <div className="flex h-16 min-w-fit items-center text-neutral-400">
+            <TextIcon size={14} />
           </div>
           <EditableText
+            isActive={isContentEditActive}
+            onActiveChange={setIsContentEditActive}
             initialValue={task.content ?? ""}
             onSave={(content) => onUpdate({ content: content || null })}
             placeholder="Notes..."
             allowEmpty
             isMultiline
-            className={({}) => twMerge("grow text-neutral-700", "!no-underline")}
+            className={({}) => twMerge("grow text-sm text-neutral-700", "!no-underline")}
           />
         </div>
         <div className="flex items-center gap-8">

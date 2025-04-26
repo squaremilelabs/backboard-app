@@ -208,6 +208,14 @@ const metadata = {
                     name: "task_order",
                     type: "String",
                     isArray: true,
+                }, emoji_code: {
+                    name: "emoji_code",
+                    type: "String",
+                    isOptional: true,
+                }, emoji_char: {
+                    name: "emoji_char",
+                    type: "String",
+                    isOptional: true,
                 }, tasks: {
                     name: "tasks",
                     type: "Task",

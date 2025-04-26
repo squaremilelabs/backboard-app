@@ -1,18 +1,11 @@
 "use client"
 
-import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { FocusScope } from "react-aria"
 import { Button, Dialog, DialogTrigger, Popover } from "react-aria-components"
 import { ClassNameValue, twMerge } from "tailwind-merge"
 import TextareaAutosize from "react-textarea-autosize"
-
-export interface TextToInputCallbackParams {
-  isActive: boolean
-  setIsActive: Dispatch<SetStateAction<boolean>>
-}
-
-export interface TextToInputClassNameCallbackParams
-  extends Omit<TextToInputCallbackParams, "setIsActive"> {
+export interface TextToInputClassNameCallbackParams {
   isButton: boolean
   isInput: boolean
 }
@@ -26,6 +19,7 @@ export default function TextToInput({
   onValueChange,
   placeholder,
   className,
+  isActive,
   onActiveChange,
   onPressEnter,
   onPressEscape,
@@ -35,20 +29,14 @@ export default function TextToInput({
   onValueChange: (value: string) => void
   placeholder?: string
   className?: TextToInputClassNameProp
-  onActiveChange?: (isActive: boolean) => void
-  onPressEnter?: (params: TextToInputCallbackParams) => void
-  onPressEscape?: (params: TextToInputCallbackParams) => void
+  isActive: boolean
+  onActiveChange: (isActive: boolean) => void
+  onPressEnter?: () => void
+  onPressEscape?: () => void
   isMultiline?: boolean
 }) {
-  const [isActive, setIsActive] = useState(false)
   const triggerRef = useRef<HTMLButtonElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
-
-  useEffect(() => {
-    if (onActiveChange) {
-      onActiveChange(isActive)
-    }
-  }, [isActive, onActiveChange])
 
   // Implemented to match width of textarea popover with width of the trigger button
   const [triggerWidth, setTriggerWidth] = useState<number>(0)
@@ -73,23 +61,23 @@ export default function TextToInput({
     if (e.key === "Enter") {
       if (isMultiline && e.shiftKey) return
       e.preventDefault()
-      if (onPressEnter) onPressEnter({ isActive, setIsActive })
+      if (onPressEnter) onPressEnter()
     }
     if (e.key === "Escape") {
       if (onPressEscape) {
         e.preventDefault()
-        onPressEscape({ isActive, setIsActive })
+        onPressEscape()
       }
     }
   }
 
   const appliedClassName = (slot: "button" | "input") =>
     typeof className === "function"
-      ? className({ isActive, isButton: slot === "button", isInput: slot === "input" })
+      ? className({ isButton: slot === "button", isInput: slot === "input" })
       : className
 
   return (
-    <DialogTrigger isOpen={isActive} onOpenChange={setIsActive}>
+    <DialogTrigger isOpen={isActive} onOpenChange={onActiveChange}>
       <Button
         className={twMerge(
           "inline-flex cursor-text justify-start text-left whitespace-pre-wrap",
@@ -100,7 +88,7 @@ export default function TextToInput({
           isActive ? "text-transparent" : null
         )}
         ref={triggerRef}
-        onPress={() => setIsActive(true)}
+        onPress={() => onActiveChange(true)}
       >
         {value || placeholder}
       </Button>

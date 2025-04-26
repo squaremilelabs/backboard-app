@@ -1,5 +1,6 @@
 "use client"
 import { useUser } from "@clerk/nextjs"
+import { EmojiStyle } from "emoji-picker-react"
 import {
   useCreateTask,
   useDeleteTask,
@@ -8,7 +9,8 @@ import {
   useUpdateTask,
   useUpdateUser,
 } from "@/database/generated/hooks"
-import TaskList from "@/components/task/task-list"
+import TaskList from "@/components/task/task-list-panel"
+import { EmojiDynamic } from "@/components/common/emoji-dynamic"
 
 export default function Inbox() {
   const { user: authUser } = useUser()
@@ -40,8 +42,8 @@ export default function Inbox() {
       isLoading={isLoading}
       disabledStatuses={["DONE"]}
       headerContent={
-        <div className="flex items-center gap-4 text-lg font-medium">
-          <span className="flex size-24 items-center justify-center rounded-md text-lg">📥</span>
+        <div className="flex items-center gap-8 text-lg font-medium">
+          <EmojiDynamic unified="1f4e5" emojiStyle={EmojiStyle.APPLE} size={16} />
           <span className="text-lg">Inbox</span>
         </div>
       }
@@ -78,6 +80,7 @@ export default function Inbox() {
             tasklist: { disconnect: true },
             timeslot: { disconnect: true },
             completed_at: null,
+            status: task.status === "DONE" ? "DRAFT" : undefined,
           },
         })
       }}

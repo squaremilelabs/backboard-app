@@ -83,6 +83,9 @@ model Tasklist extends WithMetadata {
   content    String?
   task_order String[]
 
+  emoji_code String?
+  emoji_char String?
+
   tasks      Task[]
   timeslots  Timeslot[]
 

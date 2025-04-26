@@ -2,6 +2,7 @@ import { useState } from "react"
 import { PlusIcon } from "lucide-react"
 import { twMerge } from "tailwind-merge"
 import { TaskStatus } from "@prisma/client"
+import { useSessionStorage } from "usehooks-ts"
 import { TaskSizeSelect } from "../../task-size"
 import { TaskStatusSelect } from "../../task-status"
 import TextToInput from "@/components/common/text-to-input"
@@ -20,14 +21,21 @@ const initialValues: TaskCreateValues = {
   size_minutes: 5,
 }
 
-export default function TaskCreateInput({
+export default function TaskListPanelCreate({
   onSubmit,
   disabledStatuses,
+  tasklistUid,
+  tasklistIsEmpty,
 }: {
+  tasklistUid: string
   onSubmit: (values: TaskCreateValues) => void
   disabledStatuses?: TaskStatus[]
+  tasklistIsEmpty?: boolean
 }) {
-  const [values, setValues] = useState<TaskCreateValues>(initialValues)
+  const [values, setValues] = useSessionStorage<TaskCreateValues>(
+    `create-values/tasklist-${tasklistUid}`,
+    initialValues
+  )
 
   const onPressEnter = () => {
     if (values.title.trim() !== "") {
@@ -39,11 +47,15 @@ export default function TaskCreateInput({
   const onPressEscape = () => {
     setValues({ ...values, title: "" })
   }
+
+  const [isTitleActive, setIsTitleActive] = useState(false)
+
   return (
     <div
       className={twMerge(
         "flex items-start gap-4",
-        "rounded-md p-4 outline outline-neutral-300",
+        "rounded-md p-4 outline-neutral-300",
+        !tasklistIsEmpty ? "outline" : "",
         "opacity-50",
         "hover:opacity-100",
         "focus-within:opacity-100",
@@ -59,6 +71,8 @@ export default function TaskCreateInput({
         disabledStatuses={disabledStatuses}
       />
       <TextToInput
+        isActive={isTitleActive}
+        onActiveChange={setIsTitleActive}
         value={values.title}
         onValueChange={(title) => setValues({ ...values, title })}
         placeholder="Add task"

@@ -3,26 +3,27 @@
 import { useEffect, useState } from "react"
 import { twMerge } from "tailwind-merge"
 import TextToInput, {
-  TextToInputCallbackParams,
   TextToInputClassNameCallbackParams,
   TextToInputClassNameProp,
 } from "./text-to-input"
 
 export default function EditableText({
+  isActive,
   initialValue,
   onSave,
   className,
   allowEmpty = false,
   placeholder,
-  onActiveChange,
   isMultiline,
+  onActiveChange
 }: {
+  isActive: boolean
   initialValue: string
   onSave: (value: string) => void
   className?: TextToInputClassNameProp
   allowEmpty?: boolean
   placeholder?: string
-  onActiveChange?: (isActive: boolean) => void
+  onActiveChange: (isActive: boolean) => void
   isMultiline?: boolean
 }) {
   const [innerValue, setInnerValue] = useState("")
@@ -31,19 +32,17 @@ export default function EditableText({
     setInnerValue(initialValue)
   }, [initialValue])
 
-  const handleActiveChange = (isActive: boolean) => {
+  const handleActiveChange = (nextIsActive: boolean) => {
     // Handle resetting innerValue if leaving edit mode and left empty
-    if (!isActive) {
+    if (!nextIsActive) {
       if (!innerValue && !allowEmpty) {
         setInnerValue(initialValue)
       }
     }
-    if (onActiveChange) {
-      onActiveChange(isActive)
-    }
+    onActiveChange(nextIsActive)
   }
 
-  const handleSubmitOrReset = ({ setIsActive }: TextToInputCallbackParams) => {
+  const handleSubmitOrReset = () => {
     if (!innerValue && !allowEmpty) {
       setInnerValue(initialValue)
     } else {
@@ -51,12 +50,12 @@ export default function EditableText({
         onSave(innerValue)
       }
     }
-    setIsActive(false)
+    onActiveChange(false)
   }
 
-  const handleReset = ({ setIsActive }: TextToInputCallbackParams) => {
+  const handleReset = () => {
     setInnerValue(initialValue)
-    setIsActive(false)
+    onActiveChange(false)
   }
 
   const appliedClassName = (params: TextToInputClassNameCallbackParams) =>
@@ -64,16 +63,17 @@ export default function EditableText({
 
   return (
     <TextToInput
+      isActive={isActive}
+      onActiveChange={handleActiveChange}
       value={innerValue}
       onValueChange={setInnerValue}
       onPressEnter={handleSubmitOrReset}
       onPressEscape={handleReset}
-      onActiveChange={handleActiveChange}
       placeholder={placeholder}
       isMultiline={isMultiline}
       className={(params) =>
         twMerge(
-          params.isActive ? "w-full grow" : null,
+          isActive ? "w-full grow" : null,
           params.isButton ? "cursor-text" : null,
           !innerValue && params.isButton ? "text-neutral-500" : null,
           !innerValue && params.isInput ? "placeholder-neutral-500" : null,
