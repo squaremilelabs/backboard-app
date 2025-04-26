@@ -13,14 +13,14 @@
   --text-*: initial;
   --text-xs: 10px;
   --text-xs--line-height: 14px;
-  --text-sm: 12px;
+  --text-sm: 10px;
   --text-sm--line-height: 16px;
-  --text-base: 14px;
+  --text-base: 12px;
   --text-base--line-height: 20px;
-  --text-lg: 16px;
+  --text-lg: 14px;
   --text-lg--line-height: 20px;
-  --text-xl: 20px;
-  --text-xl--line-height: 24px;
+  --text-xl: 16px;
+  --text-xl--line-height: 20px;
 
   --radius-*: initial;
   --radius-sm: 2px;
@@ -54,6 +54,7 @@ html {
     @apply text-base;
     @apply outline-neutral-700;
     @apply outline-offset-2;
+    @apply focus-visible:outline;
     @apply box-border;
   }
   /*  As of Tailwind V4, border-color defaulted to currentColor. Modified here. */

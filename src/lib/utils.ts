@@ -1,4 +1,6 @@
 import { format } from "date-fns"
+import { createId } from "@paralleldrive/cuid2"
+import { WithMetadata } from "./types"
 
 export function formatDate(
   date: Date | null | undefined,
@@ -34,4 +36,25 @@ export function formatMinutes(minutes: number | null | undefined): string {
     return `${hours}h`
   }
   return `${hours}h ${remainingMinutes}m`
+}
+
+export function sortItemsByOrder<T extends WithMetadata>({
+  items,
+  order,
+}: {
+  items: T[]
+  order: string[]
+}) {
+  return items.sort((a, b) => {
+    const aIndex = order.indexOf(a.id)
+    const bIndex = order.indexOf(b.id)
+    if (aIndex === -1 && bIndex !== -1) return -1
+    if (aIndex !== -1 && bIndex === -1) return 1
+    if (aIndex === -1 && bIndex === -1) {
+      if (a.created_at > b.created_at) return -1
+      if (a.created_at < b.created_at) return 1
+      return 0
+    }
+    return aIndex - bIndex
+  })
 }

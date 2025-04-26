@@ -1,6 +1,6 @@
 "use client"
 import { twMerge } from "tailwind-merge"
-import { useState } from "react"
+import { useId, useState } from "react"
 import { Prisma, TaskStatus } from "@zenstackhq/runtime/models"
 import { useUser } from "@clerk/nextjs"
 import { createId } from "@paralleldrive/cuid2"
@@ -15,6 +15,10 @@ import {
 } from "@/database/generated/hooks"
 import useDragAndDropList from "@/hooks/useDragAndDropList"
 import TaskList from "@/components/task/task-list"
+import TaskStatusChip from "@/components/task/task-status-chip-OLD"
+import { TaskSizeChip, TaskSizeSelect } from "@/components/task/task-size"
+import { TaskStatusSelect } from "@/components/task/task-status"
+import TaskGridList from "@/components/task/task-grid-list"
 
 export default function Inbox() {
   const [newTaskValues, setNewTaskValues] = useState({
@@ -90,7 +94,15 @@ export default function Inbox() {
       )}
     >
       <h2 className="text-lg font-medium text-neutral-600">Inbox</h2>
-      <CreateInput
+      <div>
+        <TaskGridList
+          key={JSON.stringify({ tasks, order: user?.inbox_task_order })}
+          tasks={tasks ?? []}
+          order={user?.inbox_task_order ?? []}
+          disabledStatuses={["DONE"]}
+        />
+      </div>
+      {/* <CreateInput
         onSubmit={handleCreateTask}
         placeholder="Add task"
         endContent={
@@ -108,7 +120,7 @@ export default function Inbox() {
         dragAndDropHooks={dragAndDropHooks}
         onUpdateTask={onUpdateTask}
         disabledStatuses={["TODO", "DONE"]}
-      />
+      /> */}
     </div>
   )
 }

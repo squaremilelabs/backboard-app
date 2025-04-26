@@ -10,7 +10,7 @@ import {
 import { twMerge } from "tailwind-merge"
 import { useEffect, useState } from "react"
 import { Task, TaskStatus } from "@zenstackhq/runtime/models"
-import TaskStatusChip from "./task-status-chip"
+import TaskStatusChip from "./task-status-chip-OLD"
 import { formatMinutes } from "@/lib/utils"
 import { useDebouncedEffect } from "@/lib/hooks"
 
@@ -152,7 +152,6 @@ const statusOptions: TaskStatus[] = ["DRAFT", "TODO", "DONE"]
 
 const sizeOptions: { value: number; label: string }[] = [
   { value: 5, label: "5m" },
-  { value: 10, label: "10m" },
   { value: 15, label: "15m" },
   { value: 30, label: "30m" },
   { value: 60, label: "1h" },

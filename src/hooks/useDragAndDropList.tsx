@@ -2,7 +2,7 @@
 
 import { isTextDropItem, useDragAndDrop } from "react-aria-components"
 import { useListData } from "react-stately"
-import { useEffect, JSX } from "react"
+import { useEffect, JSX, useMemo, useId } from "react"
 import { isEqualStringArrays } from "@/lib/utils"
 import { WithMetadata } from "@/lib/types"
 import { useCache } from "@/lib/cache-context"
@@ -35,71 +35,75 @@ export default function useDragAndDropList<T extends WithMetadata>({
   handleInsert?: (items: T[]) => void
   renderDragPreview?: (items: T[]) => JSX.Element
 }) {
-  const { getCacheValue, setCacheValue } = useCache()
-  const internalInitialized = getCacheValue<boolean>(`${listKey}-initialized`)
-  const setInternalInitialized = (value: boolean) => {
-    setCacheValue(`${listKey}-initialized`, value)
-  }
+  // const { getCacheValue, setCacheValue } = useCache()
+  // const internalInitialized = getCacheValue<boolean>(`${listKey}-initialized`)
+  // const setInternalInitialized = (value: boolean) => {
+  //   setCacheValue(`${listKey}-initialized`, value)
+  // }
 
-  // List starts as empty until isInitialized becomes true
-  const list = useListData<T>({
-    initialItems: isPreintialized && items ? items : [],
+  // // List starts as empty until isInitialized becomes true
+  // const list = useListData<T>({
+  //   initialItems: isPreintialized && items && order ? sortItemsByOrder(items, order) : [],
+  // })
+
+  // useEffect(() => {
+  //   // Effect should only run on first initialization
+  //   if (internalInitialized) return
+  //   if (isPreintialized) return
+
+  //   // If is initialized and both items & saved order have been provided, initialize the list
+  //   if (isInitialized && items && order) {
+  //     const listItems = sortItemsByOrder(items, order)
+  //     list.append(...listItems)
+  //     setInternalInitialized(true)
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps -- only runs for when all items are loaded
+  // }, [isInitialized, items, order])
+
+  // // Synchronizes list changes outside of drag and drop operations (only after list has been initialized)
+  // useDebouncedEffect(
+  //   () => {
+  //     // Effect should not run if not yet initialized
+  //     if (!isInitialized) return
+  //     if (!internalInitialized) return
+  //     if (!items) return
+
+  //     const incomingItems = [...items]
+  //     const incomingListItemIds = incomingItems.map(({ id }) => id)
+  //     const currentListItemIds = list.items.map(({ id }) => id)
+
+  //     // Handle added items (if added via insertion, the current list will have the id, and this section should be skipped)
+  //     const addedItems = incomingItems.filter((item) => !currentListItemIds.includes(item.id))
+
+  //     if (addedItems.length > 0) {
+  //       list.prepend(...addedItems)
+  //     }
+
+  //     // Handle removed items (if removed via insertion, the current list will NOT have the id, and this section should be skipped)
+  //     const removedItemIds = currentListItemIds.filter((id) => !incomingListItemIds.includes(id))
+
+  //     if (removedItemIds.length > 0) {
+  //       list.remove(...removedItemIds)
+  //     }
+
+  //     // Handle updated items (if an item was added via insertion, the item may have stale data [e.g., the previous `tasklist_id`] and this section should update it)
+  //     const updatedItems = incomingItems
+  //       .filter((item) => currentListItemIds.includes(item.id))
+  //       .filter((item) => item.updated_at !== list.getItem(item.id)?.updated_at)
+
+  //     if (updatedItems.length > 0) {
+  //       updatedItems.forEach((item) => {
+  //         list.update(item.id, item)
+  //       })
+  //     }
+  //   },
+  //   [items, list.items],
+  //   500
+  // )
+
+  const list = useListData({
+    initialItems: sortItemsByOrder(items ?? [], order ?? []),
   })
-
-  useEffect(() => {
-    // Effect should only run on first initialization
-    if (internalInitialized) return
-    if (isPreintialized) return
-
-    // If is initialized and both items & saved order have been provided, initialize the list
-    if (isInitialized && items && order) {
-      const listItems = sortItemsByOrder(items, order)
-      list.append(...listItems)
-      setInternalInitialized(true)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only runs for when all items are loaded
-  }, [isInitialized, items, order])
-
-  // Synchronizes list changes outside of drag and drop operations (only after list has been initialized)
-  useDebouncedEffect(
-    () => {
-      // Effect should not run if not yet initialized
-      if (!isInitialized) return
-      if (!internalInitialized) return
-      if (!items) return
-
-      const incomingItems = [...items]
-      const incomingListItemIds = incomingItems.map(({ id }) => id)
-      const currentListItemIds = list.items.map(({ id }) => id)
-
-      // Handle added items (if added via insertion, the current list will have the id, and this section should be skipped)
-      const addedItems = incomingItems.filter((item) => !currentListItemIds.includes(item.id))
-
-      if (addedItems.length > 0) {
-        list.prepend(...addedItems)
-      }
-
-      // Handle removed items (if removed via insertion, the current list will NOT have the id, and this section should be skipped)
-      const removedItemIds = currentListItemIds.filter((id) => !incomingListItemIds.includes(id))
-
-      if (removedItemIds.length > 0) {
-        list.remove(...removedItemIds)
-      }
-
-      // Handle updated items (if an item was added via insertion, the item may have stale data [e.g., the previous `tasklist_id`] and this section should update it)
-      const updatedItems = incomingItems
-        .filter((item) => currentListItemIds.includes(item.id))
-        .filter((item) => item.updated_at !== list.getItem(item.id)?.updated_at)
-
-      if (updatedItems.length > 0) {
-        updatedItems.forEach((item) => {
-          list.update(item.id, item)
-        })
-      }
-    },
-    [items, list.items],
-    500
-  )
 
   const saveOrderIfChanged = (newOrder: string[]) => {
     if (!isEqualStringArrays(newOrder, order ?? [])) {
