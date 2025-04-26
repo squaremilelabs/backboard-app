@@ -61,7 +61,7 @@ export default function TaskCreateInput({
       <TextToInput
         value={values.title}
         onValueChange={(title) => setValues({ ...values, title })}
-        placeholder="Add Task"
+        placeholder="Add task"
         className={twMerge("grow", "placeholder-neutral-500")}
         onPressEnter={onPressEnter}
         onPressEscape={onPressEscape}

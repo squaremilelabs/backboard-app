@@ -1,8 +1,8 @@
 import { Task, TaskStatus } from "@prisma/client"
 import { ChevronDownIcon, CornerDownRightIcon, DeleteIcon } from "lucide-react"
-import { useState } from "react"
 import { Button, Disclosure, DisclosurePanel, Heading } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
+import { useSessionStorage } from "usehooks-ts"
 import { TaskStatusSelect } from "../../task-status"
 import { TaskSizeSelect } from "../../task-size"
 import EditableText from "@/components/common/editable-text"
@@ -26,7 +26,7 @@ export default function TaskItem({
   onDelete: () => void
   disabledStatuses?: TaskStatus[]
 }) {
-  const [isExpanded, setIsExpanded] = useState(false)
+  const [isExpanded, setIsExpanded] = useSessionStorage(`expanded/task-${task.id}`, false)
   return (
     <Disclosure
       isExpanded={isExpanded}

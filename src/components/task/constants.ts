@@ -2,8 +2,6 @@
 
 import { TaskStatus } from "@prisma/client"
 import { Circle, CircleCheckBig, CircleDashed, LucideIcon } from "lucide-react"
-import { tv } from "tailwind-variants"
-
 
 export const taskStatusUIMap: Record<
   TaskStatus,

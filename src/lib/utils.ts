@@ -1,5 +1,4 @@
 import { format } from "date-fns"
-import { createId } from "@paralleldrive/cuid2"
 import { WithMetadata } from "./types"
 
 export function formatDate(

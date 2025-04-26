@@ -3,21 +3,23 @@ import { ReactNode, useEffect, useState } from "react"
 import { Button, Dialog, DialogTrigger, ListBox, ListBoxItem, Popover } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
 import { tv } from "tailwind-variants"
-import { getTaskSizeTier, taskSizeOptions } from "./constants"
+import { getTaskSizeTier, taskSizeOptions, TaskSizeTier } from "./constants"
 import { formatMinutes } from "@/lib/utils"
 
 export function TaskSizeChip({
   minutes,
   status,
   children,
+  tierOverride,
   className,
 }: {
   minutes: number | null | undefined
   status: TaskStatus
+  tierOverride?: TaskSizeTier
   children?: ReactNode
   className?: string
 }) {
-  const tier = getTaskSizeTier(minutes)
+  const tier = tierOverride ?? getTaskSizeTier(minutes)
   const text = !minutes ? "-" : formatMinutes(minutes)
   return <div className={taskSizeClassName({ status, tier, className })}>{children ?? text}</div>
 }
@@ -31,6 +33,7 @@ export function TaskSizeSelect({
   onValueChange: (value: number) => void
   status: TaskStatus
 }) {
+  const [isOpen, setIsOpen] = useState(false)
   const [innerValue, setInnerValue] = useState<number>(value)
   const selectedTier = getTaskSizeTier(innerValue)
   const selectedText = formatMinutes(innerValue)
@@ -42,7 +45,7 @@ export function TaskSizeSelect({
   }, [value, onValueChange, innerValue])
 
   return (
-    <DialogTrigger>
+    <DialogTrigger isOpen={isOpen} onOpenChange={setIsOpen}>
       <Button
         className={taskSizeClassName({
           status,
@@ -59,7 +62,10 @@ export function TaskSizeSelect({
             selectionMode="single"
             orientation="horizontal"
             selectedKeys={new Set([innerValue])}
-            onSelectionChange={(selection) => setInnerValue([...selection][0] as number)}
+            onSelectionChange={(selection) => {
+              setInnerValue([...selection][0] as number)
+              setIsOpen(false)
+            }}
             disallowEmptySelection
             className={twMerge("flex gap-4")}
             autoFocus
