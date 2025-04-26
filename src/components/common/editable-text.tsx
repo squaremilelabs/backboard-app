@@ -15,7 +15,7 @@ export default function EditableText({
   allowEmpty = false,
   placeholder,
   isMultiline,
-  onActiveChange
+  onActiveChange,
 }: {
   isActive: boolean
   initialValue: string
