@@ -44,7 +44,7 @@ export default function Inbox() {
       headerContent={
         <div className="flex items-center gap-8 text-lg font-medium">
           <EmojiDynamic unified="1f4e5" emojiStyle={EmojiStyle.APPLE} size={16} />
-          <span className="text-lg">Inbox</span>
+          <span className="font-medium">Inbox</span>
         </div>
       }
       defaultTaskValues={{

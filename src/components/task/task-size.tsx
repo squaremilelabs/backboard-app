@@ -125,7 +125,7 @@ export const taskSizeClassName = tv({
     {
       status: "DRAFT",
       tier: "low",
-      class: `bg-neutral-50 text-neutral-600`,
+      class: `bg-neutral-100 text-neutral-600`,
     },
     {
       status: "DRAFT",

@@ -6,7 +6,6 @@ import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs"
 import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
 import { usePathname } from "next/navigation"
-import BackboardLogo from "@/components/common/backboard-logo"
 import { cell } from "@/styles/class-names"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -22,13 +21,9 @@ function Header() {
   return (
     <header className="flex items-center px-16 py-8">
       <nav className="flex items-center gap-16">
-        <Link href="/" className={twMerge(cell({ interactive: true }), "gap-4 text-neutral-600")}>
-          <BackboardLogo size={20} />
-          <h1 className="text-xl font-medium">Backboard</h1>
-        </Link>
         <div className="flex items-center gap-8">
-          <NavLink title="Triage" href="/triage" />
-          <NavLink title="Schedule" href="/schedule" />
+          <NavLink emoji="📝" title="Triage" href="/triage" />
+          <NavLink emoji="🗓️" title="Schedule" href="/schedule" />
         </div>
       </nav>
       <div className="grow" />
@@ -69,22 +64,23 @@ function ThemeButton() {
   )
 }
 
-function NavLink({ title, href }: { title: string; href: string }) {
+function NavLink({ emoji, title, href }: { emoji: string; title: string; href: string }) {
   const pathname = usePathname()
   const isActive = pathname === href
   return (
     <Link
       href={href}
       className={twMerge(
-        cell({ interactive: true }),
-        "px-8 py-4",
-        "rounded-md",
+        "flex items-center gap-4",
+        "px-8 py-2",
+        "rounded-xl border-neutral-300",
         isActive
-          ? "border-2 border-neutral-300 bg-neutral-100 text-neutral-950"
-          : "text-neutral-600"
+          ? ["bg-canvas cursor-auto border-2 font-medium text-neutral-950"]
+          : ["hover:bg-canvas cursor-pointer text-neutral-500 hover:border"]
       )}
     >
-      {title}
+      {isActive ? <span>{emoji}</span> : null}
+      <span>{title}</span>
     </Link>
   )
 }

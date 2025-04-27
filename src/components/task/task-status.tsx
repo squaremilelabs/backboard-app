@@ -42,9 +42,9 @@ export function TaskStatusSelect({
       </Button>
       <Popover
         offset={4}
-        className={twMerge("bg-canvas/30 rounded-xl border-2 p-4 backdrop-blur-lg")}
+        className={twMerge("bg-canvas/30 rounded-xl border-2 p-8 backdrop-blur-lg")}
       >
-        <ListBox className="flex flex-col gap-4">
+        <ListBox className="flex flex-col gap-8">
           {taskStatuses.map((status) => {
             const optionUI = taskStatusUIMap[status]
             return (
@@ -55,12 +55,12 @@ export function TaskStatusSelect({
                 className={twMerge(
                   "flex items-center gap-2 rounded-full border px-8 py-4",
                   "cursor-pointer hover:opacity-70",
-                  "data-disabled:cursor-not-allowed data-disabled:opacity-50",
+                  "data-disabled:cursor-not-allowed data-disabled:opacity-30",
                   "data-selected:outline-2"
                 )}
                 style={{
-                  color: `var(--bb-${optionUI.color}-500)`,
-                  background: `var(--bb-${optionUI.color}-100)`,
+                  color: `var(--bb-${optionUI.color}-50)`,
+                  background: `var(--bb-${optionUI.color}-500)`,
                   borderColor: `var(--bb-${optionUI.color}-300)`,
                 }}
               >

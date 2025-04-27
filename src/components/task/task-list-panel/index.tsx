@@ -129,7 +129,7 @@ export default function TaskListPanel({
       className={twMerge(
         "group",
         "flex flex-col",
-        "rounded-lg border bg-neutral-100",
+        "rounded-lg border-2 bg-neutral-100",
         "data-expanded:rounded-xl data-expanded:border-2 data-expanded:p-4",
         "box-content",
         isDropTarget ? "outline" : null

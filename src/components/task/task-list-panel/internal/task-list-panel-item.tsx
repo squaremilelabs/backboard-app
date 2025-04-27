@@ -54,7 +54,8 @@ export default function TaskListPanelItem({
               "grow",
               task.status === "DONE" && isButton && !isTitleEditActive
                 ? "text-neutral-500 line-through"
-                : ""
+                : "",
+              isExpanded ? "font-medium" : ""
             )
           }
         />
@@ -78,6 +79,15 @@ export default function TaskListPanelItem({
         />
       </Heading>
       <DisclosurePanel className="flex flex-col gap-4">
+        <div className="flex items-center gap-8">
+          <span className="text-sm text-neutral-500">
+            Created {formatDate(task.created_at, { withTime: true })}
+          </span>
+          <div className="h-10 w-1 bg-neutral-400" />
+          <span className="text-sm text-neutral-500">
+            Updated {formatDate(task.updated_at, { withTime: true })}
+          </span>
+        </div>
         <div
           className={twMerge(
             "flex items-start gap-8 p-4",
@@ -96,17 +106,15 @@ export default function TaskListPanelItem({
             placeholder="Notes..."
             allowEmpty
             isMultiline
-            className={({}) => twMerge("grow text-sm text-neutral-700", "!no-underline")}
+            className={({}) => twMerge("min-h-80 grow text-sm text-neutral-700", "!no-underline")}
           />
         </div>
         <div className="flex items-center gap-8">
-          <span className="text-sm text-neutral-500">
-            Created {formatDate(task.created_at, { withTime: true })}
-          </span>
-          <div className="h-10 w-1 bg-neutral-400" />
-          <span className="text-sm text-neutral-500">
-            Updated {formatDate(task.updated_at, { withTime: true })}
-          </span>
+          {task.completed_at ? (
+            <span className="text-sm text-blue-500">
+              Done {formatDate(task.completed_at, { withTime: true })}
+            </span>
+          ) : null}
           <div className="grow" />
           <Button
             onPress={onDelete}

@@ -31,15 +31,21 @@ export default function TaskSummary({ tasks }: { tasks: Task[] }) {
       {showAll ? (
         taskStatuses.map((status) => {
           const summary = taskSummary.status[status]
-          return <TaskSizeChip key={status} status={status} minutes={summary.minutes} />
+          return (
+            <TaskSizeChip
+              key={status}
+              status={status}
+              minutes={summary.minutes}
+              tierOverride="medium"
+              className={summary.minutes === 0 ? "bg-transparent" : undefined}
+            />
+          )
         })
       ) : (
         <TaskSizeChip
           status={primaryStatus}
           minutes={taskSummary.status[primaryStatus].minutes}
-          tierOverride={
-            primaryStatus === "DONE" ? "zero" : primaryStatus === "DRAFT" ? "medium" : undefined
-          }
+          tierOverride="medium"
           className={taskSummary.total.minutes === 0 ? "bg-transparent" : undefined}
         />
       )}
