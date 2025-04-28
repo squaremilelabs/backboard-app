@@ -1,7 +1,7 @@
 import { TaskStatus } from "@zenstackhq/runtime/models"
 import { ReactNode, useEffect, useState } from "react"
 import { Button, Dialog, DialogTrigger, ListBox, ListBoxItem, Popover } from "react-aria-components"
-import { twMerge } from "tailwind-merge"
+import { ClassNameValue, twMerge } from "tailwind-merge"
 import { tv } from "tailwind-variants"
 import { getTaskSizeTier, taskSizeOptions, TaskSizeTier } from "./utilities"
 import { formatMinutes } from "@/lib/utils"
@@ -28,10 +28,12 @@ export function TaskSizeSelect({
   value,
   onValueChange,
   status,
+  className,
 }: {
   value: number
   onValueChange: (value: number) => void
   status: TaskStatus
+  className?: ClassNameValue
 }) {
   const [isOpen, setIsOpen] = useState(false)
   const [innerValue, setInnerValue] = useState<number>(value)
@@ -50,7 +52,7 @@ export function TaskSizeSelect({
         className={taskSizeClassName({
           status,
           tier: selectedTier,
-          class: "cursor-pointer hover:opacity-70",
+          class: twMerge("cursor-pointer hover:opacity-70", className),
         })}
       >
         {selectedText}

@@ -60,16 +60,27 @@ export default function WeekGrid() {
           style={{ gridTemplateRows: `repeat(${presetTimeslots.length}, 1fr)` }}
         >
           {presetTimeslots.map((ts) => (
-            <div
-              key={ts.startTime}
-              className={twMerge(
-                "flex p-8",
-                "border-2",
-                "bg-neutral-100/50 backdrop-blur-lg",
-                "rounded-lg font-medium text-neutral-700"
-              )}
-            >
-              {formatTimeString(ts.startTime)}
+            <div key={ts.startTime} className={twMerge("flex flex-col")}>
+              <span
+                className={twMerge(
+                  "flex items-center justify-center",
+                  "rounded-lg p-2 text-sm font-medium text-neutral-700",
+                  "border-2 bg-neutral-100/50 backdrop-blur-lg"
+                )}
+              >
+                {formatTimeString(ts.startTime)}
+              </span>
+              <div className="grow" />
+              <span
+                className={twMerge(
+                  "flex items-center justify-center",
+                  "rounded-lg p-2 text-sm font-medium text-neutral-700",
+                  "border-2 bg-neutral-100/50 backdrop-blur-lg"
+                )}
+              >
+                {formatTimeString(ts.midTime)}
+              </span>
+              <div className="grow" />
             </div>
           ))}
         </div>

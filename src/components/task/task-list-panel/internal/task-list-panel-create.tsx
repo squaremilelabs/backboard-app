@@ -45,7 +45,7 @@ export default function TaskListPanelCreate({
   return (
     <div
       className={twMerge(
-        "flex items-start gap-4",
+        "group flex items-start gap-4",
         "rounded-md p-4 outline-neutral-300",
         !tasklistIsEmpty ? "outline" : "",
         "opacity-50",
@@ -76,6 +76,7 @@ export default function TaskListPanelCreate({
         value={values.size_minutes}
         onValueChange={(size) => setValues({ ...values, size_minutes: size })}
         status={values.status}
+        className="invisible group-focus-within:visible group-has-[button[data-pressed]]:visible"
       />
     </div>
   )

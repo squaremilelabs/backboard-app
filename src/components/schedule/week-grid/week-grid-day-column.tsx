@@ -161,10 +161,12 @@ function AssignedTimeslot({
       className={twMerge(
         "group flex flex-col gap-8 p-8",
         "rounded-lg border",
-        isActive ? "border-gold-500 border-2" : null,
+        isActive ? "outline -outline-offset-2 outline-neutral-700" : null,
         timeslotStatus === "past"
           ? [doneMinutes > 0 ? "border-blue-300 bg-blue-50" : "bg-neutral-200"]
-          : ["bg-canvas"]
+          : null,
+        timeslotStatus === "current" ? "bg-gold-50 border-gold-300" : null,
+        timeslotStatus === "future" ? "bg-canvas" : null
       )}
     >
       <Link
