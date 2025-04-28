@@ -76,10 +76,10 @@ function NavLink({ emoji, title, href }: { emoji: string; title: string; href: s
       className={twMerge(
         "flex items-center gap-4",
         "px-8 py-2",
-        "rounded-xl border-neutral-300",
+        "rounded-xl border-2 border-transparent",
         isActive
-          ? ["bg-canvas cursor-auto border-2 font-medium text-neutral-950"]
-          : ["hover:bg-canvas cursor-pointer text-neutral-500 hover:border"]
+          ? ["bg-canvas cursor-auto border-neutral-200 font-medium text-neutral-950"]
+          : ["hover:bg-canvas cursor-pointer text-neutral-500 hover:border-neutral-200"]
       )}
     >
       {isActive ? <span>{emoji}</span> : null}

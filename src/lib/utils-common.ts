@@ -2,7 +2,7 @@ import { format } from "date-fns"
 
 export function formatDate(
   date: Date | null | undefined,
-  options?: { withTime?: boolean; customNoneLabel?: string }
+  options?: { withTime?: boolean; customNoneLabel?: string; withWeekday?: boolean }
 ): string {
   if (!date || !(date instanceof Date)) {
     if (options?.customNoneLabel) return options.customNoneLabel
@@ -14,6 +14,10 @@ export function formatDate(
 
   if (options?.withTime) {
     dateFormat += " h:mma"
+  }
+
+  if (options?.withWeekday) {
+    dateFormat = "EEE " + dateFormat
   }
 
   return format(date, dateFormat)

@@ -14,7 +14,7 @@ import TaskList from "@/components/task/tasks-panel"
 import { EmojiDynamic } from "@/components/common/emoji"
 import { draftTask } from "@/lib/utils-task"
 
-export default function Inbox() {
+export default function InboxTasksPanel() {
   const { user: authUser } = useUser()
 
   const userQuery = useFindUniqueUser({

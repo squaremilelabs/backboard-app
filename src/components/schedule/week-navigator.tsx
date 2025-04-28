@@ -7,17 +7,18 @@ export default function WeekNavigator() {
   const { currentWeekHref, nextWeekHref, prevWeekHref } = useScheduleParams()
 
   return (
-    <div className={twMerge("flex items-stretch justify-between", "gap-4")}>
+    <div className={twMerge("flex items-center justify-between", "gap-4")}>
       <Link
         key={prevWeekHref}
         className="flex cursor-pointer items-center rounded-md text-neutral-600 hover:bg-neutral-200"
         href={prevWeekHref}
       >
-        <ChevronLeftIcon size={16} />
+        <ChevronLeftIcon size={20} />
       </Link>
       <Link
         href={currentWeekHref}
-        className="flex cursor-pointer items-center rounded-md text-sm font-medium underline-offset-2 hover:underline"
+        className="hover:text-gold-500 flex cursor-pointer items-center rounded-md font-medium underline-offset-2
+          hover:underline"
       >
         Today
       </Link>
@@ -26,7 +27,7 @@ export default function WeekNavigator() {
         className="flex cursor-pointer items-center rounded-md text-neutral-600 hover:bg-neutral-200"
         href={nextWeekHref}
       >
-        <ChevronRightIcon size={16} />
+        <ChevronRightIcon size={20} />
       </Link>
     </div>
   )

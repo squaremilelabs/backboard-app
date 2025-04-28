@@ -1,96 +1,72 @@
-"use client"
-import { Link } from "react-aria-components"
-import { XIcon } from "lucide-react"
+import { Task, Tasklist, Timeslot } from "@zenstackhq/runtime/models"
 import { createId } from "@paralleldrive/cuid2"
-import TaskListPanel from "../task/tasks-panel"
+import { TaskStatus } from "@prisma/client"
+import TasksPanel from "../task/tasks-panel"
 import TasklistItem from "../tasklist/tasklist-item"
+import { getTimeslotStatus } from "@/lib/utils-timeslot"
 import { draftTask } from "@/lib/utils-task"
 import {
   useCreateTask,
   useDeleteTask,
-  useFindUniqueTimeslot,
   useUpdateTask,
   useUpdateTimeslot,
 } from "@/database/generated/hooks"
-import { useScheduleParams } from "@/lib/schedule"
-import { getTimeslotStatus } from "@/lib/utils-timeslot"
 
-export default function TimeslotTasksPanel({ timeslotId }: { timeslotId: string }) {
-  const timeslotQuery = useFindUniqueTimeslot({
-    where: { id: timeslotId },
-    include: {
-      tasklist: {
-        include: {
-          tasks: {
-            where: {
-              OR: [{ status: "TODO" }, { status: "DONE", timeslot_id: timeslotId }],
-            },
-          },
-        },
-      },
-    },
-  })
-
+export default function TimeslotTasksPanel({
+  timeslot,
+}: {
+  timeslot: Timeslot & { tasklist: Tasklist & { tasks: Task[] } }
+}) {
   const updateTimeslotMutation = useUpdateTimeslot()
   const createTaskMutation = useCreateTask()
   const updateTaskMutation = useUpdateTask()
   const deleteTaskMutation = useDeleteTask()
 
-  const timeslot = timeslotQuery.data
-  const tasklist = timeslotQuery.data?.tasklist
-  const tasks = tasklist?.tasks || []
-
   const timeslotOrder = timeslot?.task_order || []
-  const tasklistOrder = tasklist?.task_order || []
+  const tasklistOrder = timeslot.tasklist?.task_order || []
   const order = timeslotOrder.length > 0 ? timeslotOrder : tasklistOrder
 
-  const { closeTimeslotHref } = useScheduleParams()
-
-  const timeslotStatus = timeslot
-    ? getTimeslotStatus({
-        date: timeslot?.date_string,
-        startTime: timeslot?.start_time_string,
-        endTime: timeslot?.end_time_string,
-      })
-    : null
+  const timeslotStatus = getTimeslotStatus({
+    date: timeslot?.date_string,
+    startTime: timeslot?.start_time_string,
+    endTime: timeslot?.end_time_string,
+  })
 
   const displayedTasks =
-    timeslotStatus === "past" ? tasks.filter((task) => task.status === "DONE") : tasks
+    timeslotStatus === "past"
+      ? timeslot.tasklist.tasks.filter((task) => task.status === "DONE")
+      : timeslot.tasklist.tasks
 
-  return timeslot && tasklist ? (
-    <TaskListPanel
-      uid={`schedule/timeslot/${timeslotId}`}
-      key={`schedule/timeslot/${timeslotId}`}
+  const creatableTaskStatuses: TaskStatus[] = timeslotStatus === "past" ? ["DONE"] : ["TODO"]
+
+  const selectableTaskStatuses: TaskStatus[] =
+    timeslotStatus !== "future" ? ["TODO", "DONE", "DRAFT"] : ["TODO", "DRAFT"]
+
+  return (
+    <TasksPanel
+      uid={`schedule/timeslot/${timeslot.id}`}
       tasks={displayedTasks}
       order={order}
-      headerContent={
-        <div className="flex items-start gap-8">
-          <Link href={closeTimeslotHref} className="cursor-pointer rounded-md hover:opacity-70">
-            <XIcon size={20} />
-          </Link>
-          <TasklistItem tasklist={tasklist} />
-        </div>
-      }
-      creatableTaskStatuses={timeslotStatus === "past" ? ["DONE"] : ["TODO"]}
-      selectableTaskStatuses={
-        timeslotStatus !== "future" ? ["TODO", "DONE", "DRAFT"] : ["TODO", "DRAFT"]
-      }
+      headerContent={<TasklistItem tasklist={timeslot.tasklist} />}
+      creatableTaskStatuses={creatableTaskStatuses}
+      selectableTaskStatuses={selectableTaskStatuses}
       onCreateTask={({ list, values }) => {
         const id = createId()
         list.prepend(
           draftTask({
             id,
-            tasklist_id: tasklist.id,
-            timeslot_id: values.status === "DONE" ? timeslotId : undefined,
-            timeslot_tasklist_id: values.status === "DONE" ? tasklist.id : undefined,
+            tasklist_id: timeslot.tasklist.id,
+            timeslot_id: values.status === "DONE" ? timeslot.id : undefined,
+            timeslot_tasklist_id: values.status === "DONE" ? timeslot.tasklist.id : undefined,
             ...values,
           })
         )
         createTaskMutation.mutate({
           data: {
             ...values,
-            tasklist: { connect: { id: tasklist.id } },
-            timeslot: values.status === "DONE" ? { connect: { id: timeslotId } } : undefined,
+            tasklist: { connect: { id: timeslot.tasklist.id } },
+            timeslot:
+              values.status === "DONE" ? { connect: { id: timeslot.tasklist.id } } : undefined,
           },
         })
       }}
@@ -109,7 +85,7 @@ export default function TimeslotTasksPanel({ timeslotId }: { timeslotId: string 
             ...values,
             timeslot: values.status
               ? values.status === "DONE"
-                ? { connect: { id: timeslotId } }
+                ? { connect: { id: timeslot.id } }
                 : { disconnect: true }
               : undefined,
           },
@@ -121,12 +97,10 @@ export default function TimeslotTasksPanel({ timeslotId }: { timeslotId: string 
       }}
       onReorder={({ reorderedIds }) => {
         updateTimeslotMutation.mutate({
-          where: { id: timeslotId },
+          where: { id: timeslot.id },
           data: { task_order: reorderedIds },
         })
       }}
     />
-  ) : (
-    <div>Loading...</div>
   )
 }

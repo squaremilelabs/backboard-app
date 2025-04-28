@@ -80,7 +80,6 @@ function AssignedTimeslot({
     }
   }
 
-  const isActive = activeTimeslotId === timeslot.id
   const timeslotHref = getTimeslotHref(timeslot.id)
 
   const timeslotStatus = getTimeslotStatus({
@@ -96,7 +95,6 @@ function AssignedTimeslot({
       className={twMerge(
         "group flex flex-col gap-8 p-8",
         "rounded-lg border",
-        isActive ? "outline -outline-offset-2 outline-neutral-700" : null,
         timeslotStatus === "past" ? [doneMinutes > 0 ? "bg-blue-50" : "bg-neutral-200"] : null,
         timeslotStatus === "current" ? "bg-canvas border-gold-300" : null,
         timeslotStatus === "future" ? "bg-canvas" : null

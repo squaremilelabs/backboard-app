@@ -117,7 +117,6 @@ export default function TasksPanel({
         "group",
         "flex flex-col",
         "rounded-xl border-2 bg-neutral-100 p-4",
-        "data-expanded:rounded-xl data-expanded:border-2",
         "box-content",
         isDropTarget ? "outline" : null
       )}
@@ -139,7 +138,7 @@ export default function TasksPanel({
           <Button
             slot="trigger"
             className={twMerge(
-              "flex size-24 items-center justify-center",
+              "flex size-20 items-center justify-center",
               "cursor-pointer rounded-md hover:bg-neutral-200"
             )}
           >
