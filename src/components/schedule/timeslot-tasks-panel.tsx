@@ -1,14 +1,10 @@
 "use client"
-
 import { Link } from "react-aria-components"
 import { XIcon } from "lucide-react"
-import { EmojiStyle } from "emoji-picker-react"
 import { createId } from "@paralleldrive/cuid2"
-import TaskListPanel from "../task/task-list-panel"
-import { EmojiDynamic } from "../common/emoji-dynamic"
-import { defaultTasklistEmojiCode } from "../tasklist/utilities"
-import { draftTask } from "../task/utilities"
-import { useScheduleParams } from "./utilities"
+import TaskListPanel from "../task/tasks-panel"
+import TasklistItem from "../tasklist/tasklist-item"
+import { draftTask } from "@/lib/utils-task"
 import {
   useCreateTask,
   useDeleteTask,
@@ -16,9 +12,10 @@ import {
   useUpdateTask,
   useUpdateTimeslot,
 } from "@/database/generated/hooks"
-import { getTimeslotStatus } from "@/lib/utils"
+import { useScheduleParams } from "@/lib/schedule"
+import { getTimeslotStatus } from "@/lib/utils-timeslot"
 
-export default function TimeslotPanel({ timeslotId }: { timeslotId: string }) {
+export default function TimeslotTasksPanel({ timeslotId }: { timeslotId: string }) {
   const timeslotQuery = useFindUniqueTimeslot({
     where: { id: timeslotId },
     include: {
@@ -69,14 +66,9 @@ export default function TimeslotPanel({ timeslotId }: { timeslotId: string }) {
       headerContent={
         <div className="flex items-start gap-8">
           <Link href={closeTimeslotHref} className="cursor-pointer rounded-md hover:opacity-70">
-            <XIcon size={16} />
+            <XIcon size={20} />
           </Link>
-          <EmojiDynamic
-            unified={tasklist?.emoji?.code ?? defaultTasklistEmojiCode}
-            emojiStyle={EmojiStyle.APPLE}
-            size={16}
-          />
-          <p className="font-medium wrap-break-word">{tasklist?.title}</p>
+          <TasklistItem tasklist={tasklist} />
         </div>
       }
       creatableTaskStatuses={timeslotStatus === "past" ? ["DONE"] : ["TODO"]}

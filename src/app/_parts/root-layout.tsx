@@ -1,4 +1,5 @@
 "use client"
+
 import { twMerge } from "tailwind-merge"
 import { Moon, SunDim } from "lucide-react"
 import { Button, Link } from "react-aria-components"
@@ -6,7 +7,7 @@ import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs"
 import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
 import { usePathname } from "next/navigation"
-import ScheduleNavigator from "@/components/schedule/schedule-navigator"
+import WeekNavigator from "@/components/schedule/week-navigator"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -25,7 +26,7 @@ function Header() {
         <div className="flex items-center gap-8">
           <NavLink emoji="📝" title="Triage" href="/triage" />
           <NavLink emoji="🗓️" title="Schedule" href="/schedule" />
-          {pathname.startsWith("/schedule") ? <ScheduleNavigator /> : null}
+          {pathname.startsWith("/schedule") ? <WeekNavigator /> : null}
         </div>
       </nav>
       <div className="grow" />

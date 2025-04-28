@@ -3,13 +3,13 @@ import React, { useMemo } from "react"
 import { Tasklist } from "@zenstackhq/runtime/models"
 import { FocusScope } from "react-aria"
 import { twMerge } from "tailwind-merge"
-import { EmojiDynamic } from "../common/emoji-dynamic"
 import { TaskSizeChip } from "../task/task-size"
-import { getTaskSummary } from "../task/utilities"
-import { defaultTasklistEmojiCode, sortTasklists } from "./utilities"
+import { getTaskSummary } from "../../lib/utils-task"
+import { sortTasklists } from "../../lib/utils-tasklist"
+import TasklistItem from "./tasklist-item"
 import { useFindManyTasklist } from "@/database/generated/hooks"
 
-export default function TasklistPopover({
+export default function TasklistSelect({
   triggerRef,
   isOpen,
   onOpenChange,
@@ -28,7 +28,7 @@ export default function TasklistPopover({
     },
     include: {
       tasks: {
-        where: { status: { in: ["TODO"] } },
+        where: { status: "TODO" },
       },
     },
   })
@@ -80,11 +80,7 @@ export default function TasklistPopover({
                   "cursor-pointer"
                 )}
               >
-                <EmojiDynamic
-                  unified={tasklist.emoji?.code || defaultTasklistEmojiCode}
-                  size={16}
-                />
-                <p className="grow truncate">{tasklist.title}</p>
+                <TasklistItem tasklist={tasklist} />
                 {hasTasks ? (
                   <>
                     <TaskSizeChip minutes={taskSummary.status.TODO.minutes} status="TODO" />

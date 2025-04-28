@@ -2,7 +2,7 @@ import { TaskStatus } from "@prisma/client"
 import { useEffect, useState } from "react"
 import { Button, ListBox, ListBoxItem, Popover, Select, SelectValue } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
-import { taskStatusUIMap } from "./utilities"
+import { taskStatusUIMap } from "../../lib/utils-task"
 
 export function TaskStatusSelect({
   value,
@@ -42,7 +42,7 @@ export function TaskStatusSelect({
       <Popover
         offset={4}
         placement="right"
-        className={twMerge("bg-canvas/30 rounded-xl border-2 p-2 backdrop-blur-lg")}
+        className={twMerge("bg-canvas/30 rounded-xl border-2 p-4 backdrop-blur-lg")}
       >
         <ListBox className="flex items-center gap-4" orientation="horizontal">
           {selectableStatuses.map((status) => {
@@ -54,14 +54,14 @@ export function TaskStatusSelect({
                 textValue={optionUI.label}
                 isDisabled={status === innerValue}
                 className={twMerge(
-                  "flex items-center gap-4 rounded-full border px-8 py-2",
-                  "cursor-pointer hover:opacity-70",
+                  "flex items-center gap-4 rounded-full border px-4 py-1",
+                  "cursor-pointer not-data-disabled:hover:opacity-70",
                   "data-disabled:cursor-auto",
                   "ring-neutral-500 data-selected:ring-2"
                 )}
                 style={{
-                  color: `var(--bb-${optionUI.color}-50)`,
-                  background: `var(--bb-${optionUI.color}-400)`,
+                  color: `var(--bb-${optionUI.color}-500)`,
+                  background: `var(--bb-${optionUI.color}-50)`,
                   borderColor: `var(--bb-${optionUI.color}-300)`,
                 }}
               >

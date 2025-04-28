@@ -1,8 +1,8 @@
 "use client"
 
 import { twMerge } from "tailwind-merge"
-import TimeslotTaskListPanel from "@/components/schedule/timeslot-task-list-panel"
-import { useScheduleParams } from "@/components/schedule/utilities"
+import TimeslotTaskListPanel from "@/components/schedule/timeslot-tasks-panel"
+import { useScheduleParams } from "@/lib/schedule"
 import WeekGrid from "@/components/schedule/week-grid"
 
 export default function SchedulePage() {

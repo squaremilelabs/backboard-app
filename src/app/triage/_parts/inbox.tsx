@@ -10,9 +10,9 @@ import {
   useUpdateTask,
   useUpdateUser,
 } from "@/database/generated/hooks"
-import TaskList from "@/components/task/task-list-panel"
-import { EmojiDynamic } from "@/components/common/emoji-dynamic"
-import { draftTask } from "@/components/task/utilities"
+import TaskList from "@/components/task/tasks-panel"
+import { EmojiDynamic } from "@/components/common/emoji"
+import { draftTask } from "@/lib/utils-task"
 
 export default function Inbox() {
   const { user: authUser } = useUser()

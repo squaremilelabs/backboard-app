@@ -3,11 +3,10 @@ import { ChevronDownIcon, DeleteIcon, TextIcon } from "lucide-react"
 import { Button, Disclosure, DisclosurePanel, Heading } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
 import { useSessionStorage } from "usehooks-ts"
-import { useState } from "react"
-import { TaskStatusSelect } from "../../task-status"
-import { TaskSizeSelect } from "../../task-size"
+import { TaskStatusSelect } from "./task-status"
+import { TaskSizeSelect } from "./task-size"
 import EditableText from "@/components/common/editable-text"
-import { formatDate } from "@/lib/utils"
+import { formatDate } from "@/lib/utils-common"
 
 export interface TaskItemValues {
   title?: string
@@ -16,7 +15,7 @@ export interface TaskItemValues {
   size_minutes?: number
 }
 
-export default function TaskListPanelItem({
+export default function TaskItem({
   task,
   onUpdate,
   onDelete,
@@ -28,9 +27,6 @@ export default function TaskListPanelItem({
   selectableStatuses: TaskStatus[]
 }) {
   const [isExpanded, setIsExpanded] = useSessionStorage(`expanded/task-${task.id}`, false)
-
-  const [isTitleEditActive, setIsTitleEditActive] = useState(false)
-  const [isContentEditActive, setIsContentEditActive] = useState(false)
 
   return (
     <Disclosure
@@ -45,14 +41,12 @@ export default function TaskListPanelItem({
           selectableStatuses={selectableStatuses}
         />
         <EditableText
-          isActive={isTitleEditActive}
-          onActiveChange={setIsTitleEditActive}
           initialValue={task.title}
           onSave={(title) => onUpdate({ title })}
-          className={({ isButton }) =>
+          className={({ isActive, isButton }) =>
             twMerge(
               "grow",
-              task.status === "DONE" && isButton && !isTitleEditActive
+              task.status === "DONE" && isButton && !isActive
                 ? "text-neutral-500 line-through"
                 : "",
               isExpanded ? "font-medium" : ""
@@ -99,8 +93,6 @@ export default function TaskListPanelItem({
             <TextIcon size={14} />
           </div>
           <EditableText
-            isActive={isContentEditActive}
-            onActiveChange={setIsContentEditActive}
             initialValue={task.content ?? ""}
             onSave={(content) => onUpdate({ content: content || null })}
             placeholder="Notes..."

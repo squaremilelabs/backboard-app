@@ -5,36 +5,40 @@ import { FocusScope } from "react-aria"
 import { Button, Dialog, DialogTrigger, Popover } from "react-aria-components"
 import { ClassNameValue, twMerge } from "tailwind-merge"
 import TextareaAutosize from "react-textarea-autosize"
-export interface TextToInputClassNameCallbackParams {
-  isButton: boolean
-  isInput: boolean
+export interface TextToInputCallbackParams {
+  isActive: boolean
+  setIsActive: (isActive: boolean) => void
 }
 
 export type TextToInputClassNameProp =
   | ClassNameValue
-  | ((params: TextToInputClassNameCallbackParams) => ClassNameValue)
+  | ((params: { isActive: boolean; isButton: boolean; isInput: boolean }) => ClassNameValue)
 
 export default function TextToInput({
   value,
   onValueChange,
   placeholder,
   className,
-  isActive,
-  onActiveChange,
   onPressEnter,
   onPressEscape,
   isMultiline,
+  onActiveChange,
 }: {
   value: string
   onValueChange: (value: string) => void
   placeholder?: string
   className?: TextToInputClassNameProp
-  isActive: boolean
-  onActiveChange: (isActive: boolean) => void
-  onPressEnter?: () => void
-  onPressEscape?: () => void
+  onPressEnter?: (params: TextToInputCallbackParams) => void
+  onPressEscape?: (params: TextToInputCallbackParams) => void
+  onActiveChange?: (isActive: boolean) => void
   isMultiline?: boolean
 }) {
+  const [isActive, setIsActive] = useState(false)
+
+  useEffect(() => {
+    if (onActiveChange) setIsActive(isActive)
+  }, [isActive, onActiveChange])
+
   const triggerRef = useRef<HTMLButtonElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -61,23 +65,23 @@ export default function TextToInput({
     if (e.key === "Enter") {
       if (isMultiline && e.shiftKey) return
       e.preventDefault()
-      if (onPressEnter) onPressEnter()
+      if (onPressEnter) onPressEnter({ isActive, setIsActive })
     }
     if (e.key === "Escape") {
       if (onPressEscape) {
         e.preventDefault()
-        onPressEscape()
+        onPressEscape({ isActive, setIsActive })
       }
     }
   }
 
   const appliedClassName = (slot: "button" | "input") =>
     typeof className === "function"
-      ? className({ isButton: slot === "button", isInput: slot === "input" })
+      ? className({ isActive, isButton: slot === "button", isInput: slot === "input" })
       : className
 
   return (
-    <DialogTrigger isOpen={isActive} onOpenChange={onActiveChange}>
+    <DialogTrigger isOpen={isActive} onOpenChange={setIsActive}>
       <Button
         className={twMerge(
           "inline-flex cursor-text justify-start text-left whitespace-pre-wrap",
@@ -88,7 +92,6 @@ export default function TextToInput({
           isActive ? "text-transparent" : null
         )}
         ref={triggerRef}
-        onPress={() => onActiveChange(true)}
       >
         {value || placeholder}
       </Button>

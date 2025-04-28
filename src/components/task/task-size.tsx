@@ -3,8 +3,8 @@ import { ReactNode, useEffect, useState } from "react"
 import { Button, Dialog, DialogTrigger, ListBox, ListBoxItem, Popover } from "react-aria-components"
 import { ClassNameValue, twMerge } from "tailwind-merge"
 import { tv } from "tailwind-variants"
-import { getTaskSizeTier, taskSizeOptions, TaskSizeTier } from "./utilities"
-import { formatMinutes } from "@/lib/utils"
+import { getTaskSizeTier, taskSizeOptions, TaskSizeTier } from "../../lib/utils-task"
+import { formatMinutes } from "@/lib/utils-common"
 
 export function TaskSizeChip({
   minutes,
@@ -140,7 +140,7 @@ export const taskSizeClassName = tv({
     {
       status: "DRAFT",
       tier: "high",
-      class: `bg-neutral-400 text-neutral-50`,
+      class: `bg-neutral-400 border-neutral-500 text-neutral-50`,
     },
     // TODO
     {
@@ -161,7 +161,7 @@ export const taskSizeClassName = tv({
     {
       status: "TODO",
       tier: "high",
-      class: `bg-gold-400 text-gold-50`,
+      class: `bg-gold-400 border-gold-500 text-gold-50`,
     },
     // DONE
     {
@@ -182,7 +182,7 @@ export const taskSizeClassName = tv({
     {
       status: "DONE",
       tier: "high",
-      class: `bg-blue-400 text-blue-50`,
+      class: `bg-blue-400 border-blue-500 text-blue-50`,
     },
   ],
   defaultVariants: {

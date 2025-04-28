@@ -1,5 +1,5 @@
 import { Task, Tasklist } from "@zenstackhq/runtime/models"
-import { getTaskSummary } from "../task/utilities"
+import { getTaskSummary } from "./utils-task"
 
 export const defaultTasklistEmojiCode = "1f4cb" // Default emoji code for tasklist
 

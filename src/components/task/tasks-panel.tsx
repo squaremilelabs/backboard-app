@@ -14,13 +14,13 @@ import { ChevronDownIcon, GripVerticalIcon } from "lucide-react"
 import { TaskStatus } from "@prisma/client"
 import { useSessionStorage } from "usehooks-ts"
 import { useRef } from "react"
-import TaskSummary from "../task-summary"
-import TaskListPanelCreate, { TaskCreateValues } from "./internal/task-list-panel-create"
-import TaskListPanelItem, { TaskItemValues } from "./internal/task-list-panel-item"
-import { sortItemsByOrder } from "@/lib/utils"
+import TaskSummary from "./task-summary"
+import TaskCreate, { TaskCreateValues } from "./task-create"
+import TaskItem, { TaskItemValues } from "./task-item"
+import { sortItemsByOrder } from "@/lib/utils-common"
 import { useDragAndDropHooks, useDroppableProps } from "@/lib/drag-and-drop"
 
-export interface TaskListPanelProps {
+export interface TasksPanelProps {
   uid: string
   tasks: Task[]
   order: string[]
@@ -36,7 +36,7 @@ export interface TaskListPanelProps {
   creatableTaskStatuses: TaskStatus[]
 }
 
-export default function TaskListPanel({
+export default function TasksPanel({
   uid,
   tasks,
   order,
@@ -50,7 +50,7 @@ export default function TaskListPanel({
   isCollapsible,
   headerContent,
   isLoading,
-}: TaskListPanelProps) {
+}: TasksPanelProps) {
   const list = useListData({
     initialItems: sortItemsByOrder({ items: tasks, order }),
   })
@@ -83,6 +83,10 @@ export default function TaskListPanel({
     itemKind: "task",
     handleReorder,
     handleInsert,
+    renderDragPreview: (tasks) => {
+      const task = tasks[0]
+      return <div className="bg-canvas rounded-xl border px-8 py-4">{task.title}</div>
+    },
   })
 
   const dropRef = useRef<HTMLDivElement>(null)
@@ -112,8 +116,8 @@ export default function TaskListPanel({
       className={twMerge(
         "group",
         "flex flex-col",
-        "rounded-lg border-2 bg-neutral-100",
-        "data-expanded:rounded-xl data-expanded:border-2 data-expanded:p-4",
+        "rounded-xl border-2 bg-neutral-100 p-4",
+        "data-expanded:rounded-xl data-expanded:border-2",
         "box-content",
         isDropTarget ? "outline" : null
       )}
@@ -161,12 +165,7 @@ export default function TaskListPanel({
             "Loading..."
           ) : (
             <>
-              <TaskListPanelCreate
-                onSubmit={handleCreate}
-                selectableTaskStatuses={creatableTaskStatuses}
-                tasklistUid={uid}
-                tasklistIsEmpty={isEmpty}
-              />
+              <TaskCreate onSubmit={handleCreate} selectableTaskStatuses={creatableTaskStatuses} />
               <GridList
                 aria-label="Task List"
                 items={list.items}
@@ -191,7 +190,7 @@ export default function TaskListPanel({
                       >
                         <GripVerticalIcon size={16} />
                       </Button>
-                      <TaskListPanelItem
+                      <TaskItem
                         task={task}
                         onUpdate={(values) => handleUpdate(task.id, values)}
                         onDelete={() => handleDelete(task.id)}

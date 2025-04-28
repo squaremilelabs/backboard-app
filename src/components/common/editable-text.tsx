@@ -2,28 +2,21 @@
 
 import { useEffect, useState } from "react"
 import { twMerge } from "tailwind-merge"
-import TextToInput, {
-  TextToInputClassNameCallbackParams,
-  TextToInputClassNameProp,
-} from "./text-to-input"
+import TextToInput, { TextToInputCallbackParams, TextToInputClassNameProp } from "./text-to-input"
 
 export default function EditableText({
-  isActive,
   initialValue,
   onSave,
   className,
   allowEmpty = false,
   placeholder,
   isMultiline,
-  onActiveChange,
 }: {
-  isActive: boolean
   initialValue: string
   onSave: (value: string) => void
   className?: TextToInputClassNameProp
   allowEmpty?: boolean
   placeholder?: string
-  onActiveChange: (isActive: boolean) => void
   isMultiline?: boolean
 }) {
   const [innerValue, setInnerValue] = useState("")
@@ -39,10 +32,9 @@ export default function EditableText({
         setInnerValue(initialValue)
       }
     }
-    onActiveChange(nextIsActive)
   }
 
-  const handleSubmitOrReset = () => {
+  const handleSubmitOrReset = ({ setIsActive }: TextToInputCallbackParams) => {
     if (!innerValue && !allowEmpty) {
       setInnerValue(initialValue)
     } else {
@@ -50,30 +42,29 @@ export default function EditableText({
         onSave(innerValue)
       }
     }
-    onActiveChange(false)
+    setIsActive(false)
   }
 
-  const handleReset = () => {
+  const handleReset = ({ setIsActive }: TextToInputCallbackParams) => {
     setInnerValue(initialValue)
-    onActiveChange(false)
+    setIsActive(false)
   }
 
-  const appliedClassName = (params: TextToInputClassNameCallbackParams) =>
+  const appliedClassName = (params: { isActive: boolean; isButton: boolean; isInput: boolean }) =>
     typeof className === "function" ? className(params) : className
 
   return (
     <TextToInput
-      isActive={isActive}
-      onActiveChange={handleActiveChange}
       value={innerValue}
       onValueChange={setInnerValue}
       onPressEnter={handleSubmitOrReset}
       onPressEscape={handleReset}
       placeholder={placeholder}
       isMultiline={isMultiline}
+      onActiveChange={handleActiveChange}
       className={(params) =>
         twMerge(
-          isActive ? "w-full grow" : null,
+          params.isActive ? "w-full grow" : null,
           params.isButton ? "cursor-text" : null,
           !innerValue && params.isButton ? "text-neutral-500" : null,
           !innerValue && params.isInput ? "placeholder-neutral-500" : null,

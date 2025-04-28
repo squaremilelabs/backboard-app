@@ -1,5 +1,4 @@
 import { format } from "date-fns"
-import { WithMetadata } from "./types"
 
 export function formatDate(
   date: Date | null | undefined,
@@ -37,7 +36,15 @@ export function formatMinutes(minutes: number | null | undefined): string {
   return `${hours}h ${remainingMinutes}m`
 }
 
-export function sortItemsByOrder<T extends WithMetadata>({
+export interface GenericListItem {
+  id: string
+  title: string
+  created_at: Date
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- to allow for any record type (as it has the above fields)
+  [key: string]: any
+}
+
+export function sortItemsByOrder<T extends GenericListItem>({
   items,
   order,
 }: {
@@ -71,46 +78,4 @@ export function formatTimeString(timeString: string, options?: { withMinutes: bo
   return options?.withMinutes
     ? `${formattedHours}:${formattedMinutes}${period}`
     : `${formattedHours}${period}`
-}
-
-export function getMondayFromDate(date: Date) {
-  const day = date.getDay()
-  const result = new Date(date)
-  result.setHours(0, 0, 0, 0) // Reset time to midnight
-  if (day === 1) return result // If it's already Monday, return the same date
-  const diff = date.getDate() - day + (day === 0 ? -6 : 1) // Adjust when day is Sunday
-  result.setDate(diff)
-  return result
-}
-
-export function getWeekdaysFromDate(date: Date) {
-  const monday = getMondayFromDate(date)
-  return Array.from({ length: 7 }, (_, i) => {
-    const newDate = new Date(monday)
-    newDate.setDate(monday.getDate() + i)
-    return newDate
-  })
-}
-
-type TimeslotStatus = "past" | "current" | "future"
-export function getTimeslotStatus({
-  date,
-  startTime,
-  endTime,
-}: {
-  date: string
-  startTime: string
-  endTime: string
-}): TimeslotStatus {
-  const now = new Date()
-  const startDateTime = new Date(`${date}T${startTime}`)
-  const endDateTime = new Date(`${date}T${endTime}`)
-
-  if (endDateTime < now) {
-    return "past"
-  } else if (startDateTime <= now && endDateTime >= now) {
-    return "current"
-  } else {
-    return "future"
-  }
 }

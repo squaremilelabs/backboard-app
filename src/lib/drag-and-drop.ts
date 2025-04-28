@@ -4,9 +4,9 @@ import { ListData } from "react-stately"
 import { isTextDropItem, useDragAndDrop } from "react-aria-components"
 import { JSX } from "react"
 import { DropOptions, useDrop } from "react-aria"
-import { WithMetadata } from "./types"
+import { GenericListItem } from "./utils-common"
 
-export function useDragAndDropHooks<T extends WithMetadata>({
+export function useDragAndDropHooks<T extends GenericListItem>({
   list,
   itemKind,
   handleReorder,
@@ -18,7 +18,7 @@ export function useDragAndDropHooks<T extends WithMetadata>({
   itemKind: string
   handleReorder: (reorderedIds: string[]) => void
   handleInsert?: (items: T[]) => T[]
-  renderDragPreview?: (items: T[]) => JSX.Element
+  renderDragPreview: (items: T[]) => JSX.Element
   disableRootDrop?: boolean
 }) {
   const { dragAndDropHooks } = useDragAndDrop({
@@ -39,15 +39,7 @@ export function useDragAndDropHooks<T extends WithMetadata>({
         .map((item) => {
           return JSON.parse(item[itemKind])
         })
-      if (renderDragPreview) {
-        return renderDragPreview(processedItems)
-      }
-      const firstItem = processedItems[0]
-      return (
-        <span className="rounded-lg bg-neutral-700 px-8 py-4 text-neutral-50">
-          {firstItem.title}
-        </span>
-      )
+      return renderDragPreview(processedItems)
     },
     onReorder: (e) => {
       if (e.target.dropPosition === "before") {
@@ -116,7 +108,7 @@ export function useDragAndDropHooks<T extends WithMetadata>({
   return dragAndDropHooks
 }
 
-export function useDroppableProps<T extends WithMetadata>({
+export function useDroppableProps<T extends GenericListItem>({
   ref,
   acceptedItemKind,
   handleDrop,

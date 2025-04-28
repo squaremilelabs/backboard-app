@@ -5,20 +5,19 @@ import { PlusIcon, XIcon } from "lucide-react"
 import { Task, Tasklist, Timeslot } from "@zenstackhq/runtime/models"
 import { format } from "date-fns"
 import { useRouter } from "next/navigation"
-import { PresetTimeslot, presetTimeslots, useScheduleParams } from "../utilities"
-import TasklistPopover from "@/components/tasklist/tasklist-popover"
+import TasklistItem from "../tasklist/tasklist-item"
+import { PresetTimeslot, presetTimeslots, getTimeslotStatus } from "@/lib/utils-timeslot"
+import { useScheduleParams } from "@/lib/schedule"
+import TasklistSelect from "@/components/tasklist/tasklist-select"
 import {
   useCreateTimeslot,
   useDeleteTimeslot,
   useFindManyTimeslot,
 } from "@/database/generated/hooks"
-import { EmojiDynamic } from "@/components/common/emoji-dynamic"
-import { defaultTasklistEmojiCode } from "@/components/tasklist/utilities"
-import { getTaskSummary } from "@/components/task/utilities"
+import { getTaskSummary } from "@/lib/utils-task"
 import { TaskSizeChip } from "@/components/task/task-size"
-import { getTimeslotStatus } from "@/lib/utils"
 
-export default function WeekGridDayColumn({ date }: { date: Date }) {
+export default function WeekGridDay({ date }: { date: Date }) {
   const dateString = format(date, "yyyy-MM-dd")
   const timeslotsQuery = useFindManyTimeslot({
     where: { date_string: dateString, archived_at: null },
@@ -26,11 +25,11 @@ export default function WeekGridDayColumn({ date }: { date: Date }) {
       tasklist: {
         include: {
           tasks: {
-            where: { status: { in: ["TODO"] } },
+            where: { status: "TODO" },
           },
         },
       },
-      tasks: true,
+      tasks: { where: { status: "DONE" } },
     },
   })
 
@@ -54,70 +53,6 @@ export default function WeekGridDayColumn({ date }: { date: Date }) {
         )
       })}
     </div>
-  )
-}
-
-function EmptyTimeslot({ date, presetTimeslot }: { date: Date; presetTimeslot: PresetTimeslot }) {
-  const dateString = format(date, "yyyy-MM-dd")
-  const [tasklistPopoverOpen, setTasklistPopoverOpen] = useState(false)
-  const buttonRef = useRef<HTMLButtonElement>(null)
-
-  const createTimeslot = useCreateTimeslot()
-
-  const handleCreateTimeslot = (tasklist: Tasklist) => {
-    createTimeslot.mutate({
-      data: {
-        date_string: dateString,
-        start_time_string: presetTimeslot.startTime,
-        end_time_string: presetTimeslot.endTime,
-        tasklist: {
-          connect: { id: tasklist.id },
-        },
-      },
-    })
-  }
-
-  const timeslotStatus = getTimeslotStatus({
-    date: dateString,
-    ...presetTimeslot,
-  })
-
-  return (
-    <>
-      <Button
-        ref={buttonRef}
-        onPress={() => setTasklistPopoverOpen(true)}
-        className={twMerge(
-          "group flex items-end justify-start",
-          "!outline-0",
-          "rounded-lg p-8",
-          "cursor-pointer",
-          "not-hover:focus-visible:bg-neutral-200",
-          tasklistPopoverOpen ? "bg-canvas" : "",
-          timeslotStatus === "past"
-            ? [tasklistPopoverOpen ? "bg-neutral-300" : "hover:bg-neutral-300"]
-            : ["border", tasklistPopoverOpen ? "bg-canvas" : "hover:bg-canvas"]
-        )}
-      >
-        <span
-          className={twMerge(
-            "flex items-center justify-center gap-4 text-sm text-neutral-500",
-            "invisible group-hover:visible",
-            tasklistPopoverOpen ? "visible" : ""
-          )}
-        >
-          Assign Tasklist
-          <PlusIcon size={14} />
-        </span>
-      </Button>
-      <TasklistPopover
-        triggerRef={buttonRef}
-        isOpen={tasklistPopoverOpen}
-        onOpenChange={setTasklistPopoverOpen}
-        selectedId={null}
-        onSelectionChange={handleCreateTimeslot}
-      />
-    </>
   )
 }
 
@@ -162,10 +97,8 @@ function AssignedTimeslot({
         "group flex flex-col gap-8 p-8",
         "rounded-lg border",
         isActive ? "outline -outline-offset-2 outline-neutral-700" : null,
-        timeslotStatus === "past"
-          ? [doneMinutes > 0 ? "border-blue-300 bg-blue-50" : "bg-neutral-200"]
-          : null,
-        timeslotStatus === "current" ? "bg-gold-50 border-gold-300" : null,
+        timeslotStatus === "past" ? [doneMinutes > 0 ? "bg-blue-50" : "bg-neutral-200"] : null,
+        timeslotStatus === "current" ? "bg-canvas border-gold-300" : null,
         timeslotStatus === "future" ? "bg-canvas" : null
       )}
     >
@@ -173,10 +106,7 @@ function AssignedTimeslot({
         href={timeslotHref}
         className={twMerge("flex items-start gap-4 rounded", "cursor-pointer hover:underline")}
       >
-        <span className="inline-flex h-20 min-w-fit items-center">
-          <EmojiDynamic unified={tasklist.emoji?.code ?? defaultTasklistEmojiCode} size={16} />
-        </span>
-        <span className="line-clamp-2 text-left font-medium">{timeslot.tasklist.title}</span>
+        <TasklistItem tasklist={tasklist} />
       </Link>
       <div className="flex gap-2">
         {timeslotStatus === "past" && !doneMinutes ? (
@@ -205,5 +135,69 @@ function AssignedTimeslot({
         </div>
       )}
     </div>
+  )
+}
+
+function EmptyTimeslot({ date, presetTimeslot }: { date: Date; presetTimeslot: PresetTimeslot }) {
+  const dateString = format(date, "yyyy-MM-dd")
+  const [tasklistSelectOpen, setTasklistSelectOpen] = useState(false)
+  const buttonRef = useRef<HTMLButtonElement>(null)
+
+  const createTimeslot = useCreateTimeslot()
+
+  const handleCreateTimeslot = (tasklist: Tasklist) => {
+    createTimeslot.mutate({
+      data: {
+        date_string: dateString,
+        start_time_string: presetTimeslot.startTime,
+        end_time_string: presetTimeslot.endTime,
+        tasklist: {
+          connect: { id: tasklist.id },
+        },
+      },
+    })
+  }
+
+  const timeslotStatus = getTimeslotStatus({
+    date: dateString,
+    ...presetTimeslot,
+  })
+
+  return (
+    <>
+      <Button
+        ref={buttonRef}
+        onPress={() => setTasklistSelectOpen(true)}
+        className={twMerge(
+          "group flex items-end justify-start",
+          "!outline-0",
+          "rounded-lg p-8",
+          "cursor-pointer",
+          "not-hover:focus-visible:bg-neutral-200",
+          tasklistSelectOpen ? "bg-canvas" : "",
+          timeslotStatus === "past"
+            ? [tasklistSelectOpen ? "bg-neutral-300" : "hover:bg-neutral-300"]
+            : ["border", tasklistSelectOpen ? "bg-canvas" : "hover:bg-canvas"]
+        )}
+      >
+        <span
+          className={twMerge(
+            "flex items-center justify-center gap-4 text-sm text-neutral-500",
+            "invisible group-hover:visible",
+            tasklistSelectOpen ? "visible" : ""
+          )}
+        >
+          Assign Tasklist
+          <PlusIcon size={14} />
+        </span>
+      </Button>
+      <TasklistSelect
+        triggerRef={buttonRef}
+        isOpen={tasklistSelectOpen}
+        onOpenChange={setTasklistSelectOpen}
+        selectedId={null}
+        onSelectionChange={handleCreateTimeslot}
+      />
+    </>
   )
 }

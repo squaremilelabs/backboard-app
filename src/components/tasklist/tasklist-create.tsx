@@ -5,10 +5,10 @@ import { Loader, PlusIcon, XIcon } from "lucide-react"
 import { FormEventHandler, useState } from "react"
 import { twMerge } from "tailwind-merge"
 import Modal from "../common/modal"
-import { EmojiSelect } from "../common/emoji-dynamic"
+import { EmojiSelect } from "../common/emoji"
 import { useCreateTasklist } from "@/database/generated/hooks"
 
-export default function TasklistCreate() {
+export default function TasklistCreateModal() {
   const [open, setOpen] = useState(false)
   const [values, setValues] = useState({
     title: "",
@@ -40,18 +40,19 @@ export default function TasklistCreate() {
         <Button
           className={twMerge(
             "flex items-center gap-4 px-8 py-4",
-            "cursor-pointer rounded-lg",
-            "hover:bg-neutral-200"
+            "cursor-pointer rounded-xl",
+            "hover:bg-neutral-200",
+            "text-neutral-600"
           )}
         >
           <PlusIcon size={16} />
-          <span>New tasklist</span>
+          <span>New List</span>
         </Button>
       }
     >
       <div className="flex w-300 flex-col gap-16">
         <div className="flex items-center">
-          <h1 className="grow text-lg font-medium text-neutral-700">New Tasklist</h1>
+          <h1 className="grow text-lg font-medium text-neutral-700">New List</h1>
           <Button
             onPress={() => setOpen(false)}
             className="cursor-pointer rounded-md hover:opacity-70"
@@ -73,7 +74,7 @@ export default function TasklistCreate() {
           />
           <TextField
             isDisabled={createTasklistMutation.isPending}
-            aria-label="Tasklist title"
+            aria-label="List title"
             value={values.title}
             onChange={(value) => setValues({ ...values, title: value })}
             className={"flex grow"}

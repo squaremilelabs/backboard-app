@@ -1,12 +1,11 @@
 "use client"
-
 import { twMerge } from "tailwind-merge"
 import { useEffect, useState } from "react"
 import { createId } from "@paralleldrive/cuid2"
-import { draftTask } from "../task/utilities"
-import { sortTasklists } from "./utilities"
+import { draftTask } from "../../lib/utils-task"
+import { sortTasklists } from "../../lib/utils-tasklist"
 import TasklistCreate from "./tasklist-create"
-import { TasklistItemContent } from "./tasklist-item-content"
+import TasklistItem from "./tasklist-item"
 import {
   useCreateTask,
   useDeleteTask,
@@ -14,7 +13,7 @@ import {
   useUpdateTask,
   useUpdateTasklist,
 } from "@/database/generated/hooks"
-import TaskListPanel from "@/components/task/task-list-panel"
+import TaskListPanel from "@/components/task/tasks-panel"
 
 export default function TasklistList() {
   const tasklistsQuery = useFindManyTasklist({
@@ -31,6 +30,7 @@ export default function TasklistList() {
 
   const [tasklistIdOrder, setTasklistIdOrder] = useState<string[] | null>(null)
 
+  // maintains tasklsit order in local state
   useEffect(() => {
     if (!tasklistsQuery.data) return
     const sortedTasklists = sortTasklists(tasklistsQuery.data)
@@ -65,7 +65,20 @@ export default function TasklistList() {
                   tasks={tasklist.tasks}
                   order={tasklist.task_order}
                   isCollapsible
-                  headerContent={<TasklistItemContent tasklist={tasklist} />}
+                  headerContent={
+                    <TasklistItem
+                      tasklist={tasklist}
+                      onUpdate={(values) =>
+                        updateTasklistMutation.mutate({ where: { id: tasklist.id }, data: values })
+                      }
+                      onArchive={() => {
+                        updateTasklistMutation.mutate({
+                          where: { id: tasklist.id },
+                          data: { archived_at: new Date() },
+                        })
+                      }}
+                    />
+                  }
                   selectableTaskStatuses={["DRAFT", "TODO"]}
                   creatableTaskStatuses={["DRAFT", "TODO"]}
                   onCreateTask={({ values, list }) => {
