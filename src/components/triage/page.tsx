@@ -1,3 +1,5 @@
+"use client"
+
 import InboxTasksPanel from "./inbox-tasks-panel"
 import TasklistsList from "./tasklists-list"
 
