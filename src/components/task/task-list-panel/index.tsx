@@ -141,7 +141,7 @@ export default function TaskListPanel({
         role={onInsert ? "list" : undefined}
         {...dropProps}
         className={twMerge(
-          "flex grow items-center px-8 py-4",
+          "flex items-center px-8 py-4",
           "gap-4 rounded-xl",
           "group-data-expanded:outline-0"
         )}
@@ -178,12 +178,16 @@ export default function TaskListPanel({
             "Loading..."
           ) : (
             <>
-              <TaskListPanelCreate
-                onSubmit={handleCreate}
-                disabledStatuses={disabledStatuses}
-                tasklistUid={uid}
-                tasklistIsEmpty={isEmpty}
-              />
+              {onCreateTask ? (
+                <TaskListPanelCreate
+                  onSubmit={handleCreate}
+                  disabledStatuses={disabledStatuses}
+                  tasklistUid={uid}
+                  tasklistIsEmpty={isEmpty}
+                />
+              ) : isEmpty ? (
+                <div>No completed tasks...</div>
+              ) : null}
               <GridList
                 aria-label="Task List"
                 items={list.items}

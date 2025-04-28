@@ -79,7 +79,12 @@ export default function TasklistList() {
                       where: { id },
                       data: {
                         ...values,
-                        completed_at: values.status === "DONE" ? new Date() : undefined,
+                        completed_at: values.status
+                          ? values.status === "DONE"
+                            ? new Date()
+                            : null
+                          : undefined,
+                        timeslot: values.status ? { disconnect: true } : undefined,
                       },
                     })
                   }}

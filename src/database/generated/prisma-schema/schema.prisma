@@ -66,8 +66,7 @@ model Tasklist {
   title         String
   content       String?
   task_order    String[]
-  emoji_code    String?
-  emoji_char    String?
+  emoji         Json?
   tasks         Task[]
   timeslots     Timeslot[]
 
@@ -75,18 +74,19 @@ model Tasklist {
 }
 
 model Timeslot {
-  id              String    @id() @default(cuid())
-  created_at      DateTime  @default(now()) @db.Timestamptz()
-  updated_at      DateTime  @updatedAt() @db.Timestamptz()
-  created_by_id   String
-  created_by      User      @relation(fields: [created_by_id], references: [id], onDelete: Cascade)
-  archived_at     DateTime? @db.Timestamptz()
-  start_timestamp DateTime  @db.Timestamptz()
-  end_timestamp   DateTime  @db.Timestamptz()
-  task_order      String[]
-  tasklist_id     String
-  tasklist        Tasklist  @relation(fields: [tasklist_id], references: [id], onDelete: Cascade)
-  tasks           Task[]
+  id                String    @id() @default(cuid())
+  created_at        DateTime  @default(now()) @db.Timestamptz()
+  updated_at        DateTime  @updatedAt() @db.Timestamptz()
+  created_by_id     String
+  created_by        User      @relation(fields: [created_by_id], references: [id], onDelete: Cascade)
+  archived_at       DateTime? @db.Timestamptz()
+  date_string       String
+  start_time_string String
+  end_time_string   String
+  task_order        String[]
+  tasklist_id       String
+  tasklist          Tasklist  @relation(fields: [tasklist_id], references: [id], onDelete: Cascade)
+  tasks             Task[]
 
   @@unique([id, tasklist_id])
   @@map("timeslots")

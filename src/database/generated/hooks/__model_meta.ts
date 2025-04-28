@@ -208,13 +208,10 @@ const metadata = {
                     name: "task_order",
                     type: "String",
                     isArray: true,
-                }, emoji_code: {
-                    name: "emoji_code",
-                    type: "String",
-                    isOptional: true,
-                }, emoji_char: {
-                    name: "emoji_char",
-                    type: "String",
+                }, emoji: {
+                    name: "emoji",
+                    type: "Emoji",
+                    isTypeDef: true,
                     isOptional: true,
                 }, tasks: {
                     name: "tasks",
@@ -272,12 +269,15 @@ const metadata = {
                     name: "archived_at",
                     type: "DateTime",
                     isOptional: true,
-                }, start_timestamp: {
-                    name: "start_timestamp",
-                    type: "DateTime",
-                }, end_timestamp: {
-                    name: "end_timestamp",
-                    type: "DateTime",
+                }, date_string: {
+                    name: "date_string",
+                    type: "String",
+                }, start_time_string: {
+                    name: "start_time_string",
+                    type: "String",
+                }, end_time_string: {
+                    name: "end_time_string",
+                    type: "String",
                 }, task_order: {
                     name: "task_order",
                     type: "String",
@@ -309,6 +309,23 @@ const metadata = {
                 }, id_tasklist_id: {
                     name: "id_tasklist_id",
                     fields: ["id", "tasklist_id"]
+                },
+            }
+            ,
+        }
+        ,
+    }
+    ,
+    typeDefs: {
+        emoji: {
+            name: 'Emoji', fields: {
+                code: {
+                    name: "code",
+                    type: "String",
+                }, char: {
+                    name: "char",
+                    type: "String",
+                    isOptional: true,
                 },
             }
             ,

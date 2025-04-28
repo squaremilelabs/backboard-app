@@ -15,12 +15,6 @@ export interface TaskCreateValues {
   size_minutes: number
 }
 
-const initialValues: TaskCreateValues = {
-  title: "",
-  status: "DRAFT",
-  size_minutes: 5,
-}
-
 export default function TaskListPanelCreate({
   onSubmit,
   disabledStatuses,
@@ -34,7 +28,7 @@ export default function TaskListPanelCreate({
 }) {
   const [values, setValues] = useSessionStorage<TaskCreateValues>(
     `create-values/tasklist-${tasklistUid}`,
-    initialValues
+    { title: "", status: disabledStatuses?.includes("DRAFT") ? "TODO" : "DRAFT", size_minutes: 5 }
   )
 
   const onPressEnter = () => {
@@ -68,7 +62,7 @@ export default function TaskListPanelCreate({
       <TaskStatusSelect
         value={values.status}
         onValueChange={(status) => setValues({ ...values, status: status as UndoneTaskStatus })}
-        disabledStatuses={disabledStatuses}
+        disabledStatuses={[...(disabledStatuses ?? []), "DONE"]}
       />
       <TextToInput
         isActive={isTitleActive}

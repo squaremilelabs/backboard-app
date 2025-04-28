@@ -12,8 +12,7 @@ export default function TasklistCreate() {
   const [open, setOpen] = useState(false)
   const [values, setValues] = useState({
     title: "",
-    emoji_code: "1f4cb",
-    emoji_char: "📋",
+    emoji: { code: "1f4cb" },
   })
 
   const createTasklistMutation = useCreateTasklist()
@@ -68,11 +67,9 @@ export default function TasklistCreate() {
           )}
         >
           <EmojiSelect
-            selected={values.emoji_code}
+            selected={values.emoji.code}
             fallback="1f4cb"
-            onSelect={({ emoji_char, emoji_code }) =>
-              setValues({ ...values, emoji_code, emoji_char })
-            }
+            onSelect={(emoji) => setValues({ ...values, emoji: { code: emoji.unified } })}
           />
           <TextField
             isDisabled={createTasklistMutation.isPending}

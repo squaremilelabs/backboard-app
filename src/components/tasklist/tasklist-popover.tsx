@@ -1,0 +1,101 @@
+import { ListBox, ListBoxItem, Popover, Selection } from "react-aria-components"
+import React, { useMemo } from "react"
+import { Tasklist } from "@zenstackhq/runtime/models"
+import { FocusScope } from "react-aria"
+import { twMerge } from "tailwind-merge"
+import { EmojiDynamic } from "../common/emoji-dynamic"
+import { TaskSizeChip } from "../task/task-size"
+import { getTaskSummary } from "../task/utilities"
+import { defaultTasklistEmojiCode, sortTasklists } from "./utilities"
+import { useFindManyTasklist } from "@/database/generated/hooks"
+
+export default function TasklistPopover({
+  triggerRef,
+  isOpen,
+  onOpenChange,
+  selectedId,
+  onSelectionChange,
+}: {
+  triggerRef: React.RefObject<Element | null>
+  isOpen: boolean
+  onOpenChange: (open: boolean) => void
+  selectedId: string | null
+  onSelectionChange: (selection: Tasklist) => void
+}) {
+  const tasklistsQuery = useFindManyTasklist({
+    where: {
+      archived_at: null,
+    },
+    include: {
+      tasks: {
+        where: { status: { in: ["TODO"] } },
+      },
+    },
+  })
+
+  const sortedTasklists = useMemo(() => {
+    if (!tasklistsQuery.data) return []
+    return sortTasklists(tasklistsQuery.data)
+  }, [tasklistsQuery.data])
+
+  const handleSelect = (selection: Selection) => {
+    const tasklistId = [...selection][0]
+    const tasklist = sortedTasklists.find((tl) => tl.id === tasklistId)
+    if (tasklist) onSelectionChange(tasklist)
+  }
+
+  return (
+    <Popover
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+      triggerRef={triggerRef}
+      placement="bottom start"
+      offset={2}
+    >
+      <FocusScope autoFocus>
+        <ListBox
+          aria-label="Select Tasklist"
+          items={sortedTasklists}
+          selectionMode="single"
+          selectedKeys={selectedId ? new Set([selectedId]) : new Set([])}
+          onSelectionChange={handleSelect}
+          disallowEmptySelection
+          autoFocus
+          className={twMerge(
+            "max-h-400 w-300 max-w-300 overflow-auto p-4",
+            "bg-canvas/30 rounded-lg border-2 backdrop-blur-lg"
+          )}
+        >
+          {(tasklist) => {
+            const hasTasks = tasklist.tasks.length > 0
+            const taskSummary = getTaskSummary(tasklist.tasks)
+            return (
+              <ListBoxItem
+                id={tasklist.id}
+                textValue={tasklist.title}
+                className={twMerge(
+                  "flex w-full items-center",
+                  "gap-4 p-4",
+                  "rounded-lg hover:bg-neutral-200",
+                  "cursor-pointer"
+                )}
+              >
+                <EmojiDynamic
+                  unified={tasklist.emoji?.code || defaultTasklistEmojiCode}
+                  size={16}
+                />
+                <p className="grow truncate">{tasklist.title}</p>
+                {hasTasks ? (
+                  <>
+                    <TaskSizeChip minutes={taskSummary.status.TODO.minutes} status="TODO" />
+                    {/* <TaskSizeChip minutes={taskSummary.status.DRAFT.minutes} status="DRAFT" /> */}
+                  </>
+                ) : null}
+              </ListBoxItem>
+            )
+          }}
+        </ListBox>
+      </FocusScope>
+    </Popover>
+  )
+}

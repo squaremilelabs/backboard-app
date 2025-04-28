@@ -21,14 +21,11 @@ export function EmojiSelect({
 }: {
   selected: string | null
   fallback: string
-  onSelect: (emoji: { emoji_code: string; emoji_char: string }) => void
+  onSelect: (emoji: EmojiClickData) => void
   buttonClassName?: ClassNameValue
   emojiSize?: number
 }) {
   const { resolvedTheme } = useTheme()
-  const handleSelect = (emoji: EmojiClickData) => {
-    onSelect({ emoji_code: emoji.unified, emoji_char: emoji.emoji })
-  }
 
   const emojiTheme = resolvedTheme === "dark" ? Theme.DARK : Theme.LIGHT
 
@@ -46,7 +43,7 @@ export function EmojiSelect({
       <Popover placement="bottom start" offset={4}>
         <Dialog className="!outline-0">
           <EmojiPickerDynamic
-            onEmojiClick={handleSelect}
+            onEmojiClick={onSelect}
             emojiStyle={EmojiStyle.APPLE}
             theme={emojiTheme}
           />

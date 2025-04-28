@@ -6,13 +6,12 @@ import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs"
 import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
 import { usePathname } from "next/navigation"
-import { cell } from "@/styles/class-names"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="grid h-dvh w-dvw grid-rows-[auto_1fr] overflow-auto">
+    <div className="grid h-dvh max-h-dvh w-dvw max-w-dvw grid-rows-[auto_1fr]">
       <Header />
-      <main className={twMerge("@container/main", "overflow-auto p-16 pt-0")}>{children}</main>
+      <main className={twMerge("@container/main", "grid max-h-full p-16 pt-0")}>{children}</main>
     </div>
   )
 }
@@ -56,7 +55,7 @@ function ThemeButton() {
   const Icon = selected === "dark" ? Moon : SunDim
   return (
     <Button
-      className={cell({ interactive: true })}
+      className={"cursor-pointer rounded-md hover:opacity-70"}
       onPress={() => setTheme(selected === "dark" ? "light" : "dark")}
     >
       <Icon size={20} />

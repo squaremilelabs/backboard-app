@@ -97,7 +97,7 @@ export function TaskSizeSelect({
 export const taskSizeClassName = tv({
   base: [
     "flex items-center justify-center",
-    "border rounded-full",
+    "border rounded-full truncate",
     "min-w-40 px-8 py-1",
     "text-sm",
     "font-semibold",
@@ -135,7 +135,7 @@ export const taskSizeClassName = tv({
     {
       status: "DRAFT",
       tier: "high",
-      class: `bg-neutral-500 text-neutral-50`,
+      class: `bg-neutral-400 text-neutral-50`,
     },
     // TODO
     {
@@ -156,7 +156,7 @@ export const taskSizeClassName = tv({
     {
       status: "TODO",
       tier: "high",
-      class: `bg-gold-500 text-gold-50`,
+      class: `bg-gold-400 text-gold-50`,
     },
     // DONE
     {
@@ -177,7 +177,7 @@ export const taskSizeClassName = tv({
     {
       status: "DONE",
       tier: "high",
-      class: `bg-blue-500 text-blue-50`,
+      class: `bg-blue-400 text-blue-50`,
     },
   ],
   defaultVariants: {

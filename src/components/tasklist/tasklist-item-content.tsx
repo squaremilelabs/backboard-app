@@ -6,21 +6,20 @@ import { ArchiveIcon, Loader, XIcon } from "lucide-react"
 import { EmojiStyle } from "emoji-picker-react"
 import Modal from "../common/modal"
 import { EmojiDynamic, EmojiSelect } from "../common/emoji-dynamic"
+import { defaultTasklistEmojiCode } from "./utilities"
 import { useUpdateTasklist } from "@/database/generated/hooks"
 
 export function TasklistItemContent({ tasklist }: { tasklist: Tasklist }) {
   const [open, setOpen] = useState(false)
   const [innerValues, setInnerValues] = useState({
     title: tasklist.title,
-    emoji_code: tasklist.emoji_code,
-    emoji_char: tasklist.emoji_char,
+    emoji: tasklist.emoji ?? { code: defaultTasklistEmojiCode },
   })
 
   useEffect(() => {
     setInnerValues({
       title: tasklist.title,
-      emoji_code: tasklist.emoji_code,
-      emoji_char: tasklist.emoji_char,
+      emoji: tasklist.emoji ?? { code: defaultTasklistEmojiCode },
     })
   }, [tasklist])
 
@@ -41,10 +40,7 @@ export function TasklistItemContent({ tasklist }: { tasklist: Tasklist }) {
   }
 
   useEffect(() => {
-    if (
-      tasklist.emoji_code !== innerValues.emoji_code ||
-      tasklist.emoji_char !== innerValues.emoji_char
-    ) {
+    if (tasklist.emoji?.code !== innerValues.emoji?.code) {
       handleSubmit()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -57,17 +53,17 @@ export function TasklistItemContent({ tasklist }: { tasklist: Tasklist }) {
       triggerButton={
         <Button
           className={twMerge(
-            "flex items-center gap-8",
+            "flex items-start gap-8",
             "cursor-pointer underline-offset-4 hover:underline",
             "rounded-md"
           )}
         >
           <EmojiDynamic
-            unified={innerValues.emoji_code || "1f4cb"}
+            unified={innerValues.emoji.code || defaultTasklistEmojiCode}
             emojiStyle={EmojiStyle.APPLE}
             size={16}
           />
-          <p className="font-medium">{innerValues.title}</p>
+          <p className="text-left font-medium">{innerValues.title}</p>
         </Button>
       }
     >
@@ -92,10 +88,10 @@ export function TasklistItemContent({ tasklist }: { tasklist: Tasklist }) {
           )}
         >
           <EmojiSelect
-            selected={innerValues.emoji_code}
-            fallback="1f4cb"
-            onSelect={({ emoji_char, emoji_code }) => {
-              setInnerValues((prev) => ({ ...prev, emoji_code, emoji_char }))
+            selected={innerValues.emoji.code ?? null}
+            fallback={defaultTasklistEmojiCode}
+            onSelect={(emoji) => {
+              setInnerValues((prev) => ({ ...prev, emoji: { code: emoji.unified } }))
             }}
           />
           <TextField
