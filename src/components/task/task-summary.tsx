@@ -4,7 +4,7 @@ import { Button } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
 import { TaskSizeChip } from "./task-size"
 import { taskStatuses } from "./utilities"
-import { getTaskSummary } from "@/lib/task/utils"
+import { getTaskSummary } from "./utilities"
 
 export default function TaskSummary({ tasks }: { tasks: Task[] }) {
   const [showAll, setShowAll] = useState(false)

@@ -1,8 +1,6 @@
 "use client"
-
 import { Task } from "@zenstackhq/runtime/models"
-import { useListData } from "react-stately"
-import { createId } from "@paralleldrive/cuid2"
+import { ListData, useListData } from "react-stately"
 import {
   Button,
   Disclosure,
@@ -20,7 +18,23 @@ import TaskSummary from "../task-summary"
 import TaskListPanelCreate, { TaskCreateValues } from "./internal/task-list-panel-create"
 import TaskListPanelItem, { TaskItemValues } from "./internal/task-list-panel-item"
 import { sortItemsByOrder } from "@/lib/utils"
-import { useDragAndDropHooks, useDroppableProps } from "@/lib/common/drag-and-drop"
+import { useDragAndDropHooks, useDroppableProps } from "@/lib/drag-and-drop"
+
+export interface TaskListPanelProps {
+  uid: string
+  tasks: Task[]
+  order: string[]
+  onCreateTask: (params: { list: ListData<Task>; values: TaskCreateValues }) => void
+  onUpdateTask: (params: { list: ListData<Task>; taskId: string; values: TaskItemValues }) => void
+  onDeleteTask: (params: { list: ListData<Task>; taskId: string }) => void
+  onReorder: (params: { reorderedIds: string[] }) => void
+  onInsert?: (params: { task: Task }) => Task
+  headerContent: React.ReactNode
+  isCollapsible?: boolean
+  isLoading?: boolean
+  selectableTaskStatuses: TaskStatus[]
+  creatableTaskStatuses: TaskStatus[]
+}
 
 export default function TaskListPanel({
   uid,
@@ -31,69 +45,38 @@ export default function TaskListPanel({
   onReorder,
   onInsert,
   onDeleteTask,
-  defaultTaskValues,
-  disabledStatuses,
+  selectableTaskStatuses,
+  creatableTaskStatuses,
   isCollapsible,
   headerContent,
   isLoading,
-}: {
-  uid: string
-  tasks: Task[]
-  order: string[]
-  onCreateTask?: (values: TaskCreateValues & { id: string }) => void
-  onUpdateTask: (taskId: string, values: TaskItemValues) => void
-  onDeleteTask: (taskId: string) => void
-  onReorder: (reorderedIds: string[]) => void
-  onInsert?: (insertedTask: Task) => void
-  defaultTaskValues?: Partial<Task>
-  disabledStatuses?: TaskStatus[]
-  headerContent?: React.ReactNode
-  isCollapsible?: boolean
-  isLoading?: boolean
-}) {
+}: TaskListPanelProps) {
   const list = useListData({
     initialItems: sortItemsByOrder({ items: tasks, order }),
   })
 
   const handleCreate = (values: TaskCreateValues) => {
-    const id = createId()
-    list.prepend({
-      id,
-      created_at: new Date(),
-      updated_at: new Date(),
-      created_by_id: "UNKNOWN",
-      archived_at: null,
-      content: null,
-      tasklist_id: null,
-      timeslot_tasklist_id: null,
-      completed_at: null,
-      timeslot_id: null,
-      ...defaultTaskValues,
-      ...values,
-    })
-    if (onCreateTask) onCreateTask({ id, ...values })
+    onCreateTask({ list, values })
   }
 
   const handleUpdate = (taskId: string, values: TaskItemValues) => {
-    const prevItem = list.getItem(taskId)
-    if (prevItem) {
-      list.update(taskId, { ...prevItem, updated_at: new Date(), ...values })
-    }
-    if (onUpdateTask) onUpdateTask(taskId, values)
+    onUpdateTask({ list, values, taskId })
   }
 
   const handleDelete = (taskId: string) => {
-    list.remove(taskId)
-    if (onDeleteTask) onDeleteTask(taskId)
+    onDeleteTask({ list, taskId })
   }
 
   const handleInsert = onInsert
     ? (tasks: Task[]) => {
-        onInsert(tasks[0])
+        const updatedTask = onInsert({ task: tasks[0] })
+        return [updatedTask]
       }
     : undefined
 
-  const handleReorder = onReorder
+  const handleReorder = (reorderedIds: string[]) => {
+    onReorder({ reorderedIds })
+  }
 
   const dragAndDropHooks = useDragAndDropHooks({
     list,
@@ -110,7 +93,7 @@ export default function TaskListPanel({
       const task = tasks[0]
       if (onInsert) {
         list.prepend(task)
-        onInsert(task)
+        onInsert({ task })
       }
     },
   })
@@ -178,16 +161,12 @@ export default function TaskListPanel({
             "Loading..."
           ) : (
             <>
-              {onCreateTask ? (
-                <TaskListPanelCreate
-                  onSubmit={handleCreate}
-                  disabledStatuses={disabledStatuses}
-                  tasklistUid={uid}
-                  tasklistIsEmpty={isEmpty}
-                />
-              ) : isEmpty ? (
-                <div>No completed tasks...</div>
-              ) : null}
+              <TaskListPanelCreate
+                onSubmit={handleCreate}
+                selectableTaskStatuses={creatableTaskStatuses}
+                tasklistUid={uid}
+                tasklistIsEmpty={isEmpty}
+              />
               <GridList
                 aria-label="Task List"
                 items={list.items}
@@ -216,7 +195,7 @@ export default function TaskListPanel({
                         task={task}
                         onUpdate={(values) => handleUpdate(task.id, values)}
                         onDelete={() => handleDelete(task.id)}
-                        disabledStatuses={disabledStatuses}
+                        selectableStatuses={selectableTaskStatuses}
                       />
                     </GridListItem>
                   )

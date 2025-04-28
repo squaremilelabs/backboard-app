@@ -1,4 +1,5 @@
 "use client"
+import { createId } from "@paralleldrive/cuid2"
 import { useUser } from "@clerk/nextjs"
 import { EmojiStyle } from "emoji-picker-react"
 import {
@@ -11,6 +12,7 @@ import {
 } from "@/database/generated/hooks"
 import TaskList from "@/components/task/task-list-panel"
 import { EmojiDynamic } from "@/components/common/emoji-dynamic"
+import { draftTask } from "@/components/task/utilities"
 
 export default function Inbox() {
   const { user: authUser } = useUser()
@@ -20,7 +22,7 @@ export default function Inbox() {
   })
 
   const tasksQuery = useFindManyTask({
-    where: { tasklist_id: null, completed_at: null },
+    where: { tasklist_id: null },
   })
 
   const updateUserMutation = useUpdateUser()
@@ -35,54 +37,60 @@ export default function Inbox() {
 
   return (
     <TaskList
-      uid={"TRIAGE-INBOX"}
-      key={JSON.stringify({ tasks: tasksQuery.dataUpdatedAt, order: userQuery.dataUpdatedAt })}
+      uid={"inbox"}
+      key={`inbox-${tasksQuery.isSuccess}`}
       tasks={tasks}
       order={order}
       isLoading={isLoading}
-      disabledStatuses={["DONE"]}
+      selectableTaskStatuses={["DRAFT"]}
+      creatableTaskStatuses={["DRAFT"]}
       headerContent={
         <div className="flex items-center gap-8 text-lg font-medium">
           <EmojiDynamic unified="1f4e5" emojiStyle={EmojiStyle.APPLE} size={16} />
           <span className="font-medium">Inbox</span>
         </div>
       }
-      defaultTaskValues={{
-        tasklist_id: null,
-        timeslot_tasklist_id: null,
-        timeslot_id: null,
-        completed_at: null,
-      }}
-      onCreateTask={(values) => {
+      onCreateTask={({ list, values }) => {
+        const id = createId()
+        list.prepend(draftTask({ id, ...values }))
         createTaskMutation.mutate({
-          data: values,
+          data: { id, ...values },
         })
       }}
-      onUpdateTask={(id, values) => {
+      onUpdateTask={({ list, taskId, values }) => {
+        const prevTask = list.getItem(taskId)
+        if (prevTask) list.update(taskId, { ...prevTask, ...values })
         updateTaskMutation.mutate({
-          where: { id },
+          where: { id: taskId },
           data: values,
         })
       }}
-      onDeleteTask={(id) => {
-        deleteTaskMutation.mutate({ where: { id } })
+      onDeleteTask={({ list, taskId }) => {
+        list.remove(taskId)
+        deleteTaskMutation.mutate({ where: { id: taskId } })
       }}
-      onReorder={(reorderedIds) => {
+      onReorder={({ reorderedIds }) => {
         updateUserMutation.mutate({
           where: { id: user?.id ?? "NO_USER" },
           data: { inbox_task_order: reorderedIds },
         })
       }}
-      onInsert={(task) => {
+      onInsert={({ task }) => {
         updateTaskMutation.mutate({
           where: { id: task.id },
           data: {
             tasklist: { disconnect: true },
             timeslot: { disconnect: true },
-            completed_at: null,
-            status: task.status === "DONE" ? "DRAFT" : undefined,
+            status: "DRAFT",
           },
         })
+        return {
+          ...task,
+          tasklist_id: null,
+          timeslot_tasklist_id: null,
+          timeslot_id: null,
+          status: "DRAFT",
+        }
       }}
     />
   )

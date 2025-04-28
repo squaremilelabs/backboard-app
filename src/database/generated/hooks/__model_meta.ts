@@ -115,10 +115,6 @@ const metadata = {
                     name: "size_minutes",
                     type: "Int",
                     attributes: [{ "name": "@default", "args": [{ "value": 5 }] }],
-                }, completed_at: {
-                    name: "completed_at",
-                    type: "DateTime",
-                    isOptional: true,
                 }, tasklist_id: {
                     name: "tasklist_id",
                     type: "String",

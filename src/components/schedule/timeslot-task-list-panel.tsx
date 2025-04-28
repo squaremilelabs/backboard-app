@@ -3,9 +3,11 @@
 import { Link } from "react-aria-components"
 import { XIcon } from "lucide-react"
 import { EmojiStyle } from "emoji-picker-react"
+import { createId } from "@paralleldrive/cuid2"
 import TaskListPanel from "../task/task-list-panel"
 import { EmojiDynamic } from "../common/emoji-dynamic"
 import { defaultTasklistEmojiCode } from "../tasklist/utilities"
+import { draftTask } from "../task/utilities"
 import { useScheduleParams } from "./utilities"
 import {
   useCreateTask,
@@ -61,7 +63,7 @@ export default function TimeslotPanel({ timeslotId }: { timeslotId: string }) {
   return timeslot && tasklist ? (
     <TaskListPanel
       uid={`schedule/timeslot/${timeslotId}`}
-      key={JSON.stringify({ [timeslotId]: timeslotQuery.dataUpdatedAt })}
+      key={`schedule/timeslot/${timeslotId}`}
       tasks={displayedTasks}
       order={order}
       headerContent={
@@ -77,34 +79,42 @@ export default function TimeslotPanel({ timeslotId }: { timeslotId: string }) {
           <p className="font-medium wrap-break-word">{tasklist?.title}</p>
         </div>
       }
-      defaultTaskValues={{
-        timeslot_id: timeslotId,
-        tasklist_id: tasklist?.id,
-        timeslot_tasklist_id: tasklist?.id,
-      }}
-      disabledStatuses={["DRAFT"]}
-      onCreateTask={
-        timeslotStatus !== "past"
-          ? (values) => {
-              createTaskMutation.mutate({
-                data: {
-                  ...values,
-                  tasklist: { connect: { id: tasklist.id } },
-                },
-              })
-            }
-          : undefined
+      creatableTaskStatuses={timeslotStatus === "past" ? ["DONE"] : ["TODO"]}
+      selectableTaskStatuses={
+        timeslotStatus === "past" ? ["TODO", "DRAFT", "DONE"] : ["TODO", "DRAFT"]
       }
-      onUpdateTask={(id, values) => {
-        updateTaskMutation.mutate({
-          where: { id },
+      onCreateTask={({ list, values }) => {
+        const id = createId()
+        list.prepend(
+          draftTask({
+            id,
+            tasklist_id: tasklist.id,
+            timeslot_id: values.status === "DONE" ? timeslotId : undefined,
+            timeslot_tasklist_id: values.status === "DONE" ? tasklist.id : undefined,
+            ...values,
+          })
+        )
+        createTaskMutation.mutate({
           data: {
             ...values,
-            completed_at: values.status
-              ? values.status === "DONE"
-                ? new Date()
-                : null
-              : undefined,
+            tasklist: { connect: { id: tasklist.id } },
+            timeslot: values.status === "DONE" ? { connect: { id: timeslotId } } : undefined,
+          },
+        })
+      }}
+      onUpdateTask={({ list, taskId, values }) => {
+        const prevTask = list.getItem(taskId)
+        if (prevTask) list.update(taskId, { ...prevTask, ...values })
+        if (timeslotStatus === "past" && values.status !== "DONE") {
+          list.remove(taskId)
+        }
+        if (values.status === "DRAFT") {
+          list.remove(taskId)
+        }
+        updateTaskMutation.mutate({
+          where: { id: taskId },
+          data: {
+            ...values,
             timeslot: values.status
               ? values.status === "DONE"
                 ? { connect: { id: timeslotId } }
@@ -113,10 +123,11 @@ export default function TimeslotPanel({ timeslotId }: { timeslotId: string }) {
           },
         })
       }}
-      onDeleteTask={(id) => {
-        deleteTaskMutation.mutate({ where: { id } })
+      onDeleteTask={({ list, taskId }) => {
+        list.remove(taskId)
+        deleteTaskMutation.mutate({ where: { id: taskId } })
       }}
-      onReorder={(reorderedIds) => {
+      onReorder={({ reorderedIds }) => {
         updateTimeslotMutation.mutate({
           where: { id: timeslotId },
           data: { task_order: reorderedIds },

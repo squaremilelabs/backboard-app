@@ -1,5 +1,6 @@
 "use client"
 
+import { createId } from "@paralleldrive/cuid2"
 import { Task, TaskStatus } from "@zenstackhq/runtime/models"
 import { Circle, CircleCheckBig, CircleDashed, LucideIcon } from "lucide-react"
 
@@ -70,5 +71,23 @@ export function getTaskSummary(tasks: Task[]): {
       DONE: { count: doneCount, minutes: doneMinutes },
     },
     total: { count: totalCount, minutes: totalMinutes },
+  }
+}
+
+export function draftTask(taskValues: Partial<Task>): Task {
+  return {
+    id: createId(),
+    created_at: new Date(),
+    updated_at: new Date(),
+    title: "",
+    tasklist_id: null,
+    timeslot_id: null,
+    timeslot_tasklist_id: null,
+    archived_at: null,
+    created_by_id: "UNKNOWN",
+    status: "DRAFT",
+    size_minutes: 5,
+    content: null,
+    ...taskValues,
   }
 }

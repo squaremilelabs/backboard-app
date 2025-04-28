@@ -4,9 +4,10 @@ import { twMerge } from "tailwind-merge"
 import { Link } from "react-aria-components"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import { useMemo } from "react"
+import { format } from "date-fns"
 import { presetTimeslots, useScheduleParams } from "../utilities"
 import WeekGridDayColumn from "./week-grid-day-column"
-import { formatDate, formatTimeString, getWeekdaysFromDate } from "@/lib/utils"
+import { formatDate, formatTimeString, getTimeslotStatus, getWeekdaysFromDate } from "@/lib/utils"
 
 export default function WeekGrid() {
   const { weekStartDate } = useScheduleParams()
@@ -26,21 +27,29 @@ export default function WeekGrid() {
         <Navigator />
         {/* Weekdays */}
         <div className="grid min-w-lg grid-cols-7 gap-4">
-          {weekdays.map((date) => (
-            <div
-              key={date.toLocaleDateString()}
-              className={twMerge(
-                "flex items-center justify-center gap-8",
-                "rounded-lg border-2 p-4",
-                "bg-neutral-100/50 backdrop-blur-lg"
-              )}
-            >
-              <span className="font-medium text-neutral-700">
-                {date.toLocaleDateString("en-US", { weekday: "long" })}
-              </span>
-              <span className="text-sm font-medium text-neutral-500">{formatDate(date)}</span>
-            </div>
-          ))}
+          {weekdays.map((date) => {
+            const timeslotStatus = getTimeslotStatus({
+              date: format(date, "yyyy-MM-dd"),
+              startTime: "00:00",
+              endTime: "23:59",
+            })
+            return (
+              <div
+                key={date.toLocaleDateString()}
+                className={twMerge(
+                  "flex items-center justify-center gap-8",
+                  "rounded-lg border-2 p-4",
+                  "backdrop-blur-lg",
+                  timeslotStatus === "past" ? "bg-neutral-200/50" : "bg-canvas/50"
+                )}
+              >
+                <span className="font-medium text-neutral-700">
+                  {date.toLocaleDateString("en-US", { weekday: "long" })}
+                </span>
+                <span className="text-sm font-medium text-neutral-500">{formatDate(date)}</span>
+              </div>
+            )
+          })}
         </div>
       </div>
       {/* Body (Timeslots) */}
@@ -54,7 +63,7 @@ export default function WeekGrid() {
             <div
               key={ts.startTime}
               className={twMerge(
-                "flex items-center justify-center p-4",
+                "flex p-8",
                 "border-2",
                 "bg-neutral-100/50 backdrop-blur-lg",
                 "rounded-lg font-medium text-neutral-700"
@@ -82,7 +91,7 @@ function Navigator() {
     <div
       className={twMerge(
         "flex items-stretch justify-between",
-        "rounded-lg border-2 bg-neutral-100/50 backdrop-blur-lg"
+        "bg-canvas/50 rounded-lg border-2 backdrop-blur-lg"
       )}
     >
       <Link

@@ -4,7 +4,7 @@ import { ListData } from "react-stately"
 import { isTextDropItem, useDragAndDrop } from "react-aria-components"
 import { JSX } from "react"
 import { DropOptions, useDrop } from "react-aria"
-import { WithMetadata } from "../types"
+import { WithMetadata } from "./types"
 
 export function useDragAndDropHooks<T extends WithMetadata>({
   list,
@@ -16,8 +16,8 @@ export function useDragAndDropHooks<T extends WithMetadata>({
 }: {
   list: ListData<T>
   itemKind: string
-  handleReorder?: (reorderedIds: string[]) => void
-  handleInsert?: (items: T[]) => void
+  handleReorder: (reorderedIds: string[]) => void
+  handleInsert?: (items: T[]) => T[]
   renderDragPreview?: (items: T[]) => JSX.Element
   disableRootDrop?: boolean
 }) {
@@ -57,45 +57,44 @@ export function useDragAndDropHooks<T extends WithMetadata>({
         list.moveAfter(e.target.key, e.keys)
       }
     },
-    onInsert:
-      handleReorder && handleInsert
-        ? async (e) => {
-            const processedItems = await Promise.all<T>(
-              e.items
-                .filter(isTextDropItem)
-                .map(async (item) => JSON.parse(await item.getText(itemKind)))
-            )
-            const currentListItemIds = list.items.map(({ id }) => id)
-            const incomingItemIds = processedItems.map(({ id }) => id)
-            if (e.target.dropPosition === "before") {
-              list.insertBefore(e.target.key, ...processedItems)
-              // Must also handle order change because onDragEnd below only applies to the source list, not the destination list.
-              const insertionIndex = currentListItemIds.indexOf(e.target.key as string)
-              const newOrder = currentListItemIds.toSpliced(insertionIndex, 0, ...incomingItemIds)
-              handleReorder(newOrder)
-            } else if (e.target.dropPosition === "after") {
-              list.insertAfter(e.target.key, ...processedItems)
-              // Must also handle order change because onDragEnd below only applies to the source list, not the destination list.
-              const insertionIndex = currentListItemIds.indexOf(e.target.key as string) + 1
-              const newOrder = currentListItemIds.toSpliced(insertionIndex, 0, ...incomingItemIds)
-              handleReorder(newOrder)
-            }
-            handleInsert(processedItems)
+    onInsert: handleInsert
+      ? async (e) => {
+          const processedItems = await Promise.all<T>(
+            e.items
+              .filter(isTextDropItem)
+              .map(async (item) => JSON.parse(await item.getText(itemKind)))
+          )
+          const updatedItems = handleInsert(processedItems)
+          const currentListItemIds = list.items.map(({ id }) => id)
+          const incomingItemIds = updatedItems.map(({ id }) => id)
+          if (e.target.dropPosition === "before") {
+            list.insertBefore(e.target.key, ...updatedItems)
+            // Must also handle order change because onDragEnd below only applies to the source list, not the destination list.
+            const insertionIndex = currentListItemIds.indexOf(e.target.key as string)
+            const newOrder = currentListItemIds.toSpliced(insertionIndex, 0, ...incomingItemIds)
+            handleReorder(newOrder)
+          } else if (e.target.dropPosition === "after") {
+            list.insertAfter(e.target.key, ...updatedItems)
+            // Must also handle order change because onDragEnd below only applies to the source list, not the destination list.
+            const insertionIndex = currentListItemIds.indexOf(e.target.key as string) + 1
+            const newOrder = currentListItemIds.toSpliced(insertionIndex, 0, ...incomingItemIds)
+            handleReorder(newOrder)
           }
-        : undefined,
+        }
+      : undefined,
     onRootDrop:
-      handleInsert && handleReorder && !disableRootDrop
+      handleInsert && !disableRootDrop
         ? async (e) => {
             const processedItems = await Promise.all<T>(
               e.items
                 .filter(isTextDropItem)
                 .map(async (item) => JSON.parse(await item.getText(itemKind)))
             )
-            list.append(...processedItems)
-            handleInsert(processedItems)
+            const updatedItems = handleInsert(processedItems)
+            list.prepend(...updatedItems)
             const currentListItemIds = list.items.map(({ id }) => id)
             // Must also handle order change because onDragEnd below only applies to the source list, not the destination list.
-            const incomingItemIds = processedItems.map(({ id }) => id)
+            const incomingItemIds = updatedItems.map(({ id }) => id)
             const newOrder = [...currentListItemIds, ...incomingItemIds]
             handleReorder(newOrder)
           }

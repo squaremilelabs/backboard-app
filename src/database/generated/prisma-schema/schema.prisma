@@ -46,7 +46,6 @@ model Task {
   content              String?
   status               TaskStatus @default(DRAFT)
   size_minutes         Int        @default(5)
-  completed_at         DateTime?  @db.Timestamptz()
   tasklist_id          String?
   tasklist             Tasklist?  @relation(fields: [tasklist_id], references: [id], onDelete: SetNull)
   timeslot_id          String?

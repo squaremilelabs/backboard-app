@@ -54,7 +54,6 @@ model Task extends WithMetadata {
   content              String?
   status               TaskStatus @default(DRAFT)
   size_minutes         Int        @default(5) @gte(1, "size_minutes must be greater than 0")
-  completed_at         DateTime?  @db.Timestamptz
 
   tasklist_id          String?
   tasklist             Tasklist?  @relation(fields: [tasklist_id], references: [id], onDelete: SetNull)
@@ -66,7 +65,7 @@ model Task extends WithMetadata {
   @@map("tasks")
   @@allow("all", created_by_id == auth().id)
 
-  @@validate(status != "DONE" || completed_at != null, "completed_at must be set if status is DONE")
+  // @@validate(status != "DONE" || timeslot_id != null, "done tasks must have a timeslot_tasklist_id")
   @@validate(timeslot_id == null || timeslot_tasklist_id == tasklist_id, "timeslot_tasklist_id must match tasklist_id if timeslot_id is set")
 }
 

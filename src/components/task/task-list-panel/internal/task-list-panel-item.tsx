@@ -20,12 +20,12 @@ export default function TaskListPanelItem({
   task,
   onUpdate,
   onDelete,
-  disabledStatuses,
+  selectableStatuses,
 }: {
   task: Task
   onUpdate: (values: TaskItemValues) => void
   onDelete: () => void
-  disabledStatuses?: TaskStatus[]
+  selectableStatuses: TaskStatus[]
 }) {
   const [isExpanded, setIsExpanded] = useSessionStorage(`expanded/task-${task.id}`, false)
 
@@ -42,7 +42,7 @@ export default function TaskListPanelItem({
         <TaskStatusSelect
           value={task.status}
           onValueChange={(status) => onUpdate({ status })}
-          disabledStatuses={disabledStatuses}
+          selectableStatuses={selectableStatuses}
         />
         <EditableText
           isActive={isTitleEditActive}
@@ -110,11 +110,6 @@ export default function TaskListPanelItem({
           />
         </div>
         <div className="flex items-center gap-8">
-          {task.completed_at ? (
-            <span className="text-sm text-blue-500">
-              Done {formatDate(task.completed_at, { withTime: true })}
-            </span>
-          ) : null}
           <div className="grow" />
           <Button
             onPress={onDelete}

@@ -7,28 +7,26 @@ import { TaskSizeSelect } from "../../task-size"
 import { TaskStatusSelect } from "../../task-status"
 import TextToInput from "@/components/common/text-to-input"
 
-type UndoneTaskStatus = "TODO" | "DRAFT"
-
 export interface TaskCreateValues {
   title: string
-  status: UndoneTaskStatus
+  status: TaskStatus
   size_minutes: number
 }
 
 export default function TaskListPanelCreate({
   onSubmit,
-  disabledStatuses,
   tasklistUid,
   tasklistIsEmpty,
+  selectableTaskStatuses,
 }: {
   tasklistUid: string
   onSubmit: (values: TaskCreateValues) => void
-  disabledStatuses?: TaskStatus[]
+  selectableTaskStatuses: TaskStatus[]
   tasklistIsEmpty?: boolean
 }) {
   const [values, setValues] = useSessionStorage<TaskCreateValues>(
     `create-values/tasklist-${tasklistUid}`,
-    { title: "", status: disabledStatuses?.includes("DRAFT") ? "TODO" : "DRAFT", size_minutes: 5 }
+    { title: "", status: selectableTaskStatuses[0] ?? "DRAFT", size_minutes: 5 }
   )
 
   const onPressEnter = () => {
@@ -61,8 +59,8 @@ export default function TaskListPanelCreate({
       </div>
       <TaskStatusSelect
         value={values.status}
-        onValueChange={(status) => setValues({ ...values, status: status as UndoneTaskStatus })}
-        disabledStatuses={[...(disabledStatuses ?? []), "DONE"]}
+        onValueChange={(status) => setValues({ ...values, status: status })}
+        selectableStatuses={selectableTaskStatuses}
       />
       <TextToInput
         isActive={isTitleActive}

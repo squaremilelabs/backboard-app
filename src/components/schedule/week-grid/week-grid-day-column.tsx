@@ -77,30 +77,33 @@ function EmptyTimeslot({ date, presetTimeslot }: { date: Date; presetTimeslot: P
     })
   }
 
-  const timeslotStatus = getTimeslotStatus({ date: dateString, ...presetTimeslot })
+  const timeslotStatus = getTimeslotStatus({
+    date: dateString,
+    ...presetTimeslot,
+  })
 
   return (
     <>
       <Button
         ref={buttonRef}
-        isDisabled={timeslotStatus === "past"}
         onPress={() => setTasklistPopoverOpen(true)}
         className={twMerge(
           "group flex items-end justify-start",
           "!outline-0",
           "rounded-lg p-8",
-          "hover:bg-canvas cursor-pointer",
+          "cursor-pointer",
           "not-hover:focus-visible:bg-neutral-200",
           tasklistPopoverOpen ? "bg-canvas" : "",
-          timeslotStatus === "past" ? "cursor-auto !bg-transparent" : "border"
+          timeslotStatus === "past"
+            ? [tasklistPopoverOpen ? "bg-neutral-300" : "hover:bg-neutral-300"]
+            : ["border", tasklistPopoverOpen ? "bg-canvas" : "hover:bg-canvas"]
         )}
       >
         <span
           className={twMerge(
             "flex items-center justify-center gap-4 text-sm text-neutral-500",
             "invisible group-hover:visible",
-            tasklistPopoverOpen ? "visible" : "",
-            timeslotStatus === "past" ? "!invisible" : ""
+            tasklistPopoverOpen ? "visible" : ""
           )}
         >
           Assign Tasklist
@@ -160,7 +163,7 @@ function AssignedTimeslot({
         "rounded-lg border",
         isActive ? "border-gold-500 border-2" : null,
         timeslotStatus === "past"
-          ? [doneMinutes > 0 ? "bg-canvas" : "bg-neutral-200"]
+          ? [doneMinutes > 0 ? "border-blue-300 bg-blue-50" : "bg-neutral-200"]
           : ["bg-canvas"]
       )}
     >
@@ -173,16 +176,14 @@ function AssignedTimeslot({
         </span>
         <span className="line-clamp-2 text-left font-medium">{timeslot.tasklist.title}</span>
       </Link>
-      <div className="flex">
-        {timeslotStatus === "past" && doneMinutes ? (
-          <TaskSizeChip minutes={doneMinutes} status="DONE" />
-        ) : null}
+      <div className="flex gap-2">
         {timeslotStatus === "past" && !doneMinutes ? (
           <span className="text-sm text-neutral-500">No tasks completed</span>
         ) : null}
         {timeslotStatus !== "past" && todoMinutes ? (
           <TaskSizeChip minutes={todoMinutes} status="TODO" />
         ) : null}
+        {doneMinutes ? <TaskSizeChip minutes={doneMinutes} status="DONE" /> : null}
       </div>
       <div className="grow" />
       {deleteDisabled ? null : (

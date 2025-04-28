@@ -9,11 +9,11 @@ export default function SchedulePage() {
   const { timeslotId } = useScheduleParams()
   return (
     <div className="grid grid-cols-12 grid-rows-1 gap-8">
-      <div className={twMerge("row-span-1", timeslotId ? "col-span-7" : "col-span-12")}>
+      <div className={twMerge("row-span-1", timeslotId ? "col-span-6" : "col-span-12")}>
         <WeekGrid />
       </div>
       {timeslotId ? (
-        <div className="col-span-5">
+        <div className="col-span-6">
           <TimeslotTaskListPanel timeslotId={timeslotId} />
         </div>
       ) : null}

@@ -1,7 +1,9 @@
 "use client"
+
 import { twMerge } from "tailwind-merge"
-import { sub } from "date-fns"
 import { useEffect, useState } from "react"
+import { createId } from "@paralleldrive/cuid2"
+import { draftTask } from "../task/utilities"
 import { sortTasklists } from "./utilities"
 import TasklistCreate from "./tasklist-create"
 import { TasklistItemContent } from "./tasklist-item-content"
@@ -14,15 +16,13 @@ import {
 } from "@/database/generated/hooks"
 import TaskListPanel from "@/components/task/task-list-panel"
 
-const sevenDaysAgo = sub(new Date(), { days: 7 })
-
 export default function TasklistList() {
   const tasklistsQuery = useFindManyTasklist({
     where: { archived_at: null },
     include: {
       tasks: {
         where: {
-          OR: [{ completed_at: null }, { completed_at: { gte: sevenDaysAgo } }],
+          status: { in: ["TODO", "DRAFT"] },
         },
       },
     },
@@ -60,44 +60,40 @@ export default function TasklistList() {
               if (!tasklist) return null
               return (
                 <TaskListPanel
-                  uid={`triage/tasklist/${tasklist.id}`}
-                  key={JSON.stringify({ [tasklist.id]: tasklistsQuery.dataUpdatedAt })}
+                  uid={`tasklist/${tasklist.id}`}
+                  key={tasklist.id}
                   tasks={tasklist.tasks}
                   order={tasklist.task_order}
                   isCollapsible
                   headerContent={<TasklistItemContent tasklist={tasklist} />}
-                  defaultTaskValues={{
-                    tasklist_id: tasklist.id,
-                  }}
-                  onCreateTask={(values) => {
+                  selectableTaskStatuses={["DRAFT", "TODO"]}
+                  creatableTaskStatuses={["DRAFT", "TODO"]}
+                  onCreateTask={({ values, list }) => {
+                    const id = createId()
+                    list.prepend(draftTask({ id, tasklist_id: tasklist.id, ...values }))
                     createTaskMutation.mutate({
-                      data: { ...values, tasklist: { connect: { id: tasklist.id } } },
+                      data: { id, ...values, tasklist: { connect: { id: tasklist.id } } },
                     })
                   }}
-                  onUpdateTask={(id, values) => {
+                  onUpdateTask={({ list, taskId, values }) => {
+                    const prevTask = list.getItem(taskId)
+                    if (prevTask) list.update(taskId, { ...prevTask, ...values })
                     updateTaskMutation.mutate({
-                      where: { id },
-                      data: {
-                        ...values,
-                        completed_at: values.status
-                          ? values.status === "DONE"
-                            ? new Date()
-                            : null
-                          : undefined,
-                        timeslot: values.status ? { disconnect: true } : undefined,
-                      },
+                      where: { id: taskId },
+                      data: values,
                     })
                   }}
-                  onDeleteTask={(id) => {
-                    deleteTaskMutation.mutate({ where: { id } })
+                  onDeleteTask={({ list, taskId }) => {
+                    list.remove(taskId)
+                    deleteTaskMutation.mutate({ where: { id: taskId } })
                   }}
-                  onReorder={(reorderedIds) => {
+                  onReorder={({ reorderedIds }) => {
                     updateTasklistMutation.mutate({
                       where: { id: tasklist.id },
                       data: { task_order: reorderedIds },
                     })
                   }}
-                  onInsert={(task) => {
+                  onInsert={({ task }) => {
                     updateTaskMutation.mutate({
                       where: { id: task.id },
                       data: {
@@ -105,6 +101,10 @@ export default function TasklistList() {
                         timeslot: { disconnect: true },
                       },
                     })
+                    return {
+                      ...task,
+                      tasklist_id: tasklist.id,
+                    }
                   }}
                 />
               )
