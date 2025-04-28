@@ -15,8 +15,8 @@ export default function WeekGrid() {
   return (
     <div
       className={twMerge(
-        "h-full w-full p-4",
-        "grid grid-rows-[auto_1fr] gap-4 overflow-auto",
+        "row-span-1 h-full max-h-full w-full overflow-auto p-4",
+        "grid grid-rows-[auto_1fr] gap-4",
         "rounded-xl border-2 bg-neutral-100"
       )}
     >
@@ -90,7 +90,7 @@ export default function WeekGrid() {
           ))}
         </div>
         {/* Timeslots */}
-        <div className="grid min-w-lg grid-cols-7 gap-4 overflow-auto">
+        <div className="grid max-h-full min-w-lg grid-cols-7 gap-4">
           {weekdays.map((date) => {
             return <WeekGridDay key={date.toLocaleDateString()} date={date} />
           })}

@@ -42,8 +42,19 @@ export default function WeekGridDay({ date }: { date: Date }) {
         const existingTimeslot = timeslotsQuery.data?.find(
           (ts) => presetTimeslot.startTime === ts.start_time_string
         )
+        const timeslotStatus = getTimeslotStatus({
+          date: dateString,
+          ...presetTimeslot,
+        })
         return (
-          <div key={presetTimeslot.startTime} className={twMerge("grid")}>
+          <div
+            key={presetTimeslot.startTime}
+            className={twMerge(
+              "grid rounded-lg",
+              timeslotStatus === "past" ? "bg-neutral-200" : null,
+              timeslotStatus === "current" ? "border-gold-300 border" : null
+            )}
+          >
             {existingTimeslot ? (
               <AssignedTimeslot timeslot={existingTimeslot} />
             ) : (
@@ -96,8 +107,7 @@ function AssignedTimeslot({
         "group flex flex-col gap-8 p-8",
         "rounded-lg border",
         timeslotStatus === "past" ? [doneMinutes > 0 ? "bg-blue-50" : "bg-neutral-200"] : null,
-        timeslotStatus === "current" ? "bg-canvas border-gold-300" : null,
-        timeslotStatus === "future" ? "bg-canvas" : null
+        timeslotStatus !== "past" ? "bg-canvas" : null
       )}
     >
       <Link
@@ -185,7 +195,7 @@ function EmptyTimeslot({ date, presetTimeslot }: { date: Date; presetTimeslot: P
             tasklistSelectOpen ? "visible" : ""
           )}
         >
-          Assign Tasklist
+          Add
           <PlusIcon size={14} />
         </span>
       </Button>

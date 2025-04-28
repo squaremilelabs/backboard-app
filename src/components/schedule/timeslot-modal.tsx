@@ -62,19 +62,21 @@ export default function TimeslotModal() {
         setIsOpen(state)
       }}
       className={twMerge(
-        `fixed inset-0 z-50 flex h-dvh w-dvw flex-col items-center bg-neutral-100/30 pt-[10%]
+        `fixed inset-0 z-50 flex h-dvh w-dvw flex-col items-center bg-neutral-100/30 pt-[10dvh]
         backdrop-blur-xs`
       )}
     >
       <Modal>
-        <Dialog className="bg-canvas/50 w-sm rounded-xl border !outline-0">
+        <Dialog className="bg-canvas/50 grid max-h-[80dvh] w-sm max-w-[95dvw] grid-rows-[auto_1fr] rounded-xl border !outline-0">
           <Heading slot="title" className="flex items-center justify-between px-16 py-8">
             <p className={twMerge("text-sm font-semibold text-neutral-600")}>{timeslotTitle}</p>
             <Link href={closeTimeslotHref} className="cursor-pointer rounded-md hover:opacity-70">
               <XIcon size={16} />
             </Link>
           </Heading>
-          {timeslot ? <TimeslotTasksPanel timeslot={timeslotQuery.data} /> : null}
+          <div className="row-span-2 grid grid-cols-1 grid-rows-1">
+            {timeslot ? <TimeslotTasksPanel timeslot={timeslotQuery.data} /> : null}
+          </div>
         </Dialog>
       </Modal>
     </ModalOverlay>

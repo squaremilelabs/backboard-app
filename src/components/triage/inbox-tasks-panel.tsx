@@ -14,7 +14,7 @@ import TaskList from "@/components/task/tasks-panel"
 import { EmojiDynamic } from "@/components/common/emoji"
 import { draftTask } from "@/lib/utils-task"
 
-export default function InboxTasksPanel() {
+export default function InboxTasksPanel({ isCollapsible }: { isCollapsible?: boolean }) {
   const { user: authUser } = useUser()
 
   const userQuery = useFindUniqueUser({
@@ -44,6 +44,7 @@ export default function InboxTasksPanel() {
       isLoading={isLoading}
       selectableTaskStatuses={["DRAFT"]}
       creatableTaskStatuses={["DRAFT"]}
+      isCollapsible={isCollapsible}
       headerContent={
         <div className="flex items-center gap-8 text-lg font-medium">
           <EmojiDynamic unified="1f4e5" emojiStyle={EmojiStyle.APPLE} size={16} />

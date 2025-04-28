@@ -115,10 +115,10 @@ export default function TasksPanel({
       onExpandedChange={setIsExpanded}
       className={twMerge(
         "group",
-        "flex flex-col",
+        "flex max-h-full flex-col",
         "rounded-xl border-2 bg-neutral-100 p-4",
         "box-content",
-        isDropTarget ? "outline" : null
+        isDropTarget ? "ring-neutral-600 outline-1 -outline-offset-2" : null
       )}
     >
       <Heading
@@ -153,55 +153,55 @@ export default function TasksPanel({
           </Button>
         ) : null}
       </Heading>
-      <DisclosurePanel>
-        <div
-          className={twMerge(
-            "bg-canvas flex flex-col rounded-[12px] border p-16",
-            isEmpty ? "gap-0" : "gap-8"
-          )}
-        >
-          {isLoading ? (
-            "Loading..."
-          ) : (
-            <>
-              <TaskCreate onSubmit={handleCreate} selectableTaskStatuses={creatableTaskStatuses} />
-              <GridList
-                aria-label="Task List"
-                items={list.items}
-                selectionMode="none"
-                dragAndDropHooks={dragAndDropHooks}
-                className={"flex flex-col"}
-              >
-                {(task) => {
-                  return (
-                    <GridListItem
-                      id={task.id}
-                      textValue={task.title}
-                      className={twMerge("flex items-start gap-4 rounded-md p-4")}
+      <DisclosurePanel
+        className={twMerge(
+          isExpanded
+            ? "bg-canvas flex max-h-full flex-col overflow-auto rounded-[12px] border p-16"
+            : "",
+          isEmpty ? "gap-0" : "gap-8"
+        )}
+      >
+        {isLoading ? (
+          "Loading..."
+        ) : (
+          <>
+            <TaskCreate onSubmit={handleCreate} selectableTaskStatuses={creatableTaskStatuses} />
+            <GridList
+              aria-label="Task List"
+              items={list.items}
+              selectionMode="none"
+              dragAndDropHooks={dragAndDropHooks}
+              className={"flex flex-col"}
+            >
+              {(task) => {
+                return (
+                  <GridListItem
+                    id={task.id}
+                    textValue={task.title}
+                    className={twMerge("flex items-start gap-4 rounded-md p-4")}
+                  >
+                    <Button
+                      slot="drag"
+                      className={twMerge(
+                        "flex h-20 min-w-fit items-center rounded-md",
+                        "!pointer-events-auto cursor-move hover:bg-neutral-100",
+                        "text-neutral-400"
+                      )}
                     >
-                      <Button
-                        slot="drag"
-                        className={twMerge(
-                          "flex h-20 min-w-fit items-center rounded-md",
-                          "!pointer-events-auto cursor-move hover:bg-neutral-100",
-                          "text-neutral-400"
-                        )}
-                      >
-                        <GripVerticalIcon size={16} />
-                      </Button>
-                      <TaskItem
-                        task={task}
-                        onUpdate={(values) => handleUpdate(task.id, values)}
-                        onDelete={() => handleDelete(task.id)}
-                        selectableStatuses={selectableTaskStatuses}
-                      />
-                    </GridListItem>
-                  )
-                }}
-              </GridList>
-            </>
-          )}
-        </div>
+                      <GripVerticalIcon size={16} />
+                    </Button>
+                    <TaskItem
+                      task={task}
+                      onUpdate={(values) => handleUpdate(task.id, values)}
+                      onDelete={() => handleDelete(task.id)}
+                      selectableStatuses={selectableTaskStatuses}
+                    />
+                  </GridListItem>
+                )
+              }}
+            </GridList>
+          </>
+        )}
       </DisclosurePanel>
     </Disclosure>
   )

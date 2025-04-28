@@ -56,7 +56,7 @@ export default function TasklistItem({
           <Popover
             offset={2}
             placement="left"
-            className="bg-canvas/30 rounded-xl border-2 px-8 py-2 backdrop-blur-lg"
+            className="bg-canvas/30 rounded-md border-2 px-8 py-2 backdrop-blur-lg"
           >
             <Dialog className="!outline-0">
               <Button

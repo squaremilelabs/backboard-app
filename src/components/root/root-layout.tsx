@@ -7,13 +7,21 @@ import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs"
 import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
 import { usePathname } from "next/navigation"
+import BackboardLogo from "../common/backboard-logo"
 import WeekNavigator from "@/components/schedule/week-navigator"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="grid h-dvh max-h-dvh w-dvw max-w-dvw grid-rows-[auto_1fr]">
       <Header />
-      <main className={twMerge("@container/main", "grid max-h-full p-16 pt-0")}>{children}</main>
+      <main
+        className={twMerge(
+          "@container/main",
+          "grid h-full max-h-full w-full max-w-full grid-cols-1 grid-rows-1 overflow-auto p-8 md:p-16"
+        )}
+      >
+        {children}
+      </main>
     </div>
   )
 }
@@ -21,13 +29,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 function Header() {
   const pathname = usePathname()
   return (
-    <header className="flex items-center px-16 py-8">
-      <nav className="flex items-center gap-16">
-        <div className="flex items-center gap-8">
+    <header className="flex min-h-45 items-center gap-12 border-b px-8 py-8 lg:px-16">
+      <BackboardLogo
+        size={24}
+        color={pathname === "/" ? "var(--bb-neutral-500)" : "var(--bb-neutral-400)"}
+      />
+      <SignedOut>
+        <p className="text-lg font-medium text-neutral-500">Backboard</p>
+      </SignedOut>
+      <nav className="flex items-center gap-8">
+        <SignedIn>
           <NavLink emoji="📝" title="Triage" href="/triage" />
           <NavLink emoji="🗓️" title="Schedule" href="/schedule" />
           {pathname.startsWith("/schedule") ? <WeekNavigator /> : null}
-        </div>
+        </SignedIn>
       </nav>
       <div className="grow" />
       <div className="flex items-center gap-8">
@@ -76,10 +91,10 @@ function NavLink({ emoji, title, href }: { emoji: string; title: string; href: s
       className={twMerge(
         "flex items-center gap-4",
         "px-8 py-2",
-        "rounded-xl border-2 border-transparent",
+        "rounded-lg border-2 border-transparent",
         isActive
-          ? ["bg-canvas cursor-auto border-neutral-200 font-medium text-neutral-950"]
-          : ["hover:bg-canvas cursor-pointer text-neutral-500 hover:border-neutral-200"]
+          ? ["bg-canvas cursor-auto border-neutral-300 font-medium text-neutral-950"]
+          : ["hover:bg-canvas cursor-pointer text-neutral-500 hover:border-neutral-300"]
       )}
     >
       {isActive ? <span>{emoji}</span> : null}
