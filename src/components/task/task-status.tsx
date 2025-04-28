@@ -42,7 +42,7 @@ export function TaskStatusSelect({
       <Popover
         offset={4}
         placement="right"
-        className={twMerge("bg-canvas/30 rounded-xl border-2 p-4 backdrop-blur-lg")}
+        className={twMerge("bg-canvas/30 rounded-xl border-2 p-2 backdrop-blur-lg")}
       >
         <ListBox className="flex items-center gap-4" orientation="horizontal">
           {selectableStatuses.map((status) => {
@@ -54,14 +54,14 @@ export function TaskStatusSelect({
                 textValue={optionUI.label}
                 isDisabled={status === innerValue}
                 className={twMerge(
-                  "flex items-center gap-2 rounded-full border px-4 py-2",
+                  "flex items-center gap-4 rounded-full border px-8 py-2",
                   "cursor-pointer hover:opacity-70",
                   "data-disabled:cursor-auto",
-                  "data-selected:outline-2"
+                  "ring-neutral-500 data-selected:ring-2"
                 )}
                 style={{
                   color: `var(--bb-${optionUI.color}-50)`,
-                  background: `var(--bb-${optionUI.color}-500)`,
+                  background: `var(--bb-${optionUI.color}-400)`,
                   borderColor: `var(--bb-${optionUI.color}-300)`,
                 }}
               >

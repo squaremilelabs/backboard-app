@@ -81,7 +81,7 @@ export default function TimeslotPanel({ timeslotId }: { timeslotId: string }) {
       }
       creatableTaskStatuses={timeslotStatus === "past" ? ["DONE"] : ["TODO"]}
       selectableTaskStatuses={
-        timeslotStatus === "past" ? ["TODO", "DRAFT", "DONE"] : ["TODO", "DRAFT"]
+        timeslotStatus !== "future" ? ["TODO", "DONE", "DRAFT"] : ["TODO", "DRAFT"]
       }
       onCreateTask={({ list, values }) => {
         const id = createId()

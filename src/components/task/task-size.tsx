@@ -29,11 +29,13 @@ export function TaskSizeSelect({
   onValueChange,
   status,
   className,
+  isDisabled,
 }: {
   value: number
   onValueChange: (value: number) => void
   status: TaskStatus
   className?: ClassNameValue
+  isDisabled?: boolean
 }) {
   const [isOpen, setIsOpen] = useState(false)
   const [innerValue, setInnerValue] = useState<number>(value)
@@ -49,6 +51,7 @@ export function TaskSizeSelect({
   return (
     <DialogTrigger isOpen={isOpen} onOpenChange={setIsOpen}>
       <Button
+        isDisabled={isDisabled}
         className={taskSizeClassName({
           status,
           tier: selectedTier,

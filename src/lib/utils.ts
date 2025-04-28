@@ -58,17 +58,19 @@ export function sortItemsByOrder<T extends WithMetadata>({
   })
 }
 
-export function formatTimeString(timeString: string) {
+export function formatTimeString(timeString: string, options?: { withMinutes: boolean }) {
   const timeRegex = /^([01]?\d|2[0-3]):[0-5]\d$/
   if (!timeRegex.test(timeString)) {
-    return "-:--"
+    return options?.withMinutes ? "-:--" : "-"
   }
 
   const [hours, minutes] = timeString.split(":").map(Number)
   const formattedHours = hours % 12 || 12
   const formattedMinutes = minutes.toString().padStart(2, "0")
   const period = hours < 12 ? "am" : "pm"
-  return `${formattedHours}:${formattedMinutes}${period}`
+  return options?.withMinutes
+    ? `${formattedHours}:${formattedMinutes}${period}`
+    : `${formattedHours}${period}`
 }
 
 export function getMondayFromDate(date: Date) {

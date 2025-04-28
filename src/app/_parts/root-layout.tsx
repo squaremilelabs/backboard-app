@@ -6,6 +6,7 @@ import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs"
 import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
 import { usePathname } from "next/navigation"
+import ScheduleNavigator from "@/components/schedule/schedule-navigator"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -17,12 +18,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 }
 
 function Header() {
+  const pathname = usePathname()
   return (
     <header className="flex items-center px-16 py-8">
       <nav className="flex items-center gap-16">
         <div className="flex items-center gap-8">
           <NavLink emoji="📝" title="Triage" href="/triage" />
           <NavLink emoji="🗓️" title="Schedule" href="/schedule" />
+          {pathname.startsWith("/schedule") ? <ScheduleNavigator /> : null}
         </div>
       </nav>
       <div className="grow" />
