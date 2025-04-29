@@ -7,7 +7,7 @@ export default function TriagePage() {
   return (
     <>
       <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-center">
-        <div className="sticky top-0 w-full md:w-sm">
+        <div className="w-full md:sticky md:top-0 md:w-sm">
           <InboxTasksPanel />
         </div>
         <div className="w-full md:w-md">

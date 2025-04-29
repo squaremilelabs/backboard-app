@@ -1,15 +1,13 @@
 "use client"
 
-import { SignedIn, SignedOut } from "@clerk/nextjs"
+import { SignedOut, Waitlist } from "@clerk/nextjs"
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col items-start p-4">
-      <p className="font-medium">
-        <SignedIn>Learn Backboard</SignedIn>
-        <SignedOut>Get an account</SignedOut>
-      </p>
-      <span>Reach out {"->"} e@squaremilelabs.com</span>
+    <div className="flex flex-col items-center pt-[10dvh]">
+      <SignedOut>
+        <Waitlist />
+      </SignedOut>
     </div>
   )
 }

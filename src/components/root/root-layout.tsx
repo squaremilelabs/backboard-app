@@ -3,11 +3,11 @@
 import { twMerge } from "tailwind-merge"
 import { Moon, SunDim } from "lucide-react"
 import { Button, Link } from "react-aria-components"
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs"
+import { SignedIn, UserButton } from "@clerk/nextjs"
 import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
 import { usePathname } from "next/navigation"
-import BackboardLogo from "../common/backboard-logo"
+import Image from "next/image"
 import WeekNavigator from "@/components/schedule/week-navigator"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -30,34 +30,29 @@ function Header() {
   const pathname = usePathname()
   return (
     <header className="flex min-h-45 items-center gap-12 px-12 py-8 lg:px-20">
-      <div className="bg-canvas rounded-md outline-2 -outline-offset-1 outline-neutral-300">
-        <BackboardLogo
-          size={24}
-          color={pathname === "/" ? "var(--bb-neutral-500)" : "var(--bb-neutral-300)"}
-        />
-      </div>
-      <SignedOut>
-        <p className="text-lg font-medium text-neutral-500">Backboard</p>
-      </SignedOut>
-      <nav className="flex items-center gap-8">
-        <SignedIn>
+      <SignedIn>
+        <nav className="flex items-center gap-8">
+          <div className="px-4">
+            <Image
+              alt="Backboard"
+              src="/images/backboard-logo.png"
+              width={20}
+              height={20}
+              className="shadow-md"
+            />
+          </div>
           <NavLink emoji="📝" title="Triage" href="/triage" />
           <NavLink emoji="🗓️" title="Schedule" href="/schedule" />
           {pathname.startsWith("/schedule") ? <WeekNavigator /> : null}
-        </SignedIn>
-      </nav>
+        </nav>
+      </SignedIn>
       <div className="grow" />
-      <div className="flex items-center gap-8">
-        <ThemeButton />
-        <SignedIn>
+      <SignedIn>
+        <div className="flex items-center gap-8">
+          <ThemeButton />
           <UserButton />
-        </SignedIn>
-        <SignedOut>
-          <SignInButton>
-            <Button className="rounded px-2 text-sm">Sign In</Button>
-          </SignInButton>
-        </SignedOut>
-      </div>
+        </div>
+      </SignedIn>
     </header>
   )
 }
