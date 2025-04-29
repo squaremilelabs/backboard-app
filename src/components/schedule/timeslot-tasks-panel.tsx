@@ -32,7 +32,7 @@ export default function TimslotTasksPanel({
   const deleteTaskMutation = useDeleteTask()
 
   const creatableTaskStatuses: TaskStatus[] = ["TODO"]
-  const selectableTaskStatuses: TaskStatus[] = ["TODO", "DONE", "DRAFT"]
+  const selectableTaskStatuses: TaskStatus[] = ["TODO", "DRAFT"]
 
   const handleCreateTask: TasksPanelProps["onCreateTask"] = ({ values, list }) => {
     const id = createId()
@@ -55,7 +55,10 @@ export default function TimslotTasksPanel({
     }
     updateTaskMutation.mutate({
       where: { id: taskId },
-      data: values,
+      data: {
+        ...values,
+        timeslot: values.status === "DRAFT" ? { disconnect: true } : undefined,
+      },
     })
   }
 

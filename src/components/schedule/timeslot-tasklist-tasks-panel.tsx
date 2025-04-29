@@ -8,7 +8,7 @@ import {
   useCreateTask,
   useDeleteTask,
   useUpdateTask,
-  useUpdateTasklist,
+  // useUpdateTasklist,
 } from "@/database/generated/hooks"
 import { draftTask } from "@/lib/utils-task"
 
@@ -17,7 +17,7 @@ export default function TimeslotTasklistTasksPanel({
 }: {
   tasklist: Tasklist & { tasks: Task[] }
 }) {
-  const updateTasklistMutation = useUpdateTasklist()
+  // const updateTasklistMutation = useUpdateTasklist()
   const creatTaskMutation = useCreateTask()
   const updateTaskMutation = useUpdateTask()
   const deleteTaskMutation = useDeleteTask()
@@ -50,11 +50,12 @@ export default function TimeslotTasklistTasksPanel({
     deleteTaskMutation.mutate({ where: { id: taskId } })
   }
 
-  const handleReorder: TasksPanelProps["onReorder"] = ({ reorderedIds }) => {
-    updateTasklistMutation.mutate({
-      where: { id: tasklist.id },
-      data: { task_order: reorderedIds },
-    })
+  const handleReorder: TasksPanelProps["onReorder"] = ({}) => {
+    // Do not reorder in database in this view
+    // updateTasklistMutation.mutate({
+    //   where: { id: tasklist.id },
+    //   data: { task_order: reorderedIds },
+    // })
   }
 
   const handleInsert: TasksPanelProps["onInsert"] = ({ task }) => {
