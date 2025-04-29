@@ -3,12 +3,15 @@ import { Dialog, Heading, Link, Modal, ModalOverlay } from "react-aria-component
 import { useRouter } from "next/navigation"
 import { twMerge } from "tailwind-merge"
 import { useEffect, useState } from "react"
-import { parse } from "date-fns"
 import { XIcon } from "lucide-react"
+import { startOfToday } from "date-fns"
+import TasklistItem from "../tasklist/tasklist-item"
 import TimeslotTasksPanel from "./timeslot-tasks-panel"
+import TimeslotTasklistTasksPanel from "./timeslot-tasklist-tasks-panel"
 import { useFindUniqueTimeslot } from "@/database/generated/hooks"
 import { useScheduleParams } from "@/lib/schedule"
-import { formatDate, formatTimeString } from "@/lib/utils-common"
+
+const startOfDate = startOfToday()
 
 export default function TimeslotModal() {
   const router = useRouter()
@@ -25,34 +28,29 @@ export default function TimeslotModal() {
     include: {
       tasklist: {
         include: {
+          // Unscheduled Tasks
           tasks: {
             where: {
-              OR: [{ status: "TODO" }, { status: "DONE", timeslot_id: timeslotId }],
+              timeslot_id: null,
+              OR: [{ status: "TODO" }, { status: "DONE", updated_at: { gte: startOfDate } }],
             },
           },
         },
       },
+      // Scheduled Tasks
+      tasks: { where: { status: { in: ["TODO", "DONE"] } } },
     },
   })
 
   const timeslot = timeslotQuery.data
 
-  // const timeslotStatus = timeslot
-  //   ? getTimeslotStatus({
-  //       date: timeslot.date_string,
-  //       startTime: timeslot.start_time_string,
-  //       endTime: timeslot.end_time_string,
-  //     })
-  //   : null
-
-  const timeslotTitle = timeslot
-    ? [
-        formatDate(parse(timeslot.date_string, "yyyy-MM-dd", new Date()), { withWeekday: true }),
-        formatTimeString(timeslot.start_time_string),
-        "-",
-        formatTimeString(timeslot.end_time_string),
-      ].join(" ")
-    : "Loading..."
+  const [refreshKey, setRefreshKey] = useState(0)
+  useEffect(() => {
+    if (timeslotQuery.isFetchedAfterMount) {
+      setRefreshKey(new Date().getTime())
+    }
+    return () => setRefreshKey(0)
+  }, [timeslotQuery.isFetchedAfterMount])
 
   return (
     <ModalOverlay
@@ -67,15 +65,30 @@ export default function TimeslotModal() {
       )}
     >
       <Modal>
-        <Dialog className="bg-canvas/50 grid max-h-[80dvh] w-sm max-w-[95dvw] grid-rows-[auto_1fr] rounded-xl border !outline-0">
-          <Heading slot="title" className="flex items-center justify-between px-16 py-8">
-            <p className={twMerge("text-sm font-semibold text-neutral-600")}>{timeslotTitle}</p>
+        <Dialog
+          className="bg-canvas/70 @container grid h-[80dvh] max-h-[80dvh] w-lg max-w-[95dvw] grid-rows-[auto_1fr] gap-16
+            overflow-auto rounded-xl border p-16 !outline-0"
+        >
+          <Heading slot="title" className="flex items-center justify-between">
+            {timeslot ? <TasklistItem tasklist={timeslot.tasklist} /> : null}
             <Link href={closeTimeslotHref} className="cursor-pointer rounded-md hover:opacity-70">
               <XIcon size={16} />
             </Link>
           </Heading>
-          <div className="row-span-2 grid grid-cols-1 grid-rows-1">
-            {timeslot ? <TimeslotTasksPanel timeslot={timeslotQuery.data} /> : null}
+          <div
+            className="col-span-1 flex max-h-full flex-col gap-8 p-4 @md:grid @md:grid-cols-2 @md:grid-rows-1
+              @md:items-start @md:gap-16"
+          >
+            {timeslot ? (
+              <>
+                <TimeslotTasklistTasksPanel
+                  timeslot={timeslot}
+                  tasklist={timeslot.tasklist}
+                  refreshKey={refreshKey}
+                />
+                <TimeslotTasksPanel timeslot={timeslot} refreshKey={refreshKey} />
+              </>
+            ) : null}
           </div>
         </Dialog>
       </Modal>

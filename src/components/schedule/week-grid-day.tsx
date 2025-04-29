@@ -1,7 +1,7 @@
 import { Button, Link } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
 import { useRef, useState } from "react"
-import { PlusIcon, XIcon } from "lucide-react"
+import { Loader, PlusIcon, XIcon } from "lucide-react"
 import { Task, Tasklist, Timeslot } from "@zenstackhq/runtime/models"
 import { format } from "date-fns"
 import { useRouter } from "next/navigation"
@@ -22,14 +22,8 @@ export default function WeekGridDay({ date }: { date: Date }) {
   const timeslotsQuery = useFindManyTimeslot({
     where: { date_string: dateString, archived_at: null },
     include: {
-      tasklist: {
-        include: {
-          tasks: {
-            where: { status: "TODO" },
-          },
-        },
-      },
-      tasks: { where: { status: "DONE" } },
+      tasks: true,
+      tasklist: true,
     },
   })
 
@@ -70,15 +64,14 @@ export default function WeekGridDay({ date }: { date: Date }) {
 function AssignedTimeslot({
   timeslot,
 }: {
-  timeslot: Timeslot & { tasklist: Tasklist & { tasks: Task[] }; tasks: Task[] }
+  timeslot: Timeslot & { tasklist: Tasklist; tasks: Task[] }
 }) {
   const router = useRouter()
   const { timeslotId: activeTimeslotId, getTimeslotHref, closeTimeslotHref } = useScheduleParams()
-  const tasklist = timeslot.tasklist
-  const tasklistTaskSummary = getTaskSummary(tasklist.tasks)
-  const timeslotTaskSummary = getTaskSummary(timeslot.tasks)
-  const todoMinutes = tasklistTaskSummary.status.TODO.minutes
-  const doneMinutes = timeslotTaskSummary.status.DONE.minutes
+  const tasksSummary = getTaskSummary(timeslot.tasks)
+  const todoMinutes = tasksSummary.status.TODO.minutes
+  const doneMinutes = tasksSummary.status.DONE.minutes
+  const totalMinutes = tasksSummary.total.minutes
 
   const deleteTimeslot = useDeleteTimeslot()
 
@@ -117,32 +110,42 @@ function AssignedTimeslot({
           "cursor-pointer hover:underline"
         )}
       >
-        <TasklistItem tasklist={tasklist} />
+        <TasklistItem tasklist={timeslot.tasklist} />
       </Link>
       <div className="flex gap-2">
-        {timeslotStatus === "past" && !doneMinutes ? (
+        {timeslotStatus === "past" && !totalMinutes ? (
           <span className="text-sm text-neutral-500">No tasks completed</span>
         ) : null}
-        {timeslotStatus !== "past" && todoMinutes ? (
-          <TaskSizeChip minutes={todoMinutes} status="TODO" />
+        {todoMinutes ? (
+          <TaskSizeChip
+            minutes={todoMinutes}
+            status="TODO"
+            className={twMerge(
+              timeslotStatus === "past" ? ["bg-red-50", "border-red-700", "text-red-700"] : ""
+            )}
+          />
         ) : null}
         {doneMinutes ? <TaskSizeChip minutes={doneMinutes} status="DONE" /> : null}
       </div>
       <div className="grow" />
       {deleteDisabled ? null : (
         <div className="flex">
-          <Button
-            onPress={handleDelete}
-            className={twMerge(
-              "flex items-center gap-4 rounded-md px-2 text-sm",
-              "cursor-pointer",
-              "text-neutral-400 hover:text-red-700",
-              "invisible group-focus-within:visible group-hover:visible"
-            )}
-          >
-            Remove
-            <XIcon size={12} />
-          </Button>
+          {deleteTimeslot.isPending ? (
+            <Loader size={14} className="text-gold-500 animate-spin" />
+          ) : (
+            <Button
+              onPress={handleDelete}
+              className={twMerge(
+                "flex items-center gap-4 rounded-md px-2 text-sm",
+                "cursor-pointer",
+                "text-neutral-400 hover:text-red-700",
+                "invisible group-focus-within:visible group-hover:visible"
+              )}
+            >
+              Remove
+              <XIcon size={12} />
+            </Button>
+          )}
         </div>
       )}
     </div>
@@ -180,7 +183,7 @@ function EmptyTimeslot({ date, presetTimeslot }: { date: Date; presetTimeslot: P
     <>
       <Button
         ref={buttonRef}
-        isDisabled={timeslotStatus === "past"}
+        isDisabled={timeslotStatus === "past" || createTimeslot.isPaused}
         onPress={() => setTasklistSelectOpen(true)}
         className={twMerge(
           "group flex items-end justify-start",
@@ -194,17 +197,21 @@ function EmptyTimeslot({ date, presetTimeslot }: { date: Date; presetTimeslot: P
             : ["border", tasklistSelectOpen ? "bg-canvas" : "hover:bg-canvas"]
         )}
       >
-        <span
-          className={twMerge(
-            "flex items-center justify-center gap-4 text-sm text-neutral-500",
-            "invisible group-hover:visible",
-            tasklistSelectOpen ? "visible" : "",
-            isDisabled ? "!invisible" : ""
-          )}
-        >
-          Add
-          <PlusIcon size={14} />
-        </span>
+        {createTimeslot.isPending ? (
+          <Loader size={14} className="text-gold-500 animate-spin" />
+        ) : (
+          <span
+            className={twMerge(
+              "flex items-center justify-center gap-4 text-sm text-neutral-500",
+              "invisible group-hover:visible",
+              tasklistSelectOpen ? "visible" : "",
+              isDisabled ? "!invisible" : ""
+            )}
+          >
+            Add
+            <PlusIcon size={14} />
+          </span>
+        )}
       </Button>
       <TasklistSelect
         triggerRef={buttonRef}

@@ -28,7 +28,7 @@ export default function TasklistSelect({
     },
     include: {
       tasks: {
-        where: { status: "TODO" },
+        where: { status: "TODO", timeslot_id: null },
       },
     },
   })

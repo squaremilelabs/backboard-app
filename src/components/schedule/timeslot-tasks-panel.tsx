@@ -1,114 +1,119 @@
-import { Task, Tasklist, Timeslot } from "@zenstackhq/runtime/models"
+"use client"
+
+import { Task } from "@zenstackhq/runtime/models"
+import { TaskStatus, Timeslot } from "@prisma/client"
+import { parse } from "date-fns"
 import { createId } from "@paralleldrive/cuid2"
-import { TaskStatus } from "@prisma/client"
 import TasksPanel, { TasksPanelProps } from "../task/tasks-panel"
-import TasklistItem from "../tasklist/tasklist-item"
-import { getTimeslotStatus } from "@/lib/utils-timeslot"
-import { draftTask } from "@/lib/utils-task"
 import {
   useCreateTask,
   useDeleteTask,
   useUpdateTask,
   useUpdateTimeslot,
 } from "@/database/generated/hooks"
+import { formatDate, formatTimeString } from "@/lib/utils-common"
+import { draftTask } from "@/lib/utils-task"
+import { getTimeslotStatus } from "@/lib/utils-timeslot"
 
-export default function TimeslotTasksPanel({
+export default function TimslotTasksPanel({
   timeslot,
+  refreshKey,
 }: {
-  timeslot: Timeslot & { tasklist: Tasklist & { tasks: Task[] } }
+  timeslot: Timeslot & { tasks: Task[] }
+  refreshKey: number
 }) {
+  const timeslotStatus = getTimeslotStatus({
+    date: timeslot.date_string,
+    startTime: timeslot.start_time_string,
+    endTime: timeslot.end_time_string,
+  })
+
   const updateTimeslotMutation = useUpdateTimeslot()
   const createTaskMutation = useCreateTask()
   const updateTaskMutation = useUpdateTask()
   const deleteTaskMutation = useDeleteTask()
 
-  const timeslotOrder = timeslot?.task_order || []
-  const tasklistOrder = timeslot.tasklist?.task_order || []
-  const order = timeslotOrder.length > 0 ? timeslotOrder : tasklistOrder
+  const creatableTaskStatuses: TaskStatus[] = ["TODO"]
+  const selectableTaskStatuses: TaskStatus[] = ["TODO", "DRAFT", "DONE"]
 
-  const timeslotStatus = getTimeslotStatus({
-    date: timeslot?.date_string,
-    startTime: timeslot?.start_time_string,
-    endTime: timeslot?.end_time_string,
-  })
+  const handleCreateTask: TasksPanelProps["onCreateTask"] = ({ values, list }) => {
+    const id = createId()
+    list.prepend(draftTask({ id, timeslot_id: timeslot.id, ...values }))
+    createTaskMutation.mutate({
+      data: {
+        id,
+        ...values,
+        tasklist: { connect: { id: timeslot.tasklist_id } },
+        timeslot: { connect: { id: timeslot.id } },
+      },
+    })
+  }
 
-  const displayedTasks =
-    timeslotStatus === "past"
-      ? timeslot.tasklist.tasks.filter((task) => task.status === "DONE")
-      : timeslot.tasklist.tasks
+  const handleUpdateTask: TasksPanelProps["onUpdateTask"] = ({ list, taskId, values }) => {
+    const prevTask = list.getItem(taskId)
+    if (prevTask) {
+      if (values.status === "DRAFT") list.remove(taskId)
+      else list.update(taskId, { ...prevTask, ...values })
+    }
+    updateTaskMutation.mutate({
+      where: { id: taskId },
+      data: {
+        ...values,
+        timeslot: values.status === "DRAFT" ? { disconnect: true } : undefined,
+      },
+    })
+  }
 
-  const creatableTaskStatuses: TaskStatus[] = timeslotStatus === "past" ? ["DONE"] : ["TODO"]
+  const handleDeleteTask: TasksPanelProps["onDeleteTask"] = ({ list, taskId }) => {
+    list.remove(taskId)
+    deleteTaskMutation.mutate({ where: { id: taskId } })
+  }
 
-  const selectableTaskStatuses: TaskStatus[] =
-    timeslotStatus !== "future" ? ["TODO", "DONE", "DRAFT"] : ["TODO", "DRAFT"]
+  const handleReorder: TasksPanelProps["onReorder"] = ({ reorderedIds }) => {
+    updateTimeslotMutation.mutate({
+      where: { id: timeslot.id },
+      data: { task_order: reorderedIds },
+    })
+  }
 
-  const handleCreateTask: TasksPanelProps["onCreateTask"] =
-    timeslotStatus === "past"
-      ? undefined
-      : ({ list, values }) => {
-          const id = createId()
-          list.prepend(
-            draftTask({
-              id,
-              tasklist_id: timeslot.tasklist.id,
-              timeslot_id: values.status === "DONE" ? timeslot.id : undefined,
-              timeslot_tasklist_id: values.status === "DONE" ? timeslot.tasklist.id : undefined,
-              ...values,
-            })
-          )
-          createTaskMutation.mutate({
-            data: {
-              ...values,
-              tasklist: { connect: { id: timeslot.tasklist.id } },
-              timeslot:
-                values.status === "DONE" ? { connect: { id: timeslot.tasklist.id } } : undefined,
-            },
-          })
-        }
+  const handleInsert: TasksPanelProps["onInsert"] = ({ task }) => {
+    updateTaskMutation.mutate({
+      where: { id: task.id },
+      data: {
+        timeslot: { connect: { id: timeslot.id } },
+      },
+    })
+    return {
+      ...task,
+      timeslot_id: timeslot.id,
+      timeslot_tasklist_id: timeslot.tasklist_id,
+    }
+  }
+
+  const timeslotTitle = [
+    formatDate(parse(timeslot.date_string, "yyyy-MM-dd", new Date()), { withWeekday: true }),
+    formatTimeString(timeslot.start_time_string),
+    "-",
+    formatTimeString(timeslot.end_time_string),
+  ].join(" ")
 
   return (
     <TasksPanel
+      isCollapsible
+      defaultExpanded
+      key={refreshKey}
       uid={`schedule/timeslot/${timeslot.id}`}
-      tasks={displayedTasks}
-      order={order}
-      headerContent={<TasklistItem tasklist={timeslot.tasklist} />}
-      emptyContent={
-        timeslotStatus === "past" ? <p>No tasks were completed in this timeslot 👎</p> : undefined
-      }
+      tasks={timeslot.tasks}
+      order={timeslot.task_order}
+      headerContent={<div>{timeslotTitle}</div>}
+      emptyContent={timeslotStatus === "past" ? <div>None</div> : undefined}
       creatableTaskStatuses={creatableTaskStatuses}
       selectableTaskStatuses={selectableTaskStatuses}
-      onCreateTask={handleCreateTask}
-      onUpdateTask={({ list, taskId, values }) => {
-        const prevTask = list.getItem(taskId)
-        if (prevTask) list.update(taskId, { ...prevTask, ...values })
-        if (timeslotStatus === "past" && values.status !== "DONE") {
-          list.remove(taskId)
-        }
-        if (values.status === "DRAFT") {
-          list.remove(taskId)
-        }
-        updateTaskMutation.mutate({
-          where: { id: taskId },
-          data: {
-            ...values,
-            timeslot: values.status
-              ? values.status === "DONE"
-                ? { connect: { id: timeslot.id } }
-                : { disconnect: true }
-              : undefined,
-          },
-        })
-      }}
-      onDeleteTask={({ list, taskId }) => {
-        list.remove(taskId)
-        deleteTaskMutation.mutate({ where: { id: taskId } })
-      }}
-      onReorder={({ reorderedIds }) => {
-        updateTimeslotMutation.mutate({
-          where: { id: timeslot.id },
-          data: { task_order: reorderedIds },
-        })
-      }}
+      onCreateTask={timeslotStatus !== "past" ? handleCreateTask : undefined}
+      onUpdateTask={handleUpdateTask}
+      onDeleteTask={handleDeleteTask}
+      onReorder={handleReorder}
+      onInsert={handleInsert}
     />
   )
 }

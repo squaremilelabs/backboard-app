@@ -13,7 +13,7 @@ import { twMerge } from "tailwind-merge"
 import { ChevronDownIcon, GripVerticalIcon } from "lucide-react"
 import { TaskStatus } from "@prisma/client"
 import { useSessionStorage } from "usehooks-ts"
-import { useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import TaskSummary from "./task-summary"
 import TaskCreate, { TaskCreateValues } from "./task-create"
 import TaskItem, { TaskItemValues } from "./task-item"
@@ -31,6 +31,7 @@ export interface TasksPanelProps {
   onInsert?: (params: { task: Task }) => Task
   headerContent: React.ReactNode
   isCollapsible?: boolean
+  defaultExpanded?: boolean
   isLoading?: boolean
   selectableTaskStatuses: TaskStatus[]
   creatableTaskStatuses: TaskStatus[]
@@ -49,6 +50,7 @@ export default function TasksPanel({
   selectableTaskStatuses,
   creatableTaskStatuses,
   isCollapsible,
+  defaultExpanded,
   headerContent,
   isLoading,
   emptyContent,
@@ -106,15 +108,18 @@ export default function TasksPanel({
 
   const isEmpty = !isLoading && list.items.length === 0
 
-  const [isExpanded, setIsExpanded] = useSessionStorage(
+  const isDefaultExpanded = isCollapsible ? !!defaultExpanded : true
+  const [isExpanded, setIsExpanded] = useState(isDefaultExpanded)
+  const [sessionedIsExpanded, setSessionedIsExpaned] = useSessionStorage(
     `expanded/task-list-${uid}`,
-    isCollapsible ? false : true
+    isDefaultExpanded
   )
+  useEffect(() => setIsExpanded(sessionedIsExpanded), [sessionedIsExpanded])
 
   return (
     <Disclosure
       isExpanded={isExpanded}
-      onExpandedChange={setIsExpanded}
+      onExpandedChange={setSessionedIsExpaned}
       className={twMerge(
         "group",
         "flex max-h-full flex-col",

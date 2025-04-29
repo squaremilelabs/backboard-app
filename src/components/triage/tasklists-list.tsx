@@ -15,6 +15,7 @@ export default function TasklistsList() {
     include: {
       tasks: {
         where: {
+          timeslot_id: null,
           OR: [
             {
               status: { in: ["TODO", "DRAFT"] },
@@ -45,6 +46,14 @@ export default function TasklistsList() {
     }
   }, [tasklistsQuery, tasklistIdOrder, setTasklistIdOrder])
 
+  const [tasklistRefreshKey, setTasklistRefreshKey] = useState(0)
+  useEffect(() => {
+    if (tasklistsQuery.isFetchedAfterMount) {
+      setTasklistRefreshKey(new Date().getTime())
+    }
+    return () => setTasklistRefreshKey(0)
+  }, [tasklistsQuery.isFetchedAfterMount])
+
   return (
     <div className={twMerge("flex h-full w-full flex-col")}>
       {tasklistsQuery.isLoading ? (
@@ -55,7 +64,13 @@ export default function TasklistsList() {
             {tasklistIdOrder?.map((tasklistId) => {
               const tasklist = tasklistsQuery.data?.find((tl) => tl.id === tasklistId)
               if (!tasklist) return null
-              return <TasklistTasksPanel key={tasklistId} tasklist={tasklist} />
+              return (
+                <TasklistTasksPanel
+                  key={tasklistId}
+                  tasklist={tasklist}
+                  refreshKey={tasklistRefreshKey}
+                />
+              )
             })}
             <TasklistCreate />
             <div className="text-transparent">.</div>
