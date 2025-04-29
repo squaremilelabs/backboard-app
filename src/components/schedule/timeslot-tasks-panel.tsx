@@ -99,7 +99,7 @@ export default function TimslotTasksPanel({
       tasks={timeslot.tasks}
       order={timeslot.task_order}
       headerContent={<div>{timeslotTitle}</div>}
-      emptyContent={timeslotStatus === "past" ? (<div>None</div>) : undefined}
+      emptyContent={timeslotStatus === "past" ? <div>None</div> : undefined}
       creatableTaskStatuses={creatableTaskStatuses}
       selectableTaskStatuses={selectableTaskStatuses}
       onCreateTask={timeslotStatus !== "past" ? handleCreateTask : undefined}
