@@ -1,18 +1,16 @@
 "use client"
 
-import { Task } from "@zenstackhq/runtime/models"
-import { TaskStatus, Timeslot } from "@prisma/client"
-import { parse } from "date-fns"
+import { Task, Tasklist } from "@zenstackhq/runtime/models"
+import { TaskStatus } from "@prisma/client"
 import TasksPanel, { TasksPanelProps } from "../task/tasks-panel"
-import { useDeleteTask, useUpdateTask, useUpdateTimeslot } from "@/database/generated/hooks"
-import { formatDate, formatTimeString } from "@/lib/utils-common"
+import { useDeleteTask, useUpdateTask, useUpdateTasklist } from "@/database/generated/hooks"
 
-export default function TimslotTasksPanel({
-  timeslot,
+export default function TimeslotTasklistTasksPanel({
+  tasklist,
 }: {
-  timeslot: Timeslot & { tasks: Task[] }
+  tasklist: Tasklist & { tasks: Task[] }
 }) {
-  const updateTimeslotMutation = useUpdateTimeslot()
+  const updateTasklistMutation = useUpdateTasklist()
   const updateTaskMutation = useUpdateTask()
   const deleteTaskMutation = useDeleteTask()
 
@@ -33,8 +31,8 @@ export default function TimslotTasksPanel({
   }
 
   const handleReorder: TasksPanelProps["onReorder"] = ({ reorderedIds }) => {
-    updateTimeslotMutation.mutate({
-      where: { id: timeslot.id },
+    updateTasklistMutation.mutate({
+      where: { id: tasklist.id },
       data: { task_order: reorderedIds },
     })
   }
@@ -43,30 +41,23 @@ export default function TimslotTasksPanel({
     updateTaskMutation.mutate({
       where: { id: task.id },
       data: {
-        timeslot: { connect: { id: timeslot.id } },
+        timeslot: { disconnect: true },
       },
     })
     return {
       ...task,
-      timeslot_id: timeslot.id,
-      timeslot_tasklist_id: timeslot.tasklist_id,
+      timeslot_id: null,
+      timeslot_tasklist_id: null,
     }
   }
-
-  const timeslotTitle = [
-    formatDate(parse(timeslot.date_string, "yyyy-MM-dd", new Date()), { withWeekday: true }),
-    formatTimeString(timeslot.start_time_string),
-    "-",
-    formatTimeString(timeslot.end_time_string),
-  ].join(" ")
 
   return (
     <TasksPanel
       isCollapsible
-      uid={`schedule/tasklist/${timeslot.id}`}
-      tasks={timeslot.tasks}
-      order={timeslot.task_order}
-      headerContent={<div>{timeslotTitle}</div>}
+      uid={`schedule/tasklist/${tasklist.id}`}
+      tasks={tasklist.tasks}
+      order={tasklist.task_order}
+      headerContent={<div>Unscheduled</div>}
       emptyContent={<div>None</div>}
       creatableTaskStatuses={[]}
       selectableTaskStatuses={selectableTaskStatuses}

@@ -15,6 +15,7 @@ export default function TasklistsList() {
     include: {
       tasks: {
         where: {
+          timeslot_id: null,
           OR: [
             {
               status: { in: ["TODO", "DRAFT"] },

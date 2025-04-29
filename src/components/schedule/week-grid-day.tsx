@@ -22,14 +22,8 @@ export default function WeekGridDay({ date }: { date: Date }) {
   const timeslotsQuery = useFindManyTimeslot({
     where: { date_string: dateString, archived_at: null },
     include: {
-      tasklist: {
-        include: {
-          tasks: {
-            where: { status: "TODO" },
-          },
-        },
-      },
-      tasks: { where: { status: "DONE" } },
+      tasks: true,
+      tasklist: true,
     },
   })
 
@@ -70,15 +64,13 @@ export default function WeekGridDay({ date }: { date: Date }) {
 function AssignedTimeslot({
   timeslot,
 }: {
-  timeslot: Timeslot & { tasklist: Tasklist & { tasks: Task[] }; tasks: Task[] }
+  timeslot: Timeslot & { tasklist: Tasklist; tasks: Task[] }
 }) {
   const router = useRouter()
   const { timeslotId: activeTimeslotId, getTimeslotHref, closeTimeslotHref } = useScheduleParams()
-  const tasklist = timeslot.tasklist
-  const tasklistTaskSummary = getTaskSummary(tasklist.tasks)
-  const timeslotTaskSummary = getTaskSummary(timeslot.tasks)
-  const todoMinutes = tasklistTaskSummary.status.TODO.minutes
-  const doneMinutes = timeslotTaskSummary.status.DONE.minutes
+  const tasksSummary = getTaskSummary(timeslot.tasks)
+  const todoMinutes = tasksSummary.status.TODO.minutes
+  const doneMinutes = tasksSummary.status.DONE.minutes
 
   const deleteTimeslot = useDeleteTimeslot()
 
@@ -117,7 +109,7 @@ function AssignedTimeslot({
           "cursor-pointer hover:underline"
         )}
       >
-        <TasklistItem tasklist={tasklist} />
+        <TasklistItem tasklist={timeslot.tasklist} />
       </Link>
       <div className="flex gap-2">
         {timeslotStatus === "past" && !doneMinutes ? (
