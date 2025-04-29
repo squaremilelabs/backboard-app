@@ -62,7 +62,7 @@ export default function TasklistSelect({
           disallowEmptySelection
           autoFocus
           className={twMerge(
-            "max-h-400 w-300 max-w-300 overflow-auto p-4",
+            "max-h-400 w-300 max-w-300 truncate overflow-auto p-4",
             "bg-canvas/30 rounded-lg border-2 backdrop-blur-lg"
           )}
         >
@@ -74,7 +74,7 @@ export default function TasklistSelect({
                 id={tasklist.id}
                 textValue={tasklist.title}
                 className={twMerge(
-                  "flex w-full items-center",
+                  "flex w-full truncate",
                   "gap-4 p-4",
                   "rounded-lg hover:bg-neutral-200",
                   "cursor-pointer"

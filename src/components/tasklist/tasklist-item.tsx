@@ -22,7 +22,7 @@ export default function TasklistItem({
   onArchive?: () => void
 }) {
   return (
-    <div className="flex grow items-start gap-4">
+    <div className="flex grow items-start gap-4 truncate">
       {onUpdate ? (
         <div className="flex grow items-start gap-4">
           <EmojiSelect
@@ -37,7 +37,7 @@ export default function TasklistItem({
           />
         </div>
       ) : (
-        <div className={twMerge("flex grow items-start gap-4")}>
+        <div className={twMerge("flex grow items-start gap-4 truncate")}>
           <div className="flex size-20 min-w-20 items-center justify-center">
             <EmojiDynamic
               unified={tasklist.emoji?.code || defaultTasklistEmojiCode}

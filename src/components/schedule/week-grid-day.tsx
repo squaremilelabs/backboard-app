@@ -104,7 +104,7 @@ function AssignedTimeslot({
   return (
     <div
       className={twMerge(
-        "group flex flex-col gap-8 p-8",
+        "group flex flex-col gap-8 truncate p-8",
         "rounded-lg border",
         timeslotStatus === "past" ? [doneMinutes > 0 ? "bg-blue-50" : "bg-neutral-200"] : null,
         timeslotStatus !== "past" ? "bg-canvas" : null
@@ -112,7 +112,10 @@ function AssignedTimeslot({
     >
       <Link
         href={timeslotHref}
-        className={twMerge("flex items-start gap-4 rounded", "cursor-pointer hover:underline")}
+        className={twMerge(
+          "flex items-start gap-4 truncate rounded",
+          "cursor-pointer hover:underline"
+        )}
       >
         <TasklistItem tasklist={tasklist} />
       </Link>
