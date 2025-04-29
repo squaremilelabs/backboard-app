@@ -28,24 +28,29 @@ export default function TimeslotModal() {
     include: {
       tasklist: {
         include: {
+          // Unscheduled Tasks
           tasks: {
             where: {
               timeslot_id: null,
-              OR: [
-                {
-                  status: "TODO",
-                },
-                { status: "DONE", updated_at: { gte: startOfDate } },
-              ],
+              OR: [{ status: "TODO" }, { status: "DONE", updated_at: { gte: startOfDate } }],
             },
           },
         },
       },
+      // Scheduled Tasks
       tasks: { where: { status: { in: ["TODO", "DONE"] } } },
     },
   })
 
   const timeslot = timeslotQuery.data
+
+  const [refreshKey, setRefreshKey] = useState(0)
+  useEffect(() => {
+    if (timeslotQuery.isFetchedAfterMount) {
+      setRefreshKey(new Date().getTime())
+    }
+    return () => setRefreshKey(0)
+  }, [timeslotQuery.isFetchedAfterMount])
 
   return (
     <ModalOverlay
@@ -61,7 +66,7 @@ export default function TimeslotModal() {
     >
       <Modal>
         <Dialog
-          className="bg-canvas/50 @container grid max-h-[80dvh] w-lg max-w-[95dvw] grid-rows-[auto_1fr] gap-16
+          className="bg-canvas/70 @container grid h-[80dvh] max-h-[80dvh] w-lg max-w-[95dvw] grid-rows-[auto_1fr] gap-16
             overflow-auto rounded-xl border p-16 !outline-0"
         >
           <Heading slot="title" className="flex items-center justify-between">
@@ -76,8 +81,12 @@ export default function TimeslotModal() {
           >
             {timeslot ? (
               <>
-                <TimeslotTasklistTasksPanel tasklist={timeslot.tasklist} />
-                <TimeslotTasksPanel timeslot={timeslot} />
+                <TimeslotTasklistTasksPanel
+                  timeslot={timeslot}
+                  tasklist={timeslot.tasklist}
+                  refreshKey={refreshKey}
+                />
+                <TimeslotTasksPanel timeslot={timeslot} refreshKey={refreshKey} />
               </>
             ) : null}
           </div>

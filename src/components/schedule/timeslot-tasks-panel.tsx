@@ -17,8 +17,10 @@ import { getTimeslotStatus } from "@/lib/utils-timeslot"
 
 export default function TimslotTasksPanel({
   timeslot,
+  refreshKey,
 }: {
   timeslot: Timeslot & { tasks: Task[] }
+  refreshKey: number
 }) {
   const timeslotStatus = getTimeslotStatus({
     date: timeslot.date_string,
@@ -98,7 +100,9 @@ export default function TimslotTasksPanel({
   return (
     <TasksPanel
       isCollapsible
-      uid={`schedule/tasklist/${timeslot.id}`}
+      defaultExpanded
+      key={refreshKey}
+      uid={`schedule/timeslot/${timeslot.id}`}
       tasks={timeslot.tasks}
       order={timeslot.task_order}
       headerContent={<div>{timeslotTitle}</div>}

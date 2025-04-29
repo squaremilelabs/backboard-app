@@ -2,6 +2,7 @@
 import { createId } from "@paralleldrive/cuid2"
 import { useUser } from "@clerk/nextjs"
 import { EmojiStyle } from "emoji-picker-react"
+import { useEffect, useState } from "react"
 import {
   useCreateTask,
   useDeleteTask,
@@ -82,10 +83,18 @@ export default function InboxTasksPanel({ isCollapsible }: { isCollapsible?: boo
     }
   }
 
+  const [refreshKey, setRefreshKey] = useState(0)
+  useEffect(() => {
+    if (tasksQuery.isFetchedAfterMount) {
+      setRefreshKey(new Date().getTime())
+    }
+    return () => setRefreshKey(0)
+  }, [tasksQuery.isFetchedAfterMount])
+
   return (
     <TasksPanel
-      uid={"inbox"}
-      key={`inbox-${tasksQuery.isSuccess}`}
+      uid={"triage/inbox"}
+      key={refreshKey} // force re-render on success
       tasks={tasks}
       order={order}
       isLoading={isLoading}

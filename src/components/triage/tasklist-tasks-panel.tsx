@@ -13,8 +13,10 @@ import TasksPanel, { TasksPanelProps } from "@/components/task/tasks-panel"
 
 export default function TasklistTasksPanel({
   tasklist,
+  refreshKey,
 }: {
   tasklist: Tasklist & { tasks: Task[] }
+  refreshKey: number
 }) {
   const updateTasklistMutation = useUpdateTasklist()
   const createTaskMutation = useCreateTask()
@@ -66,8 +68,8 @@ export default function TasklistTasksPanel({
 
   return (
     <TasksPanel
-      uid={`tasklist/${tasklist.id}`}
-      key={tasklist.id}
+      uid={`triage/tasklist/${tasklist.id}`}
+      key={refreshKey}
       tasks={tasklist.tasks}
       order={tasklist.task_order}
       isCollapsible

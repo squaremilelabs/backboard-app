@@ -1,37 +1,22 @@
 "use client"
-
-import { Task, Tasklist } from "@zenstackhq/runtime/models"
+import { Task, Tasklist, Timeslot } from "@zenstackhq/runtime/models"
 import { TaskStatus } from "@prisma/client"
-import { createId } from "@paralleldrive/cuid2"
 import TasksPanel, { TasksPanelProps } from "../task/tasks-panel"
-import {
-  useCreateTask,
-  useDeleteTask,
-  useUpdateTask,
-  // useUpdateTasklist,
-} from "@/database/generated/hooks"
-import { draftTask } from "@/lib/utils-task"
+import { useDeleteTask, useUpdateTask } from "@/database/generated/hooks"
 
 export default function TimeslotTasklistTasksPanel({
   tasklist,
+  timeslot,
+  refreshKey,
 }: {
   tasklist: Tasklist & { tasks: Task[] }
+  timeslot: Timeslot
+  refreshKey: number
 }) {
-  // const updateTasklistMutation = useUpdateTasklist()
-  const creatTaskMutation = useCreateTask()
   const updateTaskMutation = useUpdateTask()
   const deleteTaskMutation = useDeleteTask()
 
-  const creatableTaskStatuses: TaskStatus[] = ["TODO"]
   const selectableTaskStatuses: TaskStatus[] = ["TODO", "DRAFT"]
-
-  const handleCreateTask: TasksPanelProps["onCreateTask"] = ({ values, list }) => {
-    const id = createId()
-    list.prepend(draftTask({ id, tasklist_id: tasklist.id, ...values }))
-    creatTaskMutation.mutate({
-      data: { id, ...values, tasklist: { connect: { id: tasklist.id } } },
-    })
-  }
 
   const handleUpdateTask: TasksPanelProps["onUpdateTask"] = ({ list, taskId, values }) => {
     const prevTask = list.getItem(taskId)
@@ -52,10 +37,6 @@ export default function TimeslotTasklistTasksPanel({
 
   const handleReorder: TasksPanelProps["onReorder"] = ({}) => {
     // Do not reorder in database in this view
-    // updateTasklistMutation.mutate({
-    //   where: { id: tasklist.id },
-    //   data: { task_order: reorderedIds },
-    // })
   }
 
   const handleInsert: TasksPanelProps["onInsert"] = ({ task }) => {
@@ -75,13 +56,15 @@ export default function TimeslotTasklistTasksPanel({
   return (
     <TasksPanel
       isCollapsible
-      uid={`schedule/tasklist/${tasklist.id}`}
+      defaultExpanded
+      uid={`schedule/timeslot/${timeslot.id}/tasklist/${tasklist.id}`}
+      key={refreshKey}
       tasks={tasklist.tasks}
       order={tasklist.task_order}
       headerContent={<div>Unscheduled</div>}
-      creatableTaskStatuses={creatableTaskStatuses}
+      emptyContent={<div>None</div>}
+      creatableTaskStatuses={[]}
       selectableTaskStatuses={selectableTaskStatuses}
-      onCreateTask={handleCreateTask}
       onUpdateTask={handleUpdateTask}
       onDeleteTask={handleDeleteTask}
       onReorder={handleReorder}
