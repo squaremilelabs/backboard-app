@@ -32,7 +32,7 @@ export default function TimslotTasksPanel({
   const deleteTaskMutation = useDeleteTask()
 
   const creatableTaskStatuses: TaskStatus[] = ["TODO"]
-  const selectableTaskStatuses: TaskStatus[] = ["TODO", "DRAFT"]
+  const selectableTaskStatuses: TaskStatus[] = ["TODO", "DRAFT", "DONE"]
 
   const handleCreateTask: TasksPanelProps["onCreateTask"] = ({ values, list }) => {
     const id = createId()
