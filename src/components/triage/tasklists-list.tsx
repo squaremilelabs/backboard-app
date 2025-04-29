@@ -1,10 +1,13 @@
 "use client"
 import { twMerge } from "tailwind-merge"
 import { useEffect, useState } from "react"
+import { startOfToday } from "date-fns"
 import { sortTasklists } from "../../lib/utils-tasklist"
 import TasklistCreate from "../tasklist/tasklist-create"
 import TasklistTasksPanel from "./tasklist-tasks-panel"
 import { useFindManyTasklist } from "@/database/generated/hooks"
+
+const startOfDay = startOfToday()
 
 export default function TasklistsList() {
   const tasklistsQuery = useFindManyTasklist({
@@ -12,7 +15,15 @@ export default function TasklistsList() {
     include: {
       tasks: {
         where: {
-          status: { in: ["TODO", "DRAFT"] },
+          OR: [
+            {
+              status: { in: ["TODO", "DRAFT"] },
+            },
+            {
+              status: "DONE",
+              updated_at: { gte: startOfDay },
+            },
+          ],
         },
       },
     },
@@ -37,7 +48,7 @@ export default function TasklistsList() {
   return (
     <div className={twMerge("flex h-full w-full flex-col")}>
       {tasklistsQuery.isLoading ? (
-        <div>Loading...</div>
+        <div className="p-8">Loading lists...</div>
       ) : (
         <>
           <div className={twMerge("flex flex-col gap-8")}>
@@ -47,6 +58,7 @@ export default function TasklistsList() {
               return <TasklistTasksPanel key={tasklistId} tasklist={tasklist} />
             })}
             <TasklistCreate />
+            <div className="text-transparent">.</div>
           </div>
         </>
       )}

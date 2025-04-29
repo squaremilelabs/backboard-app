@@ -99,7 +99,7 @@ function AssignedTimeslot({
     endTime: timeslot.end_time_string,
   })
 
-  const deleteDisabled = timeslotStatus === "past" && doneMinutes > 0
+  const deleteDisabled = timeslotStatus === "past"
 
   return (
     <div
@@ -171,16 +171,19 @@ function EmptyTimeslot({ date, presetTimeslot }: { date: Date; presetTimeslot: P
     ...presetTimeslot,
   })
 
+  const isDisabled = timeslotStatus === "past"
+
   return (
     <>
       <Button
         ref={buttonRef}
+        isDisabled={timeslotStatus === "past"}
         onPress={() => setTasklistSelectOpen(true)}
         className={twMerge(
           "group flex items-end justify-start",
           "!outline-0",
           "rounded-lg p-8",
-          "cursor-pointer",
+          "not-disabled:cursor-pointer",
           "not-hover:focus-visible:bg-neutral-200",
           tasklistSelectOpen ? "bg-canvas" : "",
           timeslotStatus === "past"
@@ -192,7 +195,8 @@ function EmptyTimeslot({ date, presetTimeslot }: { date: Date; presetTimeslot: P
           className={twMerge(
             "flex items-center justify-center gap-4 text-sm text-neutral-500",
             "invisible group-hover:visible",
-            tasklistSelectOpen ? "visible" : ""
+            tasklistSelectOpen ? "visible" : "",
+            isDisabled ? "!invisible" : ""
           )}
         >
           Add

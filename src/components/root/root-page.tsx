@@ -4,7 +4,7 @@ import { SignedIn, SignedOut } from "@clerk/nextjs"
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col items-start">
+    <div className="flex flex-col items-start p-4">
       <p className="font-medium">
         <SignedIn>Learn Backboard</SignedIn>
         <SignedOut>Get an account</SignedOut>

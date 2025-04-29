@@ -12,6 +12,7 @@ import {
 import { Loader, PlusIcon, XIcon } from "lucide-react"
 import { FormEventHandler, useState } from "react"
 import { twMerge } from "tailwind-merge"
+import { FocusScope } from "react-aria"
 import { EmojiSelect } from "../common/emoji"
 import { useCreateTasklist } from "@/database/generated/hooks"
 
@@ -77,15 +78,17 @@ export default function TasklistCreateModal() {
                   fallback="1f4cb"
                   onSelect={(emoji) => setValues({ ...values, emoji: { code: emoji.unified } })}
                 />
-                <TextField
-                  isDisabled={createTasklistMutation.isPending}
-                  aria-label="List title"
-                  value={values.title}
-                  onChange={(value) => setValues({ ...values, title: value })}
-                  className={"flex grow"}
-                >
-                  <Input className="grow !outline-0" placeholder="Enter title" />
-                </TextField>
+                <FocusScope autoFocus>
+                  <TextField
+                    isDisabled={createTasklistMutation.isPending}
+                    aria-label="List title"
+                    value={values.title}
+                    onChange={(value) => setValues({ ...values, title: value })}
+                    className={"flex grow"}
+                  >
+                    <Input className="grow !outline-0" placeholder="Enter title" />
+                  </TextField>
+                </FocusScope>
                 {createTasklistMutation.isPending ? (
                   <Loader className="text-gold-600 animate-spin" size={20} />
                 ) : null}

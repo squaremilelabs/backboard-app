@@ -24,7 +24,7 @@ export interface TasksPanelProps {
   uid: string
   tasks: Task[]
   order: string[]
-  onCreateTask: (params: { list: ListData<Task>; values: TaskCreateValues }) => void
+  onCreateTask?: (params: { list: ListData<Task>; values: TaskCreateValues }) => void
   onUpdateTask: (params: { list: ListData<Task>; taskId: string; values: TaskItemValues }) => void
   onDeleteTask: (params: { list: ListData<Task>; taskId: string }) => void
   onReorder: (params: { reorderedIds: string[] }) => void
@@ -34,6 +34,7 @@ export interface TasksPanelProps {
   isLoading?: boolean
   selectableTaskStatuses: TaskStatus[]
   creatableTaskStatuses: TaskStatus[]
+  emptyContent?: React.ReactNode
 }
 
 export default function TasksPanel({
@@ -50,13 +51,14 @@ export default function TasksPanel({
   isCollapsible,
   headerContent,
   isLoading,
+  emptyContent,
 }: TasksPanelProps) {
   const list = useListData({
     initialItems: sortItemsByOrder({ items: tasks, order }),
   })
 
   const handleCreate = (values: TaskCreateValues) => {
-    onCreateTask({ list, values })
+    if (onCreateTask) onCreateTask({ list, values })
   }
 
   const handleUpdate = (taskId: string, values: TaskItemValues) => {
@@ -165,13 +167,18 @@ export default function TasksPanel({
           "Loading..."
         ) : (
           <>
-            <TaskCreate onSubmit={handleCreate} selectableTaskStatuses={creatableTaskStatuses} />
+            {onCreateTask ? (
+              <TaskCreate onSubmit={handleCreate} selectableTaskStatuses={creatableTaskStatuses} />
+            ) : null}
             <GridList
               aria-label="Task List"
               items={list.items}
               selectionMode="none"
               dragAndDropHooks={dragAndDropHooks}
               className={"flex flex-col"}
+              renderEmptyState={() => {
+                if (isEmpty && emptyContent) return emptyContent
+              }}
             >
               {(task) => {
                 return (

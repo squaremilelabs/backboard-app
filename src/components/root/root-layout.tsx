@@ -17,7 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <main
         className={twMerge(
           "@container/main",
-          "grid h-full max-h-full w-full max-w-full grid-cols-1 grid-rows-1 overflow-auto p-8 md:p-16"
+          "grid h-full max-h-full w-full max-w-full grid-cols-1 grid-rows-1 overflow-auto p-8 !pt-0 md:p-16"
         )}
       >
         {children}
@@ -29,11 +29,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 function Header() {
   const pathname = usePathname()
   return (
-    <header className="flex min-h-45 items-center gap-12 border-b px-8 py-8 lg:px-16">
-      <BackboardLogo
-        size={24}
-        color={pathname === "/" ? "var(--bb-neutral-500)" : "var(--bb-neutral-400)"}
-      />
+    <header className="flex min-h-45 items-center gap-12 px-12 py-8 lg:px-20">
+      <div className="bg-canvas rounded-md outline-2 -outline-offset-1 outline-neutral-300">
+        <BackboardLogo
+          size={24}
+          color={pathname === "/" ? "var(--bb-neutral-500)" : "var(--bb-neutral-300)"}
+        />
+      </div>
       <SignedOut>
         <p className="text-lg font-medium text-neutral-500">Backboard</p>
       </SignedOut>

@@ -1,7 +1,7 @@
 import { Task, Tasklist, Timeslot } from "@zenstackhq/runtime/models"
 import { createId } from "@paralleldrive/cuid2"
 import { TaskStatus } from "@prisma/client"
-import TasksPanel from "../task/tasks-panel"
+import TasksPanel, { TasksPanelProps } from "../task/tasks-panel"
 import TasklistItem from "../tasklist/tasklist-item"
 import { getTimeslotStatus } from "@/lib/utils-timeslot"
 import { draftTask } from "@/lib/utils-task"
@@ -42,34 +42,42 @@ export default function TimeslotTasksPanel({
   const selectableTaskStatuses: TaskStatus[] =
     timeslotStatus !== "future" ? ["TODO", "DONE", "DRAFT"] : ["TODO", "DRAFT"]
 
+  const handleCreateTask: TasksPanelProps["onCreateTask"] =
+    timeslotStatus === "past"
+      ? undefined
+      : ({ list, values }) => {
+          const id = createId()
+          list.prepend(
+            draftTask({
+              id,
+              tasklist_id: timeslot.tasklist.id,
+              timeslot_id: values.status === "DONE" ? timeslot.id : undefined,
+              timeslot_tasklist_id: values.status === "DONE" ? timeslot.tasklist.id : undefined,
+              ...values,
+            })
+          )
+          createTaskMutation.mutate({
+            data: {
+              ...values,
+              tasklist: { connect: { id: timeslot.tasklist.id } },
+              timeslot:
+                values.status === "DONE" ? { connect: { id: timeslot.tasklist.id } } : undefined,
+            },
+          })
+        }
+
   return (
     <TasksPanel
       uid={`schedule/timeslot/${timeslot.id}`}
       tasks={displayedTasks}
       order={order}
       headerContent={<TasklistItem tasklist={timeslot.tasklist} />}
+      emptyContent={
+        timeslotStatus === "past" ? <p>No tasks were completed in this timeslot 👎</p> : undefined
+      }
       creatableTaskStatuses={creatableTaskStatuses}
       selectableTaskStatuses={selectableTaskStatuses}
-      onCreateTask={({ list, values }) => {
-        const id = createId()
-        list.prepend(
-          draftTask({
-            id,
-            tasklist_id: timeslot.tasklist.id,
-            timeslot_id: values.status === "DONE" ? timeslot.id : undefined,
-            timeslot_tasklist_id: values.status === "DONE" ? timeslot.tasklist.id : undefined,
-            ...values,
-          })
-        )
-        createTaskMutation.mutate({
-          data: {
-            ...values,
-            tasklist: { connect: { id: timeslot.tasklist.id } },
-            timeslot:
-              values.status === "DONE" ? { connect: { id: timeslot.tasklist.id } } : undefined,
-          },
-        })
-      }}
+      onCreateTask={handleCreateTask}
       onUpdateTask={({ list, taskId, values }) => {
         const prevTask = list.getItem(taskId)
         if (prevTask) list.update(taskId, { ...prevTask, ...values })

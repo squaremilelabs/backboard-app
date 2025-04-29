@@ -42,8 +42,8 @@ export default function TasklistTasksPanel({
           }}
         />
       }
-      selectableTaskStatuses={["DRAFT", "TODO"]}
-      creatableTaskStatuses={["DRAFT", "TODO"]}
+      selectableTaskStatuses={["TODO", "DRAFT", "DONE"]}
+      creatableTaskStatuses={["TODO", "DRAFT"]}
       onCreateTask={({ values, list }) => {
         const id = createId()
         list.prepend(draftTask({ id, tasklist_id: tasklist.id, ...values }))

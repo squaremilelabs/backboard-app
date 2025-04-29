@@ -1,5 +1,4 @@
 "use client"
-
 import InboxTasksPanel from "./inbox-tasks-panel"
 import TasklistsList from "./tasklists-list"
 
@@ -11,7 +10,7 @@ export default function TriagePage() {
         <div className="w-sm">
           <InboxTasksPanel />
         </div>
-        <div className="w-sm">
+        <div className="w-md">
           <TasklistsList />
         </div>
       </div>
