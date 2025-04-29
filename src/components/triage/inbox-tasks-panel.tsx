@@ -10,7 +10,7 @@ import {
   useUpdateTask,
   useUpdateUser,
 } from "@/database/generated/hooks"
-import TaskList from "@/components/task/tasks-panel"
+import TasksPanel, { TasksPanelProps } from "@/components/task/tasks-panel"
 import { EmojiDynamic } from "@/components/common/emoji"
 import { draftTask } from "@/lib/utils-task"
 
@@ -35,8 +35,55 @@ export default function InboxTasksPanel({ isCollapsible }: { isCollapsible?: boo
   const order = user?.inbox_task_order ?? []
   const isLoading = tasksQuery.isLoading || userQuery.isLoading
 
+  const handleCreateTask: TasksPanelProps["onCreateTask"] = ({ list, values }) => {
+    const id = createId()
+    list.prepend(draftTask({ id, ...values }))
+    createTaskMutation.mutate({
+      data: { id, ...values },
+    })
+  }
+
+  const handleUpdateTask: TasksPanelProps["onUpdateTask"] = ({ list, taskId, values }) => {
+    const prevTask = list.getItem(taskId)
+    if (prevTask) list.update(taskId, { ...prevTask, ...values })
+    updateTaskMutation.mutate({
+      where: { id: taskId },
+      data: values,
+    })
+  }
+
+  const handleDeleteTask: TasksPanelProps["onDeleteTask"] = ({ list, taskId }) => {
+    list.remove(taskId)
+    deleteTaskMutation.mutate({ where: { id: taskId } })
+  }
+
+  const handleReorder: TasksPanelProps["onReorder"] = ({ reorderedIds }) => {
+    updateUserMutation.mutate({
+      where: { id: user?.id ?? "NO_USER" },
+      data: { inbox_task_order: reorderedIds },
+    })
+  }
+
+  const handleInsert: TasksPanelProps["onInsert"] = ({ task }) => {
+    updateTaskMutation.mutate({
+      where: { id: task.id },
+      data: {
+        tasklist: { disconnect: true },
+        timeslot: { disconnect: true },
+        status: "DRAFT",
+      },
+    })
+    return {
+      ...task,
+      tasklist_id: null,
+      timeslot_tasklist_id: null,
+      timeslot_id: null,
+      status: "DRAFT",
+    }
+  }
+
   return (
-    <TaskList
+    <TasksPanel
       uid={"inbox"}
       key={`inbox-${tasksQuery.isSuccess}`}
       tasks={tasks}
@@ -51,48 +98,11 @@ export default function InboxTasksPanel({ isCollapsible }: { isCollapsible?: boo
           <span className="font-medium">Inbox</span>
         </div>
       }
-      onCreateTask={({ list, values }) => {
-        const id = createId()
-        list.prepend(draftTask({ id, ...values }))
-        createTaskMutation.mutate({
-          data: { id, ...values },
-        })
-      }}
-      onUpdateTask={({ list, taskId, values }) => {
-        const prevTask = list.getItem(taskId)
-        if (prevTask) list.update(taskId, { ...prevTask, ...values })
-        updateTaskMutation.mutate({
-          where: { id: taskId },
-          data: values,
-        })
-      }}
-      onDeleteTask={({ list, taskId }) => {
-        list.remove(taskId)
-        deleteTaskMutation.mutate({ where: { id: taskId } })
-      }}
-      onReorder={({ reorderedIds }) => {
-        updateUserMutation.mutate({
-          where: { id: user?.id ?? "NO_USER" },
-          data: { inbox_task_order: reorderedIds },
-        })
-      }}
-      onInsert={({ task }) => {
-        updateTaskMutation.mutate({
-          where: { id: task.id },
-          data: {
-            tasklist: { disconnect: true },
-            timeslot: { disconnect: true },
-            status: "DRAFT",
-          },
-        })
-        return {
-          ...task,
-          tasklist_id: null,
-          timeslot_tasklist_id: null,
-          timeslot_id: null,
-          status: "DRAFT",
-        }
-      }}
+      onCreateTask={handleCreateTask}
+      onUpdateTask={handleUpdateTask}
+      onDeleteTask={handleDeleteTask}
+      onReorder={handleReorder}
+      onInsert={handleInsert}
     />
   )
 }
