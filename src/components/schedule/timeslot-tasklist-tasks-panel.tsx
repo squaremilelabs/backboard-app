@@ -23,7 +23,7 @@ export default function TimeslotTasklistTasksPanel({
   const deleteTaskMutation = useDeleteTask()
 
   const creatableTaskStatuses: TaskStatus[] = ["TODO"]
-  const selectableTaskStatuses: TaskStatus[] = ["TODO", "DONE", "DRAFT"]
+  const selectableTaskStatuses: TaskStatus[] = ["TODO", "DRAFT"]
 
   const handleCreateTask: TasksPanelProps["onCreateTask"] = ({ values, list }) => {
     const id = createId()
