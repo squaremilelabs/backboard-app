@@ -89,7 +89,7 @@ export default function TaskItem({
             "focus-within:outline has-[button[data-pressed]]:outline"
           )}
         >
-          <div className="flex h-16 min-w-fit items-center text-neutral-400">
+          <div className="flex h-20 min-w-fit items-center text-neutral-400">
             <TextIcon size={14} />
           </div>
           <EditableText
@@ -98,7 +98,7 @@ export default function TaskItem({
             placeholder="Notes..."
             allowEmpty
             isMultiline
-            className={({}) => twMerge("min-h-80 grow text-sm text-neutral-700", "!no-underline")}
+            className={({}) => twMerge("min-h-80 grow text-neutral-700", "!no-underline")}
           />
         </div>
         <div className="flex items-center gap-8">

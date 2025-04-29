@@ -1,7 +1,7 @@
 import { Button, Link } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
 import { useRef, useState } from "react"
-import { PlusIcon, XIcon } from "lucide-react"
+import { Loader, PlusIcon, XIcon } from "lucide-react"
 import { Task, Tasklist, Timeslot } from "@zenstackhq/runtime/models"
 import { format } from "date-fns"
 import { useRouter } from "next/navigation"
@@ -130,18 +130,22 @@ function AssignedTimeslot({
       <div className="grow" />
       {deleteDisabled ? null : (
         <div className="flex">
-          <Button
-            onPress={handleDelete}
-            className={twMerge(
-              "flex items-center gap-4 rounded-md px-2 text-sm",
-              "cursor-pointer",
-              "text-neutral-400 hover:text-red-700",
-              "invisible group-focus-within:visible group-hover:visible"
-            )}
-          >
-            Remove
-            <XIcon size={12} />
-          </Button>
+          {deleteTimeslot.isPending ? (
+            <Loader size={14} className="text-gold-500 animate-spin" />
+          ) : (
+            <Button
+              onPress={handleDelete}
+              className={twMerge(
+                "flex items-center gap-4 rounded-md px-2 text-sm",
+                "cursor-pointer",
+                "text-neutral-400 hover:text-red-700",
+                "invisible group-focus-within:visible group-hover:visible"
+              )}
+            >
+              Remove
+              <XIcon size={12} />
+            </Button>
+          )}
         </div>
       )}
     </div>
@@ -179,7 +183,7 @@ function EmptyTimeslot({ date, presetTimeslot }: { date: Date; presetTimeslot: P
     <>
       <Button
         ref={buttonRef}
-        isDisabled={timeslotStatus === "past"}
+        isDisabled={timeslotStatus === "past" || createTimeslot.isPaused}
         onPress={() => setTasklistSelectOpen(true)}
         className={twMerge(
           "group flex items-end justify-start",
@@ -193,17 +197,21 @@ function EmptyTimeslot({ date, presetTimeslot }: { date: Date; presetTimeslot: P
             : ["border", tasklistSelectOpen ? "bg-canvas" : "hover:bg-canvas"]
         )}
       >
-        <span
-          className={twMerge(
-            "flex items-center justify-center gap-4 text-sm text-neutral-500",
-            "invisible group-hover:visible",
-            tasklistSelectOpen ? "visible" : "",
-            isDisabled ? "!invisible" : ""
-          )}
-        >
-          Add
-          <PlusIcon size={14} />
-        </span>
+        {createTimeslot.isPending ? (
+          <Loader size={14} className="text-gold-500 animate-spin" />
+        ) : (
+          <span
+            className={twMerge(
+              "flex items-center justify-center gap-4 text-sm text-neutral-500",
+              "invisible group-hover:visible",
+              tasklistSelectOpen ? "visible" : "",
+              isDisabled ? "!invisible" : ""
+            )}
+          >
+            Add
+            <PlusIcon size={14} />
+          </span>
+        )}
       </Button>
       <TasklistSelect
         triggerRef={buttonRef}
