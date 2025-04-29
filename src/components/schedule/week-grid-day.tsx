@@ -71,6 +71,7 @@ function AssignedTimeslot({
   const tasksSummary = getTaskSummary(timeslot.tasks)
   const todoMinutes = tasksSummary.status.TODO.minutes
   const doneMinutes = tasksSummary.status.DONE.minutes
+  const totalMinutes = tasksSummary.total.minutes
 
   const deleteTimeslot = useDeleteTimeslot()
 
@@ -112,11 +113,17 @@ function AssignedTimeslot({
         <TasklistItem tasklist={timeslot.tasklist} />
       </Link>
       <div className="flex gap-2">
-        {timeslotStatus === "past" && !doneMinutes ? (
+        {timeslotStatus === "past" && !totalMinutes ? (
           <span className="text-sm text-neutral-500">No tasks completed</span>
         ) : null}
-        {timeslotStatus !== "past" && todoMinutes ? (
-          <TaskSizeChip minutes={todoMinutes} status="TODO" />
+        {todoMinutes ? (
+          <TaskSizeChip
+            minutes={todoMinutes}
+            status="TODO"
+            className={twMerge(
+              timeslotStatus === "past" ? ["bg-red-50", "border-red-700", "text-red-700"] : ""
+            )}
+          />
         ) : null}
         {doneMinutes ? <TaskSizeChip minutes={doneMinutes} status="DONE" /> : null}
       </div>

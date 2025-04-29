@@ -3,24 +3,56 @@
 import { Task } from "@zenstackhq/runtime/models"
 import { TaskStatus, Timeslot } from "@prisma/client"
 import { parse } from "date-fns"
+import { createId } from "@paralleldrive/cuid2"
 import TasksPanel, { TasksPanelProps } from "../task/tasks-panel"
-import { useDeleteTask, useUpdateTask, useUpdateTimeslot } from "@/database/generated/hooks"
+import {
+  useCreateTask,
+  useDeleteTask,
+  useUpdateTask,
+  useUpdateTimeslot,
+} from "@/database/generated/hooks"
 import { formatDate, formatTimeString } from "@/lib/utils-common"
+import { draftTask } from "@/lib/utils-task"
+import { getTimeslotStatus } from "@/lib/utils-timeslot"
 
 export default function TimslotTasksPanel({
   timeslot,
 }: {
   timeslot: Timeslot & { tasks: Task[] }
 }) {
+  const timeslotStatus = getTimeslotStatus({
+    date: timeslot.date_string,
+    startTime: timeslot.start_time_string,
+    endTime: timeslot.end_time_string,
+  })
+
   const updateTimeslotMutation = useUpdateTimeslot()
+  const createTaskMutation = useCreateTask()
   const updateTaskMutation = useUpdateTask()
   const deleteTaskMutation = useDeleteTask()
 
+  const creatableTaskStatuses: TaskStatus[] = ["TODO"]
   const selectableTaskStatuses: TaskStatus[] = ["TODO", "DONE", "DRAFT"]
+
+  const handleCreateTask: TasksPanelProps["onCreateTask"] = ({ values, list }) => {
+    const id = createId()
+    list.prepend(draftTask({ id, timeslot_id: timeslot.id, ...values }))
+    createTaskMutation.mutate({
+      data: {
+        id,
+        ...values,
+        tasklist: { connect: { id: timeslot.tasklist_id } },
+        timeslot: { connect: { id: timeslot.id } },
+      },
+    })
+  }
 
   const handleUpdateTask: TasksPanelProps["onUpdateTask"] = ({ list, taskId, values }) => {
     const prevTask = list.getItem(taskId)
-    if (prevTask) list.update(taskId, { ...prevTask, ...values })
+    if (prevTask) {
+      if (values.status === "DRAFT") list.remove(taskId)
+      else list.update(taskId, { ...prevTask, ...values })
+    }
     updateTaskMutation.mutate({
       where: { id: taskId },
       data: values,
@@ -67,9 +99,10 @@ export default function TimslotTasksPanel({
       tasks={timeslot.tasks}
       order={timeslot.task_order}
       headerContent={<div>{timeslotTitle}</div>}
-      emptyContent={<div>None</div>}
-      creatableTaskStatuses={[]}
+      emptyContent={timeslotStatus === "past" ? (<div>None</div>) : undefined}
+      creatableTaskStatuses={creatableTaskStatuses}
       selectableTaskStatuses={selectableTaskStatuses}
+      onCreateTask={timeslotStatus !== "past" ? handleCreateTask : undefined}
       onUpdateTask={handleUpdateTask}
       onDeleteTask={handleDeleteTask}
       onReorder={handleReorder}

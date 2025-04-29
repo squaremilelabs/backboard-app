@@ -27,13 +27,13 @@ export default function TimeslotModal() {
         include: {
           tasks: {
             where: {
-              status: { in: ["TODO", "DRAFT"] },
+              status: "TODO",
               timeslot_id: null,
             },
           },
         },
       },
-      tasks: true,
+      tasks: { where: { status: { in: ["TODO", "DONE"] } } },
     },
   })
 
@@ -53,8 +53,8 @@ export default function TimeslotModal() {
     >
       <Modal>
         <Dialog
-          className="bg-canvas/50 @container grid h-[80dvh] w-lg max-w-[95dvw] grid-rows-[auto_1fr] gap-16 overflow-auto
-            rounded-xl border p-16 !outline-0"
+          className="bg-canvas/50 @container grid max-h-[80dvh] w-lg max-w-[95dvw] grid-rows-[auto_1fr] gap-16
+            overflow-auto rounded-xl border p-16 !outline-0"
         >
           <Heading slot="title" className="flex items-center justify-between">
             {timeslot ? <TasklistItem tasklist={timeslot.tasklist} /> : null}
