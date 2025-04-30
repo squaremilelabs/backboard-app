@@ -66,7 +66,7 @@ export default function TimeslotModal() {
     >
       <Modal>
         <Dialog
-          className="bg-canvas/70 @container grid h-[80dvh] max-h-[80dvh] w-lg max-w-[95dvw] grid-rows-[auto_1fr] gap-16
+          className="bg-canvas/70 @container grid max-h-[80dvh] w-sm max-w-[95dvw] grid-rows-[auto_1fr] gap-16
             overflow-auto rounded-xl border p-16 !outline-0"
         >
           <Heading slot="title" className="flex items-center justify-between">
@@ -75,18 +75,23 @@ export default function TimeslotModal() {
               <XIcon size={16} />
             </Link>
           </Heading>
-          <div
-            className="col-span-1 flex max-h-full flex-col gap-8 p-4 @md:grid @md:grid-cols-2 @md:grid-rows-1
-              @md:items-start @md:gap-16"
-          >
+          <div className="flex w-full flex-col gap-8">
             {timeslot ? (
               <>
+                <TimeslotTasksPanel
+                  timeslot={timeslot}
+                  refreshKey={refreshKey}
+                  className={() => [""]}
+                />
                 <TimeslotTasklistTasksPanel
                   timeslot={timeslot}
                   tasklist={timeslot.tasklist}
                   refreshKey={refreshKey}
+                  className={({ isExpanded }) => [
+                    "bg-transparent",
+                    isExpanded ? "mt-8" : "w-fit self-end",
+                  ]}
                 />
-                <TimeslotTasksPanel timeslot={timeslot} refreshKey={refreshKey} />
               </>
             ) : null}
           </div>

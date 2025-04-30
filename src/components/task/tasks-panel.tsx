@@ -5,11 +5,12 @@ import {
   Button,
   Disclosure,
   DisclosurePanel,
+  DisclosureRenderProps,
   GridList,
   GridListItem,
   Heading,
 } from "react-aria-components"
-import { twMerge } from "tailwind-merge"
+import { ClassNameValue, twMerge } from "tailwind-merge"
 import { ChevronDownIcon, GripVerticalIcon } from "lucide-react"
 import { TaskStatus } from "@prisma/client"
 import { useSessionStorage } from "usehooks-ts"
@@ -36,6 +37,7 @@ export interface TasksPanelProps {
   selectableTaskStatuses: TaskStatus[]
   creatableTaskStatuses: TaskStatus[]
   emptyContent?: React.ReactNode
+  className?: (disclosureProps: DisclosureRenderProps) => ClassNameValue
 }
 
 export default function TasksPanel({
@@ -54,6 +56,7 @@ export default function TasksPanel({
   headerContent,
   isLoading,
   emptyContent,
+  className,
 }: TasksPanelProps) {
   const list = useListData({
     initialItems: sortItemsByOrder({ items: tasks, order }),
@@ -120,13 +123,15 @@ export default function TasksPanel({
     <Disclosure
       isExpanded={isExpanded}
       onExpandedChange={setSessionedIsExpaned}
-      className={twMerge(
-        "group",
-        "flex max-h-full flex-col",
-        "rounded-xl border-2 bg-neutral-100 p-4",
-        "box-content",
-        isDropTarget ? "ring-neutral-600 outline-1 -outline-offset-2" : null
-      )}
+      className={(props) =>
+        twMerge(
+          "group",
+          "flex max-h-full flex-col",
+          "rounded-xl border-2 bg-neutral-100 p-4",
+          isDropTarget ? "ring-neutral-600 outline-1 -outline-offset-2" : null,
+          className ? className(props) : null
+        )
+      }
     >
       <Heading
         ref={dropRef}
@@ -135,7 +140,7 @@ export default function TasksPanel({
         {...dropProps}
         className={twMerge(
           "flex items-center px-8 py-4",
-          "gap-4 rounded-xl",
+          "gap-8 rounded-xl",
           "group-data-expanded:outline-0"
         )}
       >

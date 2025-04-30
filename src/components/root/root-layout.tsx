@@ -8,6 +8,8 @@ import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
 import { usePathname } from "next/navigation"
 import Image from "next/image"
+import { EmojiStyle } from "emoji-picker-react"
+import { EmojiDynamic } from "../common/emoji"
 import WeekNavigator from "@/components/schedule/week-navigator"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -41,8 +43,8 @@ function Header() {
               className="shadow-md"
             />
           </div>
-          <NavLink emoji="📝" title="Triage" href="/triage" />
-          <NavLink emoji="🗓️" title="Schedule" href="/schedule" />
+          <NavLink emoji="1f4dd" title="Triage" href="/triage" />
+          <NavLink emoji="1f5d3-fe0f" title="Schedule" href="/schedule" />
           {pathname.startsWith("/schedule") ? <WeekNavigator /> : null}
         </nav>
       </SignedIn>
@@ -94,7 +96,7 @@ function NavLink({ emoji, title, href }: { emoji: string; title: string; href: s
           : ["hover:bg-canvas cursor-pointer text-neutral-500 hover:border-neutral-300"]
       )}
     >
-      {isActive ? <span>{emoji}</span> : null}
+      {isActive ? <EmojiDynamic unified={emoji} size={16} emojiStyle={EmojiStyle.APPLE} /> : null}
       <span>{title}</span>
     </Link>
   )

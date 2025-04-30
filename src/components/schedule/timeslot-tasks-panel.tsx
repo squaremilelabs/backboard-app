@@ -4,7 +4,9 @@ import { Task } from "@zenstackhq/runtime/models"
 import { TaskStatus, Timeslot } from "@prisma/client"
 import { parse } from "date-fns"
 import { createId } from "@paralleldrive/cuid2"
+import { EmojiStyle } from "emoji-picker-react"
 import TasksPanel, { TasksPanelProps } from "../task/tasks-panel"
+import { EmojiDynamic } from "../common/emoji"
 import {
   useCreateTask,
   useDeleteTask,
@@ -18,9 +20,11 @@ import { getTimeslotStatus } from "@/lib/utils-timeslot"
 export default function TimslotTasksPanel({
   timeslot,
   refreshKey,
+  className,
 }: {
   timeslot: Timeslot & { tasks: Task[] }
   refreshKey: number
+  className: TasksPanelProps["className"]
 }) {
   const timeslotStatus = getTimeslotStatus({
     date: timeslot.date_string,
@@ -103,9 +107,15 @@ export default function TimslotTasksPanel({
       defaultExpanded
       key={refreshKey}
       uid={`schedule/timeslot/${timeslot.id}`}
+      className={className}
       tasks={timeslot.tasks}
       order={timeslot.task_order}
-      headerContent={<div>{timeslotTitle}</div>}
+      headerContent={
+        <div className="flex items-center gap-8">
+          <EmojiDynamic unified="1f5d3-fe0f" size={16} emojiStyle={EmojiStyle.APPLE} />
+          <p className="font-medium">{timeslotTitle}</p>
+        </div>
+      }
       emptyContent={timeslotStatus === "past" ? <div>None</div> : undefined}
       creatableTaskStatuses={creatableTaskStatuses}
       selectableTaskStatuses={selectableTaskStatuses}
