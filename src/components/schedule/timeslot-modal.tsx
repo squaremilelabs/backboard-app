@@ -4,27 +4,24 @@ import { useRouter } from "next/navigation"
 import { twMerge } from "tailwind-merge"
 import { useEffect, useState } from "react"
 import { XIcon } from "lucide-react"
-import { startOfToday } from "date-fns"
 import TasklistItem from "../primitives/tasklist/tasklist-item"
 import TimeslotTasksPanel from "./timeslot-tasks-panel"
 import TimeslotTasklistTasksPanel from "./timeslot-tasklist-tasks-panel"
 import { useFindUniqueTimeslot } from "@/database/generated/hooks"
 import { useScheduleParams } from "@/lib/schedule-params"
 
-const startOfDate = startOfToday()
-
 export default function TimeslotModal() {
   const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
-  const { timeslotId, closeTimeslotHref } = useScheduleParams()
+  const { activeTimeslotId, closeTimeslotHref } = useScheduleParams()
 
   useEffect(() => {
-    if (timeslotId) setIsOpen(true)
+    if (activeTimeslotId) setIsOpen(true)
     else setIsOpen(false)
-  }, [timeslotId])
+  }, [activeTimeslotId])
 
   const timeslotQuery = useFindUniqueTimeslot({
-    where: { id: timeslotId ?? "NO_TIMESLOT_ID" },
+    where: { id: activeTimeslotId ?? "NO_TIMESLOT_ID" },
     include: {
       tasklist: {
         include: {
@@ -32,7 +29,7 @@ export default function TimeslotModal() {
           tasks: {
             where: {
               timeslot_id: null,
-              OR: [{ status: "TODO" }, { status: "DONE", updated_at: { gte: startOfDate } }],
+              status: { in: ["TODO", "DONE"] },
             },
           },
         },
@@ -69,20 +66,18 @@ export default function TimeslotModal() {
           className="bg-canvas/70 @container grid max-h-[80dvh] w-sm max-w-[95dvw] grid-rows-[auto_1fr] gap-16
             overflow-auto rounded-xl border p-16 !outline-0"
         >
-          <Heading slot="title" className="flex items-center justify-between">
-            {timeslot ? <TasklistItem tasklist={timeslot.tasklist} /> : null}
+          <Heading slot="title" className="flex w-full items-center gap-8 truncate">
+            <div className="grow truncate">
+              {timeslot ? <TasklistItem tasklist={timeslot.tasklist} /> : null}
+            </div>
             <Link href={closeTimeslotHref} className="cursor-pointer rounded-md hover:opacity-70">
-              <XIcon size={16} />
+              <XIcon size={20} />
             </Link>
           </Heading>
           <div className="flex w-full flex-col gap-8">
             {timeslot ? (
               <>
-                <TimeslotTasksPanel
-                  timeslot={timeslot}
-                  refreshKey={refreshKey}
-                  className={() => [""]}
-                />
+                <TimeslotTasksPanel timeslot={timeslot} className={() => [""]} />
                 <TimeslotTasklistTasksPanel
                   timeslot={timeslot}
                   tasklist={timeslot.tasklist}

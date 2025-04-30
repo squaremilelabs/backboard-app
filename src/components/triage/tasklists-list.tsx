@@ -1,13 +1,10 @@
 "use client"
 import { twMerge } from "tailwind-merge"
 import { useEffect, useState } from "react"
-import { startOfToday } from "date-fns"
 import TasklistTasksPanel from "./tasklist-tasks-panel"
 import { sortTasklists } from "@/lib/utils-tasklist"
 import TasklistCreate from "@/components/primitives/tasklist/tasklist-create"
 import { useFindManyTasklist } from "@/database/generated/hooks"
-
-const startOfDay = startOfToday()
 
 export default function TasklistsList() {
   const tasklistsQuery = useFindManyTasklist({
@@ -16,15 +13,6 @@ export default function TasklistsList() {
       tasks: {
         where: {
           timeslot_id: null,
-          OR: [
-            {
-              status: { in: ["TODO", "DRAFT"] },
-            },
-            {
-              status: "DONE",
-              updated_at: { gte: startOfDay },
-            },
-          ],
         },
       },
     },

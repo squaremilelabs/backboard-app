@@ -6,12 +6,17 @@ export function useScheduleParams() {
   const dateParam = router.query.date
   const timeslotParam = router.query.timeslot
 
-  const weekStartDate = dateParam
+  const currentWeekStartDate = getMondayFromDate(new Date())
+  const activeWeekStartDate = dateParam
     ? getMondayFromDate(parse(dateParam, "yyyy-MM-dd", new Date()))
-    : getMondayFromDate(new Date())
+    : currentWeekStartDate
 
-  const nextWeekStartDate = add(weekStartDate, { days: 7 })
-  const prevWeekStartDate = sub(weekStartDate, { days: 7 })
+  const isActiveWeekCurrent = activeWeekStartDate.getTime() === currentWeekStartDate.getTime()
+
+  const activeWeekDays = getWeekdaysFromDate(activeWeekStartDate)
+
+  const nextWeekStartDate = add(activeWeekStartDate, { days: 7 })
+  const prevWeekStartDate = sub(activeWeekStartDate, { days: 7 })
 
   const nextWeekHref = router.constructHref({
     path: "/schedule",
@@ -45,11 +50,13 @@ export function useScheduleParams() {
   })
 
   return {
-    weekStartDate,
+    activeTimeslotId: timeslotParam,
+    activeWeekStartDate,
+    activeWeekDays,
+    isActiveWeekCurrent,
     nextWeekHref,
     currentWeekHref,
     prevWeekHref,
-    timeslotId: timeslotParam,
     getTimeslotHref,
     closeTimeslotHref,
   }

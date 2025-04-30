@@ -4,7 +4,15 @@ import { TaskStatus } from "@prisma/client"
 import { TaskSizeChip } from "./task-size"
 import { getTaskSummary } from "@/lib/utils-task"
 
-export default function TaskSummary({ tasks }: { tasks: Task[] }) {
+export default function TaskSummary({
+  tasks,
+  showOverdue,
+  showTiers,
+}: {
+  tasks: Task[]
+  showTiers?: boolean
+  showOverdue?: boolean
+}) {
   const taskSummary = getTaskSummary(tasks)
 
   const displayedStatuses: TaskStatus[] = [
@@ -22,7 +30,8 @@ export default function TaskSummary({ tasks }: { tasks: Task[] }) {
             key={status}
             status={status}
             minutes={summary.minutes}
-            tierOverride="medium"
+            tierOverride={showTiers ? undefined : "medium"}
+            overdue={showOverdue}
           />
         )
       })}

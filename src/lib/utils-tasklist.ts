@@ -3,7 +3,7 @@ import { getTaskSummary } from "./utils-task"
 
 export const defaultTasklistEmojiCode = "1f4cb" // Default emoji code for tasklist
 
-export function sortTasklists(tasklists: (Tasklist & { tasks: Task[] })[]) {
+export function sortTasklists<T extends Tasklist & { tasks: Task[] }>(tasklists: T[]): T[] {
   return tasklists.sort((a, b) => {
     const aTasksSummary = getTaskSummary(a.tasks)
     const bTasksSummary = getTaskSummary(b.tasks)

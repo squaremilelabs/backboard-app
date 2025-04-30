@@ -5,25 +5,28 @@ import { TaskStatus, Timeslot } from "@prisma/client"
 import { parse } from "date-fns"
 import { createId } from "@paralleldrive/cuid2"
 import { EmojiStyle } from "emoji-picker-react"
+import { useRouter } from "next/navigation"
+import { Button } from "react-aria-components"
+import { CalendarX2Icon } from "lucide-react"
 import TasksPanel, { TasksPanelProps } from "@/components/primitives/task/tasks-panel"
 import { EmojiDynamic } from "@/components/primitives/common/emoji"
 import {
   useCreateTask,
   useDeleteTask,
+  useDeleteTimeslot,
   useUpdateTask,
   useUpdateTimeslot,
 } from "@/database/generated/hooks"
-import { formatDate, formatTimeString } from "@/lib/utils-common"
+import { formatDate } from "@/lib/utils-common"
 import { draftTask } from "@/lib/utils-task"
 import { getTimeslotStatus } from "@/lib/utils-timeslot"
+import { useScheduleParams } from "@/lib/schedule-params"
 
 export default function TimslotTasksPanel({
   timeslot,
-  refreshKey,
   className,
 }: {
   timeslot: Timeslot & { tasks: Task[] }
-  refreshKey: number
   className: TasksPanelProps["className"]
 }) {
   const timeslotStatus = getTimeslotStatus({
@@ -94,26 +97,41 @@ export default function TimslotTasksPanel({
     }
   }
 
-  const timeslotTitle = [
-    formatDate(parse(timeslot.date_string, "yyyy-MM-dd", new Date()), { withWeekday: true }),
-    formatTimeString(timeslot.start_time_string),
-    "-",
-    formatTimeString(timeslot.end_time_string),
-  ].join(" ")
+  // Delete timeslot
+  const router = useRouter()
+  const { closeTimeslotHref } = useScheduleParams()
+  const deleteTimeslot = useDeleteTimeslot()
+  const handleDeleteTimeslot = () => {
+    router.push(closeTimeslotHref)
+    deleteTimeslot.mutate({
+      where: { id: timeslot.id },
+    })
+  }
+
+  const timeslotTitle = formatDate(parse(timeslot.date_string, "yyyy-MM-dd", new Date()), {
+    withWeekday: true,
+  })
 
   return (
     <TasksPanel
       isCollapsible
       defaultExpanded
-      key={refreshKey}
       uid={`schedule/timeslot/${timeslot.id}`}
       className={className}
       tasks={timeslot.tasks}
       order={timeslot.task_order}
       headerContent={
-        <div className="flex items-center gap-8">
+        <div className="flex grow items-center gap-8">
           <EmojiDynamic unified="1f5d3-fe0f" size={16} emojiStyle={EmojiStyle.APPLE} />
           <p className="font-medium">{timeslotTitle}</p>
+          <div className="grow" />
+          <Button
+            onPress={handleDeleteTimeslot}
+            className="flex cursor-pointer items-center gap-4 rounded-md px-4 text-neutral-500 hover:text-red-700"
+          >
+            <CalendarX2Icon size={14} />
+            Unschedule
+          </Button>
         </div>
       }
       emptyContent={timeslotStatus === "past" ? <div>None</div> : undefined}

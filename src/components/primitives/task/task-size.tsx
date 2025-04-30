@@ -12,16 +12,22 @@ export function TaskSizeChip({
   children,
   tierOverride,
   className,
+  overdue,
 }: {
   minutes: number | null | undefined
   status: TaskStatus
   tierOverride?: TaskSizeTier
   children?: ReactNode
   className?: string
+  overdue?: boolean
 }) {
   const tier = tierOverride ?? getTaskSizeTier(minutes)
   const text = !minutes ? "-" : formatMinutes(minutes)
-  return <div className={taskSizeClassName({ status, tier, className })}>{children ?? text}</div>
+  return (
+    <div className={taskSizeClassName({ status, tier, className, overdue })}>
+      {children ?? text}
+    </div>
+  )
 }
 
 export function TaskSizeSelect({
@@ -119,65 +125,76 @@ export const taskSizeClassName = tv({
       medium: "",
       high: "",
     },
+    overdue: {
+      true: "bg-red-50 border-red-300 text-red-700",
+    },
   },
   compoundVariants: [
     // DRAFT
     {
       status: "DRAFT",
       tier: "zero",
+      overdue: false,
       class: `text-neutral-400`,
     },
     {
       status: "DRAFT",
       tier: "low",
+      overdue: false,
       class: `bg-neutral-100 text-neutral-600`,
     },
     {
       status: "DRAFT",
       tier: "medium",
+      overdue: false,
       class: `bg-neutral-200 text-neutral-600`,
     },
     {
       status: "DRAFT",
       tier: "high",
+      overdue: false,
       class: `bg-neutral-400 border-neutral-500 text-neutral-50`,
     },
     // TODO
     {
       status: "TODO",
       tier: "zero",
+      overdue: false,
       class: `text-gold-400`,
     },
     {
       status: "TODO",
       tier: "low",
+      overdue: false,
       class: `bg-gold-50 text-gold-600`,
     },
     {
       status: "TODO",
       tier: "medium",
+      overdue: false,
       class: `bg-gold-200 text-gold-600`,
     },
     {
       status: "TODO",
       tier: "high",
+      overdue: false,
       class: `bg-gold-400 border-gold-500 text-gold-50`,
     },
     // DONE
     {
       status: "DONE",
       tier: "zero",
-      class: `text-blue-400`,
+      class: `border-blue-300 text-blue-400`,
     },
     {
       status: "DONE",
       tier: "low",
-      class: `bg-blue-50 text-blue-600`,
+      class: `bg-blue-50 border-blue-300 text-blue-600`,
     },
     {
       status: "DONE",
       tier: "medium",
-      class: `bg-blue-200 text-blue-600`,
+      class: `bg-blue-200 border-blue-300 text-blue-600`,
     },
     {
       status: "DONE",
