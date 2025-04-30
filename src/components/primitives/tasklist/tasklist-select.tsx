@@ -4,10 +4,12 @@ import { Tasklist } from "@zenstackhq/runtime/models"
 import { FocusScope } from "react-aria"
 import { twMerge } from "tailwind-merge"
 import { TaskSizeChip } from "../task/task-size"
-import { getTaskSummary } from "../../lib/utils-task"
-import { sortTasklists } from "../../lib/utils-tasklist"
 import TasklistItem from "./tasklist-item"
+import { getTaskSummary } from "@/lib/utils-task"
+import { sortTasklists } from "@/lib/utils-tasklist"
 import { useFindManyTasklist } from "@/database/generated/hooks"
+
+// TODO: Refactor – primitives should not call database hooks directly
 
 export default function TasklistSelect({
   triggerRef,

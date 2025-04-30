@@ -5,17 +5,17 @@ import { Loader, PlusIcon, XIcon } from "lucide-react"
 import { Task, Tasklist, Timeslot } from "@zenstackhq/runtime/models"
 import { format } from "date-fns"
 import { useRouter } from "next/navigation"
-import TasklistItem from "../tasklist/tasklist-item"
+import TasklistItem from "@/components/primitives/tasklist/tasklist-item"
 import { PresetTimeslot, presetTimeslots, getTimeslotStatus } from "@/lib/utils-timeslot"
-import { useScheduleParams } from "@/lib/schedule"
-import TasklistSelect from "@/components/tasklist/tasklist-select"
+import { useScheduleParams } from "@/lib/schedule-params"
+import TasklistSelect from "@/components/primitives/tasklist/tasklist-select"
 import {
   useCreateTimeslot,
   useDeleteTimeslot,
   useFindManyTimeslot,
 } from "@/database/generated/hooks"
 import { getTaskSummary } from "@/lib/utils-task"
-import { TaskSizeChip } from "@/components/task/task-size"
+import { TaskSizeChip } from "@/components/primitives/task/task-size"
 
 export default function WeekGridDay({ date }: { date: Date }) {
   const dateString = format(date, "yyyy-MM-dd")

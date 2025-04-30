@@ -1,7 +1,7 @@
 import { twMerge } from "tailwind-merge"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import { Link } from "react-aria-components"
-import { useScheduleParams } from "@/lib/schedule"
+import { useScheduleParams } from "@/lib/schedule-params"
 
 export default function WeekNavigator() {
   const { currentWeekHref, nextWeekHref, prevWeekHref } = useScheduleParams()

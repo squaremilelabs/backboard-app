@@ -2,7 +2,7 @@ import { TaskStatus } from "@prisma/client"
 import { useEffect, useState } from "react"
 import { Button, ListBox, ListBoxItem, Popover, Select, SelectValue } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
-import { taskStatusUIMap } from "../../lib/utils-task"
+import { taskStatusUIMap } from "@/lib/utils-task"
 
 export function TaskStatusSelect({
   value,

@@ -1,7 +1,7 @@
 "use client"
 import { createId } from "@paralleldrive/cuid2"
 import { Task, Tasklist } from "@zenstackhq/runtime/models"
-import TasklistItem from "../tasklist/tasklist-item"
+import TasklistItem from "@/components/primitives/tasklist/tasklist-item"
 import { draftTask } from "@/lib/utils-task"
 import {
   useCreateTask,
@@ -9,7 +9,7 @@ import {
   useUpdateTask,
   useUpdateTasklist,
 } from "@/database/generated/hooks"
-import TasksPanel, { TasksPanelProps } from "@/components/task/tasks-panel"
+import TasksPanel, { TasksPanelProps } from "@/components/primitives/task/tasks-panel"
 
 export default function TasklistTasksPanel({
   tasklist,

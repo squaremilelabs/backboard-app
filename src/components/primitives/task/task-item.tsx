@@ -5,7 +5,7 @@ import { twMerge } from "tailwind-merge"
 import { useSessionStorage } from "usehooks-ts"
 import { TaskStatusSelect } from "./task-status"
 import { TaskSizeSelect } from "./task-size"
-import EditableText from "@/components/common/editable-text"
+import EditableText from "@/components/primitives/common/editable-text"
 import { formatDate } from "@/lib/utils-common"
 
 export interface TaskItemValues {

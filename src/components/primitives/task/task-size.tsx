@@ -3,7 +3,7 @@ import { ReactNode, useEffect, useState } from "react"
 import { Button, Dialog, DialogTrigger, ListBox, ListBoxItem, Popover } from "react-aria-components"
 import { ClassNameValue, twMerge } from "tailwind-merge"
 import { tv } from "tailwind-variants"
-import { getTaskSizeTier, taskSizeOptions, TaskSizeTier } from "../../lib/utils-task"
+import { getTaskSizeTier, taskSizeOptions, TaskSizeTier } from "@/lib/utils-task"
 import { formatMinutes } from "@/lib/utils-common"
 
 export function TaskSizeChip({

@@ -4,7 +4,7 @@ import { twMerge } from "tailwind-merge"
 import { TaskStatus } from "@prisma/client"
 import { TaskSizeSelect } from "./task-size"
 import { TaskStatusSelect } from "./task-status"
-import TextToInput from "@/components/common/text-to-input"
+import TextToInput from "@/components/primitives/common/text-to-input"
 
 export interface TaskCreateValues {
   title: string

@@ -2,9 +2,9 @@
 import { twMerge } from "tailwind-merge"
 import { useEffect, useState } from "react"
 import { startOfToday } from "date-fns"
-import { sortTasklists } from "../../lib/utils-tasklist"
-import TasklistCreate from "../tasklist/tasklist-create"
 import TasklistTasksPanel from "./tasklist-tasks-panel"
+import { sortTasklists } from "@/lib/utils-tasklist"
+import TasklistCreate from "@/components/primitives/tasklist/tasklist-create"
 import { useFindManyTasklist } from "@/database/generated/hooks"
 
 const startOfDay = startOfToday()

@@ -5,11 +5,11 @@ import { twMerge } from "tailwind-merge"
 import { useEffect, useState } from "react"
 import { XIcon } from "lucide-react"
 import { startOfToday } from "date-fns"
-import TasklistItem from "../tasklist/tasklist-item"
+import TasklistItem from "../primitives/tasklist/tasklist-item"
 import TimeslotTasksPanel from "./timeslot-tasks-panel"
 import TimeslotTasklistTasksPanel from "./timeslot-tasklist-tasks-panel"
 import { useFindUniqueTimeslot } from "@/database/generated/hooks"
-import { useScheduleParams } from "@/lib/schedule"
+import { useScheduleParams } from "@/lib/schedule-params"
 
 const startOfDate = startOfToday()
 

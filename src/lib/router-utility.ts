@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
-export default function useRouterUtility<T extends Record<string, string>>() {
+export default function useRouterUtility<T extends Record<string, string | null>>() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -23,9 +23,9 @@ export default function useRouterUtility<T extends Record<string, string>>() {
         constructedSearchParams = new URLSearchParams(searchParams.toString())
       }
       Object.entries(params.query).forEach(([key, value]) => {
-        if (value !== null && value !== undefined) {
-          constructedSearchParams.set(key, value.toString())
-        }
+        if (value === null) constructedSearchParams.delete(key)
+        if (typeof value === "string") constructedSearchParams.set(key, value)
+        // if undefined, do nothing
       })
     }
     const constructedPath = params.path === "CURRENT" ? pathname : params.path

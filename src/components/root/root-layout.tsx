@@ -9,7 +9,7 @@ import { useEffect, useState } from "react"
 import { usePathname } from "next/navigation"
 import Image from "next/image"
 import { EmojiStyle } from "emoji-picker-react"
-import { EmojiDynamic } from "../common/emoji"
+import { EmojiDynamic } from "../primitives/common/emoji"
 import WeekNavigator from "@/components/schedule/week-navigator"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

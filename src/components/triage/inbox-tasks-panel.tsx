@@ -11,8 +11,8 @@ import {
   useUpdateTask,
   useUpdateUser,
 } from "@/database/generated/hooks"
-import TasksPanel, { TasksPanelProps } from "@/components/task/tasks-panel"
-import { EmojiDynamic } from "@/components/common/emoji"
+import TasksPanel, { TasksPanelProps } from "@/components/primitives/task/tasks-panel"
+import { EmojiDynamic } from "@/components/primitives/common/emoji"
 import { draftTask } from "@/lib/utils-task"
 
 export default function InboxTasksPanel({

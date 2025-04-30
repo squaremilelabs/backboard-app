@@ -1,8 +1,8 @@
 "use client"
 import { Task, Tasklist, Timeslot } from "@zenstackhq/runtime/models"
 import { TaskStatus } from "@prisma/client"
-import TasksPanel, { TasksPanelProps } from "../task/tasks-panel"
-import { EmojiDynamic } from "../common/emoji"
+import TasksPanel, { TasksPanelProps } from "@/components/primitives/task/tasks-panel"
+import { EmojiDynamic } from "@/components/primitives/common/emoji"
 import { useDeleteTask, useUpdateTask } from "@/database/generated/hooks"
 
 export default function TimeslotTasklistTasksPanel({

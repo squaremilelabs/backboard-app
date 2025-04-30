@@ -5,7 +5,7 @@ import { useMemo } from "react"
 import { format } from "date-fns"
 import WeekGridDay from "./week-grid-day"
 import { presetTimeslots, getTimeslotStatus } from "@/lib/utils-timeslot"
-import { useScheduleParams, getWeekdaysFromDate } from "@/lib/schedule"
+import { useScheduleParams, getWeekdaysFromDate } from "@/lib/schedule-params"
 import { formatDate, formatTimeString } from "@/lib/utils-common"
 
 export default function WeekGrid() {

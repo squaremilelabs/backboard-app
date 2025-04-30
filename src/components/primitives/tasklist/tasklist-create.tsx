@@ -16,6 +16,8 @@ import { FocusScope } from "react-aria"
 import { EmojiSelect } from "../common/emoji"
 import { useCreateTasklist } from "@/database/generated/hooks"
 
+// TODO: Refactor – primitives should not call database hooks directly
+
 export default function TasklistCreateModal() {
   const [open, setOpen] = useState(false)
   const [values, setValues] = useState({

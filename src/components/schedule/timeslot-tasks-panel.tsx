@@ -5,8 +5,8 @@ import { TaskStatus, Timeslot } from "@prisma/client"
 import { parse } from "date-fns"
 import { createId } from "@paralleldrive/cuid2"
 import { EmojiStyle } from "emoji-picker-react"
-import TasksPanel, { TasksPanelProps } from "../task/tasks-panel"
-import { EmojiDynamic } from "../common/emoji"
+import TasksPanel, { TasksPanelProps } from "@/components/primitives/task/tasks-panel"
+import { EmojiDynamic } from "@/components/primitives/common/emoji"
 import {
   useCreateTask,
   useDeleteTask,

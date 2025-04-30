@@ -1,34 +1,48 @@
 import { add, format, parse, sub } from "date-fns"
-import { useSearchParams } from "next/navigation"
+import useRouterUtility from "./router-utility"
 
 export function useScheduleParams() {
-  const searchParams = useSearchParams()
-  const dateParam = searchParams.get("date")
-  const timeslotParam = searchParams.get("timeslot")
+  const router = useRouterUtility<{ date: string | null; timeslot: string | null }>()
+  const dateParam = router.query.date
+  const timeslotParam = router.query.timeslot
 
   const weekStartDate = dateParam
     ? getMondayFromDate(parse(dateParam, "yyyy-MM-dd", new Date()))
     : getMondayFromDate(new Date())
 
-  const currentTimeslotParam = timeslotParam ? `&timeslot=${timeslotParam}` : ""
-  const currentDateParam = dateParam ? `&date=${dateParam}` : ""
-
   const nextWeekStartDate = add(weekStartDate, { days: 7 })
   const prevWeekStartDate = sub(weekStartDate, { days: 7 })
 
-  const nextWeekParam = `date=${format(nextWeekStartDate, "yyyy-MM-dd")}`
-  const prevWeekParam = `date=${format(prevWeekStartDate, "yyyy-MM-dd")}`
+  const nextWeekHref = router.constructHref({
+    path: "/schedule",
+    query: { date: format(nextWeekStartDate, "yyyy-MM-dd") },
+    merge: true,
+  })
 
-  const nextWeekHref = `/schedule?${nextWeekParam}` + currentTimeslotParam
+  const currentWeekHref = router.constructHref({
+    path: "/schedule",
+    query: { date: null },
+    merge: true,
+  })
 
-  const currentWeekHref = `/schedule` + (timeslotParam ? `?timeslot=${timeslotParam}` : "")
-
-  const prevWeekHref = `/schedule?${prevWeekParam}` + currentTimeslotParam
+  const prevWeekHref = router.constructHref({
+    path: "/schedule",
+    query: { date: format(prevWeekStartDate, "yyyy-MM-dd") },
+    merge: true,
+  })
 
   const getTimeslotHref = (timeslotId: string) =>
-    `/schedule?timeslot=${timeslotId}` + currentDateParam
+    router.constructHref({
+      path: "/schedule",
+      query: { timeslot: timeslotId },
+      merge: true,
+    })
 
-  const closeTimeslotHref = `/schedule` + (dateParam ? `?date=${dateParam}` : "")
+  const closeTimeslotHref = router.constructHref({
+    path: "/schedule",
+    query: { timeslot: null },
+    merge: true,
+  })
 
   return {
     weekStartDate,
