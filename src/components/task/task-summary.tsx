@@ -13,7 +13,7 @@ export default function TaskSummary({ tasks }: { tasks: Task[] }) {
     taskSummary.status.DONE.minutes > 0 ? ("DONE" as TaskStatus) : null,
   ].filter((t) => t !== null)
 
-  return (
+  return displayedStatuses.length ? (
     <div className={twMerge("flex min-h-20 items-center gap-4")}>
       {displayedStatuses.map((status) => {
         const summary = taskSummary.status[status]
@@ -27,5 +27,5 @@ export default function TaskSummary({ tasks }: { tasks: Task[] }) {
         )
       })}
     </div>
-  )
+  ) : null
 }

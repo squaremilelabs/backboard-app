@@ -51,7 +51,7 @@ export default function TasklistItem({
       {onArchive ? (
         <DialogTrigger>
           <Button className="flex h-20 min-w-fit cursor-pointer items-center rounded-md text-neutral-400 hover:bg-neutral-200">
-            <EllipsisVertical size={12} />
+            <EllipsisVertical size={14} />
           </Button>
           <Popover
             offset={2}
