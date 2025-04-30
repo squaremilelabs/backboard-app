@@ -46,7 +46,10 @@ export function getTimeslotStatus({
   }
 }
 
-export function sortTimeslots<T extends Timeslot & { tasks: Task[] }>(timeslots: T[]) {
+export function sortTimeslots<T extends Timeslot & { tasks: Task[] }>(
+  timeslots: T[],
+  options: { doneSort?: "asc" | "desc" } = { doneSort: "asc" }
+) {
   return timeslots.sort((a, b) => {
     const aTasksSummary = getTaskSummary(a.tasks)
     const bTasksSummary = getTaskSummary(b.tasks)
@@ -62,7 +65,8 @@ export function sortTimeslots<T extends Timeslot & { tasks: Task[] }>(timeslots:
 
     // Compare by DONE minutes in ASCENDING order
     if (bDoneMinutes !== aDoneMinutes) {
-      return aDoneMinutes - bDoneMinutes
+      if (options.doneSort === "asc") return aDoneMinutes - bDoneMinutes
+      if (options.doneSort === "desc") return bDoneMinutes - aDoneMinutes
     }
 
     // Fallback to comparing by created_at in ascending order

@@ -38,9 +38,8 @@ export default function Week() {
   const weekColumns: WeekColumnData[] = activeWeekDateStrings.map((dateString) => {
     return {
       dateString,
-      timeslots: sortTimeslots(
-        timeslotsQuery.data?.filter((timeslot) => timeslot.date_string === dateString) ?? []
-      ),
+      timeslots:
+        timeslotsQuery.data?.filter((timeslot) => timeslot.date_string === dateString) ?? [],
     }
   })
 
@@ -82,6 +81,10 @@ function WeekColumn({ dateString, timeslots }: WeekColumnData) {
   const tasklistSelectTriggerRef = useRef<HTMLButtonElement>(null)
   const [tasklistSelectOpen, setTasklistSelectOpen] = useState(false)
 
+  const sortedTimeslots = sortTimeslots(timeslots, {
+    doneSort: dateStatus === "past" ? "desc" : "asc",
+  })
+
   return (
     <div
       className={twMerge(
@@ -115,7 +118,7 @@ function WeekColumn({ dateString, timeslots }: WeekColumnData) {
           <GridList
             aria-label={`Tasklists for ${dateString}`}
             className="flex w-full flex-col gap-8"
-            items={timeslots}
+            items={sortedTimeslots}
           >
             {(timeslot) => <TimeslotItem timeslot={timeslot} />}
           </GridList>
