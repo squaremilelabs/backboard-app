@@ -88,7 +88,7 @@ export default function TasklistTasksPanel({
         />
       }
       selectableTaskStatuses={["TODO", "DRAFT", "DONE"]}
-      creatableTaskStatuses={["TODO", "DRAFT"]}
+      creatableTaskStatuses={["DRAFT", "TODO"]}
       onCreateTask={handleCreateTask}
       onUpdateTask={handleUpdateTask}
       onDeleteTask={handleDeleteTask}

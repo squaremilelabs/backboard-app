@@ -88,7 +88,7 @@ function WeekColumn({ dateString, timeslots }: WeekColumnData) {
   return (
     <div
       className={twMerge(
-        "flex w-xs flex-col rounded-xl border-2 bg-neutral-100",
+        "flex w-xs flex-col rounded-lg border-2 bg-neutral-100",
         "overflow-auto",
         dateStatus === "past" ? "bg-neutral-100" : "bg-canvas"
       )}
@@ -98,7 +98,7 @@ function WeekColumn({ dateString, timeslots }: WeekColumnData) {
         className={twMerge(
           "sticky top-0 z-10",
           "flex items-center p-16",
-          "rounded-xl rounded-b-none",
+          "rounded-lg rounded-b-none",
           "backdrop-blur-lg",
           dateStatus === "past" ? "bg-neutral-100/50" : "bg-canvas/50"
         )}
@@ -129,7 +129,7 @@ function WeekColumn({ dateString, timeslots }: WeekColumnData) {
           onPress={() => setTasklistSelectOpen(true)}
           className={twMerge(
             "flex items-center gap-4 p-8",
-            "rounded-xl text-sm text-neutral-500",
+            "rounded-lg text-sm text-neutral-500",
             "cursor-pointer hover:text-neutral-950",
             "-outline-offset-1",
             dateStatus === "past" ? "hover:bg-neutral-200" : "hover:bg-neutral-100"
@@ -156,7 +156,7 @@ function WeekColumn({ dateString, timeslots }: WeekColumnData) {
         className={twMerge(
           "sticky bottom-0 z-10",
           "flex items-center justify-end p-16",
-          "rounded-xl rounded-t-none",
+          "rounded-lg rounded-t-none",
           "backdrop-blur-lg",
           dateStatus === "past" ? "bg-neutral-100/50" : "bg-canvas/50"
         )}
@@ -197,7 +197,7 @@ function TimeslotItem({
       href={timeslotHref}
       className={twMerge(
         "group flex flex-col gap-8 truncate p-8",
-        "rounded-xl border",
+        "rounded-lg border",
         "cursor-pointer",
         "-outline-offset-1",
         isPast ? "border-neutral-300 hover:bg-neutral-200" : "hover:bg-neutral-100",
