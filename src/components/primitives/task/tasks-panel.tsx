@@ -140,7 +140,7 @@ export default function TasksPanel({
         {...dropProps}
         className={twMerge(
           "flex items-center px-8 py-4",
-          "gap-8 rounded-xl",
+          "gap-8 rounded-lg",
           "group-data-expanded:outline-0"
         )}
       >
@@ -168,7 +168,7 @@ export default function TasksPanel({
       <DisclosurePanel
         className={twMerge(
           isExpanded
-            ? "bg-canvas flex max-h-full flex-col overflow-auto rounded-[12px] border p-16"
+            ? "bg-canvas flex max-h-full flex-col overflow-auto rounded-md border p-16"
             : "",
           isEmpty ? "gap-0" : "gap-8"
         )}
