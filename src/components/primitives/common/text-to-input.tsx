@@ -35,10 +35,6 @@ export default function TextToInput({
 }) {
   const [isActive, setIsActive] = useState(false)
 
-  useEffect(() => {
-    if (onActiveChange) setIsActive(isActive)
-  }, [isActive, onActiveChange])
-
   const triggerRef = useRef<HTMLButtonElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -81,7 +77,13 @@ export default function TextToInput({
       : className
 
   return (
-    <DialogTrigger isOpen={isActive} onOpenChange={setIsActive}>
+    <DialogTrigger
+      isOpen={isActive}
+      onOpenChange={(state) => {
+        setIsActive(state)
+        if (onActiveChange) onActiveChange(state)
+      }}
+    >
       <Button
         className={twMerge(
           "inline-flex cursor-text justify-start text-left whitespace-pre-wrap",

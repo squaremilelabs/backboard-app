@@ -25,6 +25,8 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^6.11.2",
+    "@mdi/js": "^7.4.47",
+    "@mdi/react": "^1.6.1",
     "@paralleldrive/cuid2": "^2.2.2",
     "@prisma/client": "6.3.x",
     "@tanstack/react-query": "^5.66.0",

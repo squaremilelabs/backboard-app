@@ -2,6 +2,7 @@ import { TaskStatus } from "@prisma/client"
 import { useEffect, useState } from "react"
 import { Button, ListBox, ListBoxItem, Popover, Select, SelectValue } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
+import Icon from "@mdi/react"
 import { taskStatusUIMap } from "@/lib/utils-task"
 
 export function TaskStatusSelect({
@@ -36,7 +37,7 @@ export function TaskStatusSelect({
         style={{ color: `var(--bb-${selectedUI.color}-500)` }}
       >
         <SelectValue>
-          <selectedUI.Icon size={16} />
+          <Icon path={selectedUI.mdiIconPath} size={"16px"} />
         </SelectValue>
       </Button>
       <Popover
@@ -65,7 +66,7 @@ export function TaskStatusSelect({
                   borderColor: `var(--bb-${optionUI.color}-300)`,
                 }}
               >
-                <optionUI.Icon size={14} />
+                <Icon path={optionUI.mdiIconPath} size={"14px"} />
                 <span className="grow text-center text-sm font-medium">{optionUI.label}</span>
               </ListBoxItem>
             )

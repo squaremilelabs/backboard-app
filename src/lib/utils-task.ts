@@ -2,26 +2,26 @@
 
 import { createId } from "@paralleldrive/cuid2"
 import { Task, TaskStatus } from "@zenstackhq/runtime/models"
-import { Circle, CircleCheckBig, CircleDashed, LucideIcon } from "lucide-react"
+import { mdiCheckCircle, mdiRecordCircle, mdiRecordCircleOutline } from "@mdi/js"
 
 export const taskStatusUIMap: Record<
   TaskStatus,
-  { label: string; color: string; Icon: LucideIcon }
+  { label: string; color: string; mdiIconPath: string }
 > = {
   DRAFT: {
     label: "Draft",
     color: "neutral",
-    Icon: CircleDashed,
+    mdiIconPath: mdiRecordCircleOutline,
   },
   TODO: {
     label: "To-do",
     color: "gold",
-    Icon: Circle,
+    mdiIconPath: mdiRecordCircle,
   },
   DONE: {
     label: "Done",
     color: "blue",
-    Icon: CircleCheckBig,
+    mdiIconPath: mdiCheckCircle,
   },
 }
 

@@ -25,11 +25,17 @@ export default function EditableText({
     setInnerValue(initialValue)
   }, [initialValue])
 
-  const handleActiveChange = (nextIsActive: boolean) => {
-    // Handle resetting innerValue if leaving edit mode and left empty
-    if (!nextIsActive) {
+  const handleActiveChange = (isActive: boolean) => {
+    // handling changes when losing focus
+    if (!isActive) {
       if (!innerValue && !allowEmpty) {
         setInnerValue(initialValue)
+      } else {
+        if (innerValue) {
+          if (innerValue !== initialValue) {
+            onSave(innerValue)
+          }
+        }
       }
     }
   }

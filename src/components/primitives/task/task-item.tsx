@@ -46,9 +46,7 @@ export default function TaskItem({
           className={({ isActive, isButton }) =>
             twMerge(
               "grow",
-              task.status === "DONE" && isButton && !isActive
-                ? "text-neutral-500 line-through"
-                : "",
+              task.status === "DONE" && isButton && !isActive ? "text-neutral-500" : "",
               isExpanded ? "font-medium" : ""
             )
           }
