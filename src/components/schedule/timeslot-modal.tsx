@@ -64,7 +64,7 @@ export default function TimeslotModal() {
       <Modal>
         <Dialog
           className="bg-canvas/70 @container grid max-h-[80dvh] w-sm max-w-[95dvw] grid-rows-[auto_1fr] gap-16
-            overflow-auto rounded-xl border p-16 !outline-0"
+            overflow-auto rounded-lg border p-16 !outline-0"
         >
           <Heading slot="title" className="flex w-full items-center gap-8 truncate">
             <div className="grow truncate">

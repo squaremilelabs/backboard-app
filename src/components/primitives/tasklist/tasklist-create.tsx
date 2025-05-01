@@ -47,7 +47,7 @@ export default function TasklistCreateModal() {
       <Button
         className={twMerge(
           "flex items-center gap-4 px-8 py-4",
-          "cursor-pointer rounded-xl",
+          "cursor-pointer rounded-lg",
           "hover:bg-neutral-200",
           "text-neutral-600"
         )}

@@ -127,7 +127,7 @@ export default function TasksPanel({
         twMerge(
           "group",
           "flex max-h-full flex-col",
-          "rounded-xl border-2 bg-neutral-100 p-4",
+          "rounded-lg border-2 bg-neutral-100 p-4",
           isDropTarget ? "ring-neutral-600 outline-1 -outline-offset-2" : null,
           className ? className(props) : null
         )
