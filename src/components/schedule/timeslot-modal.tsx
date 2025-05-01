@@ -56,6 +56,7 @@ export default function TimeslotModal() {
         if (!state) router.push(closeTimeslotHref)
         setIsOpen(state)
       }}
+      isDismissable
       className={twMerge(
         `fixed inset-0 z-50 flex h-dvh w-dvw flex-col items-center bg-neutral-100/30 pt-[10dvh]
         backdrop-blur-xs`
