@@ -37,7 +37,7 @@ function Header() {
           <div className="px-4">
             <Image
               alt="Backboard"
-              src="/images/backboard-logo.png"
+              src="/images/backboard-logo.svg"
               width={20}
               height={20}
               className="shadow-md"
