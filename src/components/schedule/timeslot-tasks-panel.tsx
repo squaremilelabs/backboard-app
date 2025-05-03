@@ -114,8 +114,6 @@ export default function TimslotTasksPanel({
 
   return (
     <TasksPanel
-      isCollapsible
-      defaultExpanded
       uid={`schedule/timeslot/${timeslot.id}`}
       className={className}
       tasks={timeslot.tasks}

@@ -86,7 +86,7 @@ export default function TextToInput({
     >
       <Button
         className={twMerge(
-          "inline-flex cursor-text justify-start text-left whitespace-pre-wrap",
+          "inline-flex cursor-text justify-start text-left break-all whitespace-pre-wrap",
           "decoration-neutral-500 underline-offset-4",
           "focus-visible:underline focus-visible:outline-0",
           "hover:underline",
@@ -108,7 +108,7 @@ export default function TextToInput({
               onFocus={handleFocus}
               onKeyDown={handleKeyDown}
               className={twMerge(
-                "w-full resize-none whitespace-pre-wrap !outline-0",
+                "w-full resize-none break-all whitespace-pre-wrap !outline-0",
                 "placeholder-neutral-500",
                 appliedClassName("input")
               )}
