@@ -1,61 +1,98 @@
 "use client"
-
 import { twMerge } from "tailwind-merge"
 import { Moon, SunDim } from "lucide-react"
-import { Button, Link } from "react-aria-components"
-import { SignedIn, UserButton } from "@clerk/nextjs"
+import { Button } from "react-aria-components"
 import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
-import { usePathname } from "next/navigation"
 import Image from "next/image"
-import { EmojiStyle } from "emoji-picker-react"
-import { EmojiDynamic } from "../primitives/common/emoji"
+import Icon from "@mdi/react"
+import { mdiMenu, mdiMenuOpen } from "@mdi/js"
+import { SignedIn, UserButton } from "@clerk/nextjs"
 import WeekNavigator from "@/components/schedule/week-navigator"
+import { useSessionStorageUtility } from "@/lib/browser"
+import { iconBox, interactive } from "@/styles/class-names"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const [sidebarOpen] = useSessionStorageUtility("sidebar-open", true)
   return (
-    <div className="grid h-dvh max-h-dvh w-dvw max-w-dvw grid-rows-[auto_1fr]">
-      <Header />
-      <main
+    <div className={"flex h-dvh max-h-dvh w-dvw max-w-dvw items-start"}>
+      <aside
         className={twMerge(
-          "@container/main",
-          "grid h-full max-h-full w-full max-w-full grid-cols-1 grid-rows-1 overflow-auto p-8 !pt-0 md:p-16"
+          "h-full",
+          sidebarOpen ? "block w-xs min-w-xs" : "hidden w-0",
+          "overflow-hidden transition-all transition-discrete"
         )}
       >
-        {children}
-      </main>
+        <Sidebar />
+      </aside>
+      <div className="grid h-full w-full min-w-sm grow grid-rows-[auto_minmax(0,1fr)]">
+        <Header />
+        <main className="overflow-auto">{children}</main>
+      </div>
     </div>
   )
 }
 
 function Header() {
-  const pathname = usePathname()
+  const [sidebarOpen, setSidebarOpen] = useSessionStorageUtility("sidebar-open", true)
   return (
-    <header className="flex min-h-45 items-center gap-12 px-12 py-8 lg:px-20">
-      <SignedIn>
-        <nav className="flex items-center gap-8">
-          <div className="px-4">
-            <Image
-              alt="Backboard"
-              src="/images/backboard-logo.svg"
-              width={20}
-              height={20}
-              className="shadow-md"
-            />
-          </div>
-          <NavLink emoji="1f4dd" title="Triage" href="/triage" />
-          <NavLink emoji="1f5d3-fe0f" title="Schedule" href="/schedule" />
-          {pathname.startsWith("/schedule") ? <WeekNavigator /> : null}
-        </nav>
-      </SignedIn>
+    <header className="flex h-50 items-center gap-16 px-16">
+      <Button
+        onPress={() => setSidebarOpen(true)}
+        className={twMerge(
+          interactive({ hover: "background" }),
+          "items-center gap-8",
+          "rounded-md p-4",
+          sidebarOpen ? "hidden opacity-0" : "flex opacity-100 starting:opacity-0",
+          "transition-opacity"
+        )}
+      >
+        <Image
+          alt="Backboard"
+          src="/images/backboard-logo.svg"
+          width={20}
+          height={20}
+          className="shadow-md"
+        />
+        <Icon path={mdiMenu} size="20px" className="text-neutral-400" />
+      </Button>
+      <WeekNavigator />
       <div className="grow" />
       <SignedIn>
-        <div className="flex items-center gap-8">
-          <ThemeButton />
-          <UserButton />
-        </div>
+        <ThemeButton />
+        <UserButton />
       </SignedIn>
     </header>
+  )
+}
+
+function Sidebar() {
+  const [_, setSidebarOpen] = useSessionStorageUtility("sidebar-open", true)
+  return (
+    <div className="grid h-full w-xs grid-rows-[auto_minmax(0,1fr)] divide-y border-r">
+      <div className="box-content flex h-50 items-center gap-8 px-16">
+        <Image
+          alt="Backboard"
+          src="/images/backboard-logo.svg"
+          width={20}
+          height={20}
+          className="shadow-md"
+        />
+        <h1 className="text-lg font-semibold text-neutral-600">Backboard</h1>
+        <div className="grow" />
+        <Button
+          onPress={() => setSidebarOpen(false)}
+          className={twMerge(
+            interactive({ hover: "background" }),
+            iconBox({ size: "large" }),
+            "text-neutral-400"
+          )}
+        >
+          <Icon path={mdiMenuOpen} />
+        </Button>
+      </div>
+      <div></div>
+    </div>
   )
 }
 
@@ -73,31 +110,10 @@ function ThemeButton() {
   const Icon = selected === "dark" ? Moon : SunDim
   return (
     <Button
-      className={"cursor-pointer rounded-md hover:opacity-70"}
+      className={twMerge(interactive({ hover: "background" }), iconBox({ size: "large" }))}
       onPress={() => setTheme(selected === "dark" ? "light" : "dark")}
     >
-      <Icon size={20} />
+      <Icon />
     </Button>
-  )
-}
-
-function NavLink({ emoji, title, href }: { emoji: string; title: string; href: string }) {
-  const pathname = usePathname()
-  const isActive = pathname === href
-  return (
-    <Link
-      href={href}
-      className={twMerge(
-        "flex items-center gap-4",
-        "px-8 py-2",
-        "rounded-lg border-2 border-transparent",
-        isActive
-          ? ["bg-canvas cursor-auto border-neutral-300 font-medium text-neutral-950"]
-          : ["hover:bg-canvas cursor-pointer text-neutral-500 hover:border-neutral-300"]
-      )}
-    >
-      {isActive ? <EmojiDynamic unified={emoji} size={16} emojiStyle={EmojiStyle.APPLE} /> : null}
-      <span>{title}</span>
-    </Link>
   )
 }

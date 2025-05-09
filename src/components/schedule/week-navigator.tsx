@@ -7,7 +7,7 @@ export default function WeekNavigator() {
   const { currentWeekHref, nextWeekHref, prevWeekHref, isActiveWeekCurrent } = useScheduleParams()
 
   return (
-    <div className={twMerge("flex items-center justify-between", "gap-4")}>
+    <div className={twMerge("flex items-center justify-between", "gap-0")}>
       <Link
         key={prevWeekHref}
         className="flex cursor-pointer items-center rounded-md text-neutral-600 hover:bg-neutral-200"

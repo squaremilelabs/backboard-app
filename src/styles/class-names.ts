@@ -1,12 +1,12 @@
 import { tv } from "tailwind-variants"
 
 export const interactive = tv({
-  base: "not-disabled:cusor-pointer",
+  base: "not-disabled:cursor-pointer",
   variants: {
     hover: {
       fade: "not-disabled:hover:opacity-70",
       underline: "not-disabled:hover:underline",
-      background: "not-disabled:hover:bg-neutral-100",
+      background: "not-disabled:hover:bg-neutral-200",
     },
   },
   defaultVariants: {
@@ -20,8 +20,11 @@ export const iconBox = tv({
     size: {
       base: "size-20 min-w-20 [&_svg]:size-16 [&_img]:size-16",
       small: "size-16 min-w-16 [&_svg]:size-12 [&_img]:size-12 text-sm",
-      large: "size-20 min-w-20 [&_svg]:size-20 [&_img]:size-20 text-lg",
+      large: "size-24 min-w-24 [&_svg]:size-20 [&_img]:size-20 text-lg",
     },
+  },
+  defaultVariants: {
+    size: "base",
   },
 })
 
