@@ -161,7 +161,7 @@ function WeekColumn({ dateString, timeslots }: WeekColumnData) {
           dateStatus === "past" ? "bg-neutral-100/50" : "bg-canvas/50"
         )}
       >
-        <TaskSummary tasks={tasks} showOverdue={dateStatus === "past"} />
+        <TaskSummary tasks={tasks} useOverdueColor={dateStatus === "past"} />
       </div>
     </div>
   )
@@ -215,7 +215,7 @@ function TimeslotItem({
         {hasNoTasks ? (
           <TaskSizeChip minutes={0} status="DRAFT" />
         ) : (
-          <TaskSummary tasks={timeslot.tasks} showTiers showOverdue={timeslotStatus === "past"} />
+          <TaskSummary tasks={timeslot.tasks} useOverdueColor={timeslotStatus === "past"} />
         )}
       </div>
     </GridListItem>

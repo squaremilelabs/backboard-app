@@ -3,6 +3,7 @@
 import { createId } from "@paralleldrive/cuid2"
 import { Task, TaskStatus } from "@zenstackhq/runtime/models"
 import { mdiCheckCircle, mdiRecordCircle, mdiRecordCircleOutline } from "@mdi/js"
+import { ChipProps } from "@/styles/class-names"
 
 export const taskStatusUIMap: Record<
   TaskStatus,
@@ -14,7 +15,7 @@ export const taskStatusUIMap: Record<
     mdiIconPath: mdiRecordCircleOutline,
   },
   TODO: {
-    label: "To-do",
+    label: "To Do",
     color: "gold",
     mdiIconPath: mdiRecordCircle,
   },
@@ -36,6 +37,23 @@ export const taskSizeOptions: { label: string; value: number }[] = [
   { label: "4h", value: 240 },
 ]
 
+export const getTaskSizeChipWeight = (minutes: number | null | undefined): ChipProps["weight"] => {
+  if (!minutes) return "zero"
+  if (minutes < 30) return "light"
+  if (minutes < 61) return "medium"
+  return "heavy"
+}
+
+export const getTaskStatusChipColor = (
+  status: TaskStatus,
+  options?: { useOverdueColor?: boolean }
+): ChipProps["color"] => {
+  if (status === "DRAFT") return options?.useOverdueColor ? "red" : "neutral"
+  if (status === "TODO") return options?.useOverdueColor ? "red" : "gold"
+  if (status === "DONE") return "blue"
+}
+
+// TO REMOVE
 export type TaskSizeTier = "zero" | "low" | "medium" | "high"
 
 export const getTaskSizeTier = (minutes: number | null | undefined): TaskSizeTier => {

@@ -27,7 +27,10 @@ export function isEqualStringArrays(arr1: string[], arr2: string[]) {
   return arr1.every((value, index) => value === arr2[index])
 }
 
-export function formatMinutes(minutes: number | null | undefined): string {
+export function formatMinutes(
+  minutes: number | null | undefined,
+  options?: { condense?: boolean }
+): string {
   if (minutes === null || minutes === undefined) return "-"
   const hours = Math.floor(minutes / 60)
   const remainingMinutes = minutes % 60
@@ -36,6 +39,9 @@ export function formatMinutes(minutes: number | null | undefined): string {
   }
   if (remainingMinutes === 0) {
     return `${hours}h`
+  }
+  if (options?.condense) {
+    return `${hours}h+`
   }
   return `${hours}h ${remainingMinutes}m`
 }

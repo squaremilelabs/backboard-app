@@ -1,10 +1,10 @@
-import { tv } from "tailwind-variants"
+import { tv, VariantProps } from "tailwind-variants"
 
 export const interactive = tv({
   base: "not-disabled:cursor-pointer",
   variants: {
     hover: {
-      fade: "not-disabled:hover:opacity-70",
+      fade: "not-disabled:hover:opacity-60",
       underline: "not-disabled:hover:underline",
       background: "not-disabled:hover:bg-neutral-200",
     },
@@ -14,13 +14,15 @@ export const interactive = tv({
   },
 })
 
+export type InteractiveProps = VariantProps<typeof interactive>
+
 export const iconBox = tv({
   base: "inline-flex items-center justify-center rounded-md",
   variants: {
     size: {
-      base: "size-20 min-w-20 [&_svg]:size-16 [&_img]:size-16",
-      small: "size-16 min-w-16 [&_svg]:size-12 [&_img]:size-12 text-sm",
-      large: "size-24 min-w-24 [&_svg]:size-20 [&_img]:size-20 text-lg",
+      base: "size-20 min-w-20 [&_svg]:!size-16 [&_img]:!size-16",
+      small: "size-16 min-w-16 [&_svg]:!size-12 [&_img]:!size-12 text-sm",
+      large: "size-24 min-w-24 [&_svg]:!size-20 [&_img]:!size-20 text-lg",
     },
   },
   defaultVariants: {
@@ -28,11 +30,13 @@ export const iconBox = tv({
   },
 })
 
+export type IconBoxProps = VariantProps<typeof iconBox>
+
 export const chip = tv({
   base: [
-    "inline-flex items-center gap-4",
-    "text-sm border min-w-40 w-fit px-8 py-1 truncate",
-    "[&_svg]:size-14 [&_img]:size-14",
+    "inline-flex items-center justify-center gap-4",
+    "text-sm border min-w-40 w-fit px-8 py-1 truncate font-semibold",
+    "[&_svg]:!size-14 [&_img]:!size-14",
   ],
   variants: {
     shape: {
@@ -71,7 +75,7 @@ export const chip = tv({
     },
     {
       color: "neutral",
-      weight: "medium",
+      weight: "heavy",
       class: "bg-neutral-400 border-neutral-300 text-neutral-50",
     },
     // gold
@@ -92,7 +96,7 @@ export const chip = tv({
     },
     {
       color: "gold",
-      weight: "medium",
+      weight: "heavy",
       class: "bg-gold-400 border-gold-300 text-gold-50",
     },
     // blue
@@ -108,7 +112,7 @@ export const chip = tv({
     },
     {
       color: "blue",
-      weight: "medium",
+      weight: "heavy",
       class: "bg-blue-200 border-blue-300 text-blue-600",
     },
     {
@@ -134,7 +138,7 @@ export const chip = tv({
     },
     {
       color: "red",
-      weight: "medium",
+      weight: "heavy",
       class: "bg-red-700 border-red-300 text-red-50",
     },
   ],
@@ -143,4 +147,10 @@ export const chip = tv({
     color: "neutral",
     weight: "light",
   },
+})
+
+export type ChipProps = VariantProps<typeof chip>
+
+export const popover = tv({
+  base: "bg-canvas/30 border-2 rounded-lg p-16 backdrop-blur-lg",
 })

@@ -3,18 +3,18 @@ import { twMerge } from "tailwind-merge"
 import { TaskStatus } from "@prisma/client"
 import { TaskSizeChip } from "./task-size"
 import { getTaskSummary } from "@/lib/utils-task"
+import { ChipProps } from "@/styles/class-names"
 
 export default function TaskSummary({
   tasks,
-  showOverdue,
-  showTiers,
+  useOverdueColor,
+  consistentWeightVariant,
 }: {
   tasks: Task[]
-  showTiers?: boolean
-  showOverdue?: boolean
+  consistentWeightVariant?: ChipProps["weight"]
+  useOverdueColor?: boolean
 }) {
   const taskSummary = getTaskSummary(tasks)
-
   const displayedStatuses: TaskStatus[] = [
     taskSummary.status.TODO.minutes > 0 ? ("TODO" as TaskStatus) : null,
     taskSummary.status.DRAFT.minutes > 0 ? ("DRAFT" as TaskStatus) : null,
@@ -22,7 +22,7 @@ export default function TaskSummary({
   ].filter((t) => t !== null)
 
   return displayedStatuses.length ? (
-    <div className={twMerge("flex min-h-20 items-center gap-4")}>
+    <div className={twMerge("flex items-center -space-x-4")}>
       {displayedStatuses.map((status) => {
         const summary = taskSummary.status[status]
         return (
@@ -30,8 +30,9 @@ export default function TaskSummary({
             key={status}
             status={status}
             minutes={summary.minutes}
-            tierOverride={showTiers ? undefined : "medium"}
-            overdue={showOverdue}
+            fixedWeight={consistentWeightVariant}
+            useOverdueColor={useOverdueColor}
+            useCondensedMinutes
           />
         )
       })}

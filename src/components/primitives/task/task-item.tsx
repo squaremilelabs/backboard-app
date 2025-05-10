@@ -2,11 +2,12 @@ import { Task, TaskStatus } from "@prisma/client"
 import { ChevronDownIcon, DeleteIcon, TextIcon } from "lucide-react"
 import { Button, Disclosure, DisclosurePanel, Heading } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
-import { useSessionStorage } from "usehooks-ts"
-import { TaskStatusSelect } from "./task-status"
-import { TaskSizeSelect } from "./task-size"
+import { useRef, useState } from "react"
+import { TaskSizeChip } from "./task-size"
+import TaskPropertyPicker from "./task-property-picker"
 import EditableText from "@/components/primitives/common/editable-text"
 import { formatDate } from "@/lib/utils-common"
+import { interactive } from "@/styles/class-names"
 
 export interface TaskItemValues {
   title?: string
@@ -26,7 +27,10 @@ export default function TaskItem({
   onDelete: () => void
   selectableStatuses: TaskStatus[]
 }) {
-  const [isExpanded, setIsExpanded] = useSessionStorage(`expanded/task-${task.id}`, false)
+  const [isExpanded, setIsExpanded] = useState(false)
+
+  const propertyPickerRef = useRef<HTMLButtonElement | null>(null)
+  const [isPickerOpen, setIsPickerOpen] = useState(false)
 
   return (
     <Disclosure
@@ -35,11 +39,6 @@ export default function TaskItem({
       className={twMerge("flex grow flex-col", isExpanded ? "0 gap-8 pb-16" : null)}
     >
       <Heading className="flex items-start gap-4">
-        <TaskStatusSelect
-          value={task.status}
-          onValueChange={(status) => onUpdate({ status })}
-          selectableStatuses={selectableStatuses}
-        />
         <EditableText
           initialValue={task.title}
           onSave={(title) => onUpdate({ title })}
@@ -64,10 +63,20 @@ export default function TaskItem({
             )}
           />
         </Button>
-        <TaskSizeSelect
-          value={task.size_minutes}
-          onValueChange={(size_minutes) => onUpdate({ size_minutes })}
-          status={task.status}
+        <Button
+          ref={propertyPickerRef}
+          onPress={() => setIsPickerOpen(true)}
+          className={twMerge(interactive(), "rounded-full")}
+        >
+          <TaskSizeChip minutes={task.size_minutes} status={task.status} />
+        </Button>
+        <TaskPropertyPicker
+          triggerRef={propertyPickerRef}
+          isOpen={isPickerOpen}
+          values={{ status: task.status, size_minutes: task.size_minutes }}
+          onOpenChange={setIsPickerOpen}
+          onSelect={onUpdate}
+          selectableStatuses={selectableStatuses}
         />
       </Heading>
       <DisclosurePanel className="flex flex-col gap-4">

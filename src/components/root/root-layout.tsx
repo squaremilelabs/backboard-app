@@ -8,6 +8,7 @@ import Image from "next/image"
 import Icon from "@mdi/react"
 import { mdiMenu, mdiMenuOpen } from "@mdi/js"
 import { SignedIn, UserButton } from "@clerk/nextjs"
+import TasklistSidebarList from "../tasklist-sidebar"
 import WeekNavigator from "@/components/schedule/week-navigator"
 import { useSessionStorageUtility } from "@/lib/browser"
 import { iconBox, interactive } from "@/styles/class-names"
@@ -19,7 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <aside
         className={twMerge(
           "h-full",
-          sidebarOpen ? "block w-xs min-w-xs" : "hidden w-0",
+          sidebarOpen ? "block w-[350px] min-w-[350px]" : "hidden w-0",
           "overflow-hidden transition-all transition-discrete"
         )}
       >
@@ -69,7 +70,7 @@ function Header() {
 function Sidebar() {
   const [_, setSidebarOpen] = useSessionStorageUtility("sidebar-open", true)
   return (
-    <div className="grid h-full w-xs grid-rows-[auto_minmax(0,1fr)] divide-y border-r">
+    <div className="grid h-full grid-rows-[auto_minmax(0,1fr)] divide-y border-r">
       <div className="box-content flex h-50 items-center gap-8 px-16">
         <Image
           alt="Backboard"
@@ -91,7 +92,7 @@ function Sidebar() {
           <Icon path={mdiMenuOpen} />
         </Button>
       </div>
-      <div></div>
+      <TasklistSidebarList />
     </div>
   )
 }
