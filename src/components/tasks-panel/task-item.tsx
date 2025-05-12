@@ -3,8 +3,8 @@ import { ChevronDownIcon, DeleteIcon, TextIcon } from "lucide-react"
 import { Button, Disclosure, DisclosurePanel, Heading } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
 import { useRef, useState } from "react"
-import { TaskSizeChip } from "./task-size"
-import TaskPropertyPicker from "./task-property-picker"
+import { TaskSizeChip } from "../primitives/task/task-size"
+import TaskPropertyPicker from "../primitives/task/task-property-picker"
 import EditableText from "@/components/primitives/common/editable-text"
 import { formatDate } from "@/lib/utils-common"
 import { interactive } from "@/styles/class-names"
@@ -28,7 +28,6 @@ export default function TaskItem({
   selectableStatuses: TaskStatus[]
 }) {
   const [isExpanded, setIsExpanded] = useState(false)
-
   const propertyPickerRef = useRef<HTMLButtonElement | null>(null)
   const [isPickerOpen, setIsPickerOpen] = useState(false)
 
@@ -79,7 +78,7 @@ export default function TaskItem({
           selectableStatuses={selectableStatuses}
         />
       </Heading>
-      <DisclosurePanel className="flex flex-col gap-4">
+      <DisclosurePanel className="flex w-full flex-col gap-4">
         <div className="flex items-center gap-8">
           <span className="text-sm text-neutral-500">
             Created {formatDate(task.created_at, { withTime: true })}
@@ -91,7 +90,7 @@ export default function TaskItem({
         </div>
         <div
           className={twMerge(
-            "flex items-start gap-8 p-4",
+            "flex w-full items-start gap-8 p-4",
             "rounded-md border border-neutral-100 bg-neutral-50",
             "focus-within:outline has-[button[data-pressed]]:outline"
           )}
@@ -105,7 +104,7 @@ export default function TaskItem({
             placeholder="Notes..."
             allowEmpty
             isMultiline
-            className={({}) => twMerge("min-h-80 grow text-neutral-700", "!no-underline")}
+            className={({}) => twMerge("min-h-80 w-full grow text-neutral-700", "!no-underline")}
           />
         </div>
         <div className="flex items-center gap-8">

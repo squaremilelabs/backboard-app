@@ -4,8 +4,8 @@ import { useTheme } from "next-themes"
 import dynamic from "next/dynamic"
 import { useState } from "react"
 import { Button, Dialog, DialogTrigger, Popover } from "react-aria-components"
-import { ClassNameValue, twMerge } from "tailwind-merge"
-import { iconBox, IconBoxProps } from "@/styles/class-names"
+import { twMerge } from "tailwind-merge"
+import { iconBox, IconBoxProps, interactive } from "@/styles/class-names"
 
 export const EmojiPickerDynamic = dynamic(() => import("emoji-picker-react"), { ssr: false })
 
@@ -25,14 +25,12 @@ export function EmojiSelect({
   selected,
   onSelect,
   fallback,
-  buttonClassName,
-  emojiSize = 16,
+  size,
 }: {
   selected: string | null
   fallback: string
   onSelect: (emoji: EmojiClickData) => void
-  buttonClassName?: ClassNameValue
-  emojiSize?: number
+  size?: IconBoxProps["size"]
 }) {
   const [innerSelected, setInnerSelected] = useState(selected ?? fallback)
   const { resolvedTheme } = useTheme()
@@ -46,14 +44,8 @@ export function EmojiSelect({
 
   return (
     <DialogTrigger>
-      <Button
-        className={twMerge(
-          "flex size-20 min-w-20 items-center justify-center",
-          "cursor-pointer rounded-md hover:bg-neutral-300",
-          buttonClassName
-        )}
-      >
-        <EmojiDynamic unified={innerSelected || fallback} size={emojiSize} />
+      <Button className={twMerge(iconBox({ size }), interactive({ hover: "background" }))}>
+        <EmojiDynamic unified={innerSelected || fallback} />
       </Button>
       <Popover placement="bottom start" offset={4}>
         <Dialog className="!outline-0">

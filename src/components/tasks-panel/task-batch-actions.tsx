@@ -1,23 +1,25 @@
 import { Prisma, Task, TaskStatus } from "@zenstackhq/runtime/models"
-import { LoaderIcon, XIcon } from "lucide-react"
+import { LoaderIcon } from "lucide-react"
 import { Button } from "react-aria-components"
 import { AsyncListData } from "react-stately"
 import { twMerge } from "tailwind-merge"
 import { useEffect, useRef, useState } from "react"
 import TaskPropertyPicker from "../primitives/task/task-property-picker"
-import { chip, ChipProps, iconBox, interactive } from "@/styles/class-names"
+import { chip, ChipProps, interactive } from "@/styles/class-names"
 import { taskStatusUIMap } from "@/lib/utils-task"
 import { useDeleteManyTask, useUpdateManyTask } from "@/database/generated/hooks"
 
-export default function BatchTaskActions({
+export default function TaskBatchActions({
   list,
   selectableStatuses,
 }: {
   list: AsyncListData<Task>
   selectableStatuses: TaskStatus[]
 }) {
-  const selectionCount = [...list.selectedKeys].length
-  const isAllSelected = selectionCount === list.items.length
+  const selectedIds =
+    list.selectedKeys === "all"
+      ? list.items.map((task) => task.id)
+      : ([...list.selectedKeys] as string[])
 
   const updateTasksMutation = useUpdateManyTask()
   const deleteTasksMutation = useDeleteManyTask()
@@ -25,7 +27,6 @@ export default function BatchTaskActions({
   const isPending = updateTasksMutation.isPending || deleteTasksMutation.isPending
 
   const handleBatchDelete = () => {
-    const selectedIds = [...list.selectedKeys] as string[]
     deleteTasksMutation.mutate({
       where: { id: { in: selectedIds } },
     })
@@ -39,7 +40,6 @@ export default function BatchTaskActions({
   }, [deleteTasksMutation.isSuccess])
 
   const handleBatchUpdate = (values: Prisma.TaskUpdateManyMutationInput) => {
-    const selectedIds = [...list.selectedKeys] as string[]
     updateTasksMutation.mutate({
       where: { id: { in: selectedIds } },
       data: values,
@@ -56,27 +56,7 @@ export default function BatchTaskActions({
   const [sizePickerOpen, setSizePickerOpen] = useState(false)
 
   return (
-    <div className="flex flex-col gap-8 border-b pb-8">
-      <div className="flex items-center gap-4">
-        <Button
-          onPress={() => list.setSelectedKeys(new Set())}
-          className={twMerge(iconBox(), interactive())}
-        >
-          <XIcon />
-        </Button>
-        <p className="text-medium">{selectionCount} selected</p>
-        {!isAllSelected && (
-          <Button
-            className={twMerge(
-              interactive({ hover: "underline" }),
-              "ml-4 text-sm text-neutral-500"
-            )}
-            onPress={() => list.setSelectedKeys("all")}
-          >
-            Select all
-          </Button>
-        )}
-      </div>
+    <div className="flex flex-col gap-8">
       <div className="flex flex-wrap items-center gap-8">
         {/* Set Status Buttons */}
         {selectableStatuses.map((status) => {

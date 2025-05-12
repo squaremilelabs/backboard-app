@@ -8,8 +8,7 @@ import Image from "next/image"
 import Icon from "@mdi/react"
 import { mdiMenu, mdiMenuOpen } from "@mdi/js"
 import { SignedIn, UserButton } from "@clerk/nextjs"
-import TasklistSidebarList from "../tasklist-sidebar"
-import WeekNavigator from "@/components/schedule/week-navigator"
+import SidebarContent from "../sidebar"
 import { useSessionStorageUtility } from "@/lib/browser"
 import { iconBox, interactive } from "@/styles/class-names"
 
@@ -28,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </aside>
       <div className="grid h-full w-full min-w-sm grow grid-rows-[auto_minmax(0,1fr)]">
         <Header />
-        <main className="overflow-auto">{children}</main>
+        <main className="flex flex-col items-center-safe overflow-auto">{children}</main>
       </div>
     </div>
   )
@@ -57,7 +56,6 @@ function Header() {
         />
         <Icon path={mdiMenu} size="20px" className="text-neutral-400" />
       </Button>
-      <WeekNavigator />
       <div className="grow" />
       <SignedIn>
         <ThemeButton />
@@ -92,7 +90,7 @@ function Sidebar() {
           <Icon path={mdiMenuOpen} />
         </Button>
       </div>
-      <TasklistSidebarList />
+      <SidebarContent />
     </div>
   )
 }

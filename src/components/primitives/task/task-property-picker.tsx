@@ -2,7 +2,6 @@ import { TaskStatus } from "@zenstackhq/runtime/models"
 import { useState } from "react"
 import { ListBox, ListBoxItem, Popover, Selection } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
-import Icon from "@mdi/react"
 import { TaskSizeChip } from "./task-size"
 import { taskSizeOptions, taskStatusUIMap } from "@/lib/utils-task"
 import { chip, ChipProps, interactive, popover } from "@/styles/class-names"
@@ -85,7 +84,6 @@ export default function TaskPropertyPicker({
                     "not-focus-visible:data-selected:outline-2 not-focus-visible:data-selected:outline-neutral-400"
                   )}
                 >
-                  <Icon path={statusUI.mdiIconPath} />
                   {statusUI.label}
                 </ListBoxItem>
               )
