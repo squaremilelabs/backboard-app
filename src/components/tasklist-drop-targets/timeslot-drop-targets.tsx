@@ -9,7 +9,7 @@ import { Link } from "react-aria-components"
 import { TaskSizeSummaryChips } from "../primitives/task/task-size"
 import { useFindManyTimeslot, useUpdateManyTask } from "@/database/generated/hooks"
 import { formatDate } from "@/lib/utils-common"
-import { getTimeblock } from "@/lib/utils-calendar"
+import { getTimeblock } from "@/lib/utils-timeslot"
 import { iconBox, interactive } from "@/styles/class-names"
 
 type TimeslotWithTasks = Timeslot & { tasks: Task[] }

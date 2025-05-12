@@ -21,7 +21,7 @@ export default function TaskSelection({ list }: { list: AsyncListData<Task> }) {
       >
         <XIcon />
       </Button>
-      <p className="text-medium">{selectionCount} selected</p>
+      <p className="font-medium">{selectionCount} selected</p>
       {!isAllSelected && (
         <Button
           className={twMerge(interactive({ hover: "underline" }), "ml-4 text-sm text-neutral-500")}

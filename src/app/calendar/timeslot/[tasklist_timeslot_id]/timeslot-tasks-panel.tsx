@@ -7,9 +7,9 @@ import {
   useFindUniqueTimeslot,
   useUpdateTimeslot,
 } from "@/database/generated/hooks"
-import { getTimeblock } from "@/lib/utils-calendar"
 import { formatDate } from "@/lib/utils-common"
 import { iconBox } from "@/styles/class-names"
+import { getTimeblock } from "@/lib/utils-timeslot"
 
 export default function TimeslotTasksPanel({ timeslotId }: { timeslotId: string }) {
   const timeslotQuery = useFindUniqueTimeslot({ where: { id: timeslotId } })

@@ -1,12 +1,12 @@
 import { tv, VariantProps } from "tailwind-variants"
 
 export const interactive = tv({
-  base: "not-disabled:cursor-pointer",
+  base: "not-data-disabled:cursor-pointer",
   variants: {
     hover: {
-      fade: "not-disabled:hover:opacity-60",
-      underline: "not-disabled:hover:underline",
-      background: "not-disabled:hover:bg-neutral-200",
+      fade: "not-data-disabled:hover:opacity-60",
+      underline: "not-data-disabled:hover:underline",
+      background: "not-data-disabled:hover:bg-neutral-200",
     },
   },
   defaultVariants: {

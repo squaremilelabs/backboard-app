@@ -51,7 +51,11 @@ export default function TasksPanel({
 
   return (
     <div
-      className={twMerge("flex flex-col", "max-h-full", "rounded-lg border-2 bg-neutral-100 p-4")}
+      className={twMerge(
+        "flex flex-col",
+        "max-h-full w-full",
+        "rounded-lg border-2 bg-neutral-100 p-4"
+      )}
     >
       <div className="flex items-center p-8">
         {headerContent}
@@ -59,18 +63,21 @@ export default function TasksPanel({
         <TaskSizeSummaryChips tasks={list.items} />
       </div>
       <div className="bg-canvas flex grow flex-col overflow-auto rounded-md border">
-        <div
-          className={twMerge(
-            "bg-canvas/30 sticky top-0 z-10 p-16 pb-8 backdrop-blur-lg",
-            hasSelections ? "border-b" : ""
-          )}
-        >
-          {hasSelections ? (
+        {hasSelections ? (
+          <div
+            className={twMerge(
+              "flex flex-col gap-8",
+              "bg-canvas/50 sticky top-0 z-10 border-b p-16 backdrop-blur-lg"
+            )}
+          >
             <TaskSelection list={list} />
-          ) : (
+            <TaskBatchActions list={list} selectableStatuses={selectableStatuses} />
+          </div>
+        ) : (
+          <div className="p-16 pb-8">
             <TaskCreate list={list} defaultTaskValues={defaultTaskValues} />
-          )}
-        </div>
+          </div>
+        )}
         <div className={twMerge("px-16", hasSelections ? "py-8" : "pb-16")}>
           <TaskGridList
             list={list}
@@ -79,11 +86,6 @@ export default function TasksPanel({
             isLoading={isLoading}
           />
         </div>
-        {hasSelections && (
-          <div className="bg-canvas/30 sticky bottom-0 z-10 border-t p-16 pt-8 backdrop-blur-lg">
-            <TaskBatchActions list={list} selectableStatuses={selectableStatuses} />
-          </div>
-        )}
       </div>
     </div>
   )

@@ -1,9 +1,9 @@
 "use client"
 import { twMerge } from "tailwind-merge"
-import { Moon, SunDim } from "lucide-react"
-import { Button } from "react-aria-components"
+import { CalendarIcon, LayersIcon, Moon, SunDim } from "lucide-react"
+import { Button, Link } from "react-aria-components"
 import { useTheme } from "next-themes"
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import Image from "next/image"
 import Icon from "@mdi/react"
 import { mdiMenu, mdiMenuOpen } from "@mdi/js"
@@ -11,6 +11,8 @@ import { SignedIn, UserButton } from "@clerk/nextjs"
 import SidebarContent from "../sidebar"
 import { useSessionStorageUtility } from "@/lib/browser"
 import { iconBox, interactive } from "@/styles/class-names"
+import useRouterUtility from "@/lib/router-utility"
+import { getISOWeekString } from "@/lib/utils-timeslot"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen] = useSessionStorageUtility("sidebar-open", true)
@@ -56,6 +58,10 @@ function Header() {
         />
         <Icon path={mdiMenu} size="20px" className="text-neutral-400" />
       </Button>
+      <div className="flex items-center gap-8">
+        <NavLink id="backlog" />
+        <NavLink id="calendar" />
+      </div>
       <div className="grow" />
       <SignedIn>
         <ThemeButton />
@@ -92,6 +98,33 @@ function Sidebar() {
       </div>
       <SidebarContent />
     </div>
+  )
+}
+function NavLink({ id }: { id: "backlog" | "calendar" }) {
+  const router = useRouterUtility()
+  const currentISOWeek = getISOWeekString(new Date())
+  const isActive = router.pathParts[0] === id
+
+  const Icon = id === "backlog" ? LayersIcon : CalendarIcon
+  const label = id === "backlog" ? "Backlog" : "Calendar"
+  const href = id === "backlog" ? "/backlog/triage" : `/calendar/${currentISOWeek}`
+
+  return (
+    <Link
+      href={href}
+      isDisabled={isActive}
+      className={twMerge(
+        interactive({ hover: "background" }),
+        "flex items-center gap-4",
+        "rounded-md border px-8 py-2 text-neutral-500",
+        isActive ? "bg-canvas border-neutral-300 font-medium text-neutral-950" : ""
+      )}
+    >
+      <div className={iconBox({ size: "small", className: isActive ? "text-gold-500" : "" })}>
+        <Icon />
+      </div>
+      <p>{label}</p>
+    </Link>
   )
 }
 

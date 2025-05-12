@@ -34,22 +34,10 @@ export default function BacklogTriageItem() {
 
   const updateTasksMutation = useUpdateManyTask()
   const handleTasksDrop = (tasks: Task[]) => {
-    // handle done tasks
-    const doneTasks = tasks.filter((task) => task.status === "DONE")
-    if (doneTasks.length > 0) {
-      updateTasksMutation.mutate({
-        where: { id: { in: doneTasks.map((task) => task.id) } },
-        data: { status: "TODO", tasklist_id: null, timeslot_id: null },
-      })
-    }
-    // handle undone tasks
-    const undoneTasks = tasks.filter((task) => task.status !== "DONE")
-    if (undoneTasks.length > 0) {
-      updateTasksMutation.mutate({
-        where: { id: { in: undoneTasks.map((task) => task.id) } },
-        data: { tasklist_id: null, timeslot_id: null },
-      })
-    }
+    updateTasksMutation.mutate({
+      where: { id: { in: tasks.map((task) => task.id) } },
+      data: { status: "DRAFT", tasklist_id: null, timeslot_id: null },
+    })
   }
 
   return (

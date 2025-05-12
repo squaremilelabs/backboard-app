@@ -9,13 +9,13 @@ export default async function TasklistPage({
 }) {
   const { tasklist_id: tasklistId } = await params
   return (
-    <div className="flex h-full flex-col gap-16">
+    <div className="grid max-h-full grid-rows-[auto_minmax(0,1fr)] gap-16 p-16">
       <TasklistEditableTitle tasklistId={tasklistId} />
       <div className="flex items-start gap-16">
-        <div className="flex h-full w-sm flex-col gap-16">
+        <div className="flex max-h-full w-sm gap-16">
           <TasklistTasksPanel tasklistId={tasklistId} />
         </div>
-        <div className="flex w-xs flex-col">
+        <div className="flex max-h-full w-xs flex-col overflow-auto p-4">
           <TimeslotDropTargets tasklistId={tasklistId} />
         </div>
       </div>

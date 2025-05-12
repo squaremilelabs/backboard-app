@@ -38,7 +38,7 @@ export default function TaskGridList({
           return JSON.parse(item.task)
         })
       return (
-        <div className="rounded-md border bg-neutral-100 px-8 py-2 font-semibold">
+        <div className="max-w-xs truncate rounded-md border bg-neutral-100 px-8 py-2 font-semibold">
           {processedItems.length > 1 ? `${processedItems.length} tasks` : processedItems[0].title}
         </div>
       )
