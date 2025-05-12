@@ -5,18 +5,30 @@ import { format, sub, parse } from "date-fns"
 import { useRef } from "react"
 import { isTextDropItem, useDrop } from "react-aria"
 import { twMerge } from "tailwind-merge"
+import { Link } from "react-aria-components"
+import { TaskSizeSummaryChips } from "../primitives/task/task-size"
 import { useFindManyTimeslot, useUpdateManyTask } from "@/database/generated/hooks"
 import { formatDate } from "@/lib/utils-common"
 import { getTimeblock } from "@/lib/utils-calendar"
-import { iconBox } from "@/styles/class-names"
+import { iconBox, interactive } from "@/styles/class-names"
 
 type TimeslotWithTasks = Timeslot & { tasks: Task[] }
 
 const todayDateString = format(sub(new Date(), { weeks: 1 }), "yyyy-MM-dd")
 
-export default function TimeslotDropTargets({ tasklistId }: { tasklistId: string }) {
+export default function TimeslotDropTargets({
+  tasklistId,
+  activeTimeslotId,
+}: {
+  tasklistId: string
+  activeTimeslotId?: string
+}) {
   const timeslotsQuery = useFindManyTimeslot({
-    where: { tasklist_id: tasklistId, date_string: { gte: todayDateString } },
+    where: {
+      tasklist_id: tasklistId,
+      date_string: { gte: todayDateString },
+      id: { not: activeTimeslotId },
+    },
     include: { tasks: true },
     orderBy: [{ date_string: "asc" }, { start_time_string: "asc" }],
   })
@@ -37,7 +49,7 @@ export default function TimeslotDropTargets({ tasklistId }: { tasklistId: string
       {Object.entries(timeslotsByDate).map(([date, timeslots]) => {
         return (
           <div key={date} className="flex flex-col gap-4">
-            <p className="text-sm font-semibold text-neutral-600">
+            <p className="text-sm font-medium text-neutral-500">
               {formatDate(parse(date, "yyyy-MM-dd", new Date()), { withWeekday: true })}
             </p>
             {timeslots.map((timeslot) => {
@@ -82,14 +94,23 @@ function TimeslotDropTarget({
     if (draftTasks.length > 0) {
       updateTasksMutation.mutate({
         where: { id: { in: draftTasks.map((task) => task.id) } },
-        data: { status: "TODO", tasklist_id: tasklistId, timeslot_id: timeslot.id },
+        data: {
+          status: "TODO",
+          tasklist_id: tasklistId,
+          timeslot_id: timeslot.id,
+          timeslot_tasklist_id: tasklistId,
+        },
       })
     }
     const nonDraftTasks = tasks.filter((task) => task.status !== "DRAFT")
     if (nonDraftTasks.length > 0) {
       updateTasksMutation.mutate({
         where: { id: { in: nonDraftTasks.map((task) => task.id) } },
-        data: { tasklist_id: tasklistId, timeslot_id: timeslot.id },
+        data: {
+          tasklist_id: tasklistId,
+          timeslot_id: timeslot.id,
+          timeslot_tasklist_id: tasklistId,
+        },
       })
     }
   }
@@ -100,20 +121,26 @@ function TimeslotDropTarget({
   })
 
   return (
-    <div
-      ref={ref}
-      {...dropProps}
-      className={twMerge(
-        "flex items-center gap-4 p-4",
-        "rounded-lg border-2 bg-neutral-100",
-        isDropTarget ? "outline" : ""
-      )}
-    >
-      <div className={iconBox({ size: "small" })}>
-        <timeblock.Icon />
-      </div>
-      <p>{timeblock.label}</p>
-      {timeblock.subLabel ? <p>{timeblock.subLabel}</p> : null}
+    <div ref={ref} {...dropProps}>
+      <Link
+        href={`/calendar/timeslot/${tasklistId}-${timeslot.id}`}
+        className={twMerge(
+          interactive({ hover: "fade" }),
+          "flex items-center gap-4 px-4 py-6",
+          "rounded-lg border-2 bg-neutral-100",
+          isDropTarget ? "outline" : ""
+        )}
+      >
+        <div className={iconBox({ size: "small" })}>
+          <timeblock.Icon />
+        </div>
+        <p className="font-medium">{timeblock.label}</p>
+        {timeblock.subLabel ? (
+          <p className="text-sm text-neutral-500">({timeblock.subLabel})</p>
+        ) : null}
+        <div className="grow" />
+        <TaskSizeSummaryChips tasks={timeslot.tasks} />
+      </Link>
     </div>
   )
 }

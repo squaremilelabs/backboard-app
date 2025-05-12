@@ -1,5 +1,5 @@
 import TasklistTasksPanel from "./tasklist-tasks-panel"
-import TimeslotDropTargets from "@/components/timeslot/timeslot-drop-targets"
+import TimeslotDropTargets from "@/components/tasklist-drop-targets/timeslot-drop-targets"
 import TasklistEditableTitle from "@/components/primitives/tasklist/tasklist-editable-title"
 
 export default async function TasklistPage({
