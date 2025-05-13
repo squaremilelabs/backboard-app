@@ -7,6 +7,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import { RouterProvider } from "react-aria"
 import { useRouter } from "next/navigation"
 import { Analytics } from "@vercel/analytics/next"
+import { Suspense } from "react"
 import { Provider as ZenstackHooksProvider } from "@/database/generated/hooks"
 
 const queryClient = new QueryClient()
@@ -15,16 +16,18 @@ export default function RootProviders({ children }: { children: React.ReactNode 
   const router = useRouter()
   return (
     <>
-      <ClerkProvider>
-        <QueryClientProvider client={queryClient}>
-          <ZenstackHooksProvider value={{ endpoint: "/api/db" }}>
-            <NextThemeProvider>
-              <RouterProvider navigate={router.push}>{children}</RouterProvider>
-            </NextThemeProvider>
-          </ZenstackHooksProvider>
-          <ReactQueryDevtools initialIsOpen={false} />
-        </QueryClientProvider>
-      </ClerkProvider>
+      <Suspense>
+        <ClerkProvider>
+          <QueryClientProvider client={queryClient}>
+            <ZenstackHooksProvider value={{ endpoint: "/api/db" }}>
+              <NextThemeProvider>
+                <RouterProvider navigate={router.push}>{children}</RouterProvider>
+              </NextThemeProvider>
+            </ZenstackHooksProvider>
+            <ReactQueryDevtools initialIsOpen={false} />
+          </QueryClientProvider>
+        </ClerkProvider>
+      </Suspense>
       <Analytics />
     </>
   )

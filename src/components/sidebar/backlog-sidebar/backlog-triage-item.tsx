@@ -45,10 +45,10 @@ export default function BacklogTriageItem() {
       <Link
         href="/backlog/triage"
         className={twMerge(
-          interactive({ hover: "fade" }),
+          interactive({ hover: "underline" }),
           "flex items-center px-4 py-6",
-          "rounded-lg border border-neutral-200",
-          isActive ? "border-l-gold-500 rounded-l-none border-l-4" : "",
+          "rounded-lg border border-neutral-200 bg-neutral-100",
+          isActive ? "bg-canvas" : "",
           isDropTarget ? "outline" : ""
         )}
       >
