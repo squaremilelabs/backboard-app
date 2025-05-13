@@ -17,13 +17,13 @@ export default function TriageTasksPanel() {
     where: { tasklist_id: null, timeslot_id: null, archived_at: null },
   })
 
-  const taskOrder = userQuery.data?.inbox_task_order ?? []
+  const taskOrder = userQuery.data?.task_order ?? []
 
   const updateUserMutation = useUpdateUser()
   const handleReorder = (reorderedIds: string[]) => {
     updateUserMutation.mutate({
       where: { id: authUser?.id ?? "NO_USER" },
-      data: { inbox_task_order: reorderedIds },
+      data: { task_order: reorderedIds },
     })
   }
 

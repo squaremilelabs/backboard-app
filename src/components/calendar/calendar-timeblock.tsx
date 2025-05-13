@@ -62,9 +62,9 @@ export default function CalendarTimeblock({
     updateTimeslotsMutation.mutate({
       where: { id: { in: timeslots.map((timeslot) => timeslot.id) } },
       data: {
-        date_string: dateString,
-        start_time_string: timeblock.startTime,
-        end_time_string: timeblock.endTime,
+        date: dateString,
+        start_time: timeblock.startTime,
+        end_time: timeblock.endTime,
       },
     })
   }
@@ -74,9 +74,9 @@ export default function CalendarTimeblock({
     tasklists.forEach((tasklist) => {
       createTimeslotMutation.mutate({
         data: {
-          date_string: dateString,
-          start_time_string: timeblock.startTime,
-          end_time_string: timeblock.endTime,
+          date: dateString,
+          start_time: timeblock.startTime,
+          end_time: timeblock.endTime,
           tasklist: { connect: { id: tasklist.id } },
         },
       })

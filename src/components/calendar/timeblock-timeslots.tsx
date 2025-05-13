@@ -22,7 +22,7 @@ export default function TimeblockTimeslots({
     endTime: timeblock.endTime,
   })
   const timeslotsQuery = useFindManyTimeslot({
-    where: { date_string: dateString, start_time_string: timeblock.startTime },
+    where: { date: dateString, start_time: timeblock.startTime },
     include: { tasklist: true, tasks: true },
   })
 

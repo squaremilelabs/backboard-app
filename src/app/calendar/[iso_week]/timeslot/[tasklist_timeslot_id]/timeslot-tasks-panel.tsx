@@ -28,13 +28,13 @@ export default function TimeslotTasksPanel({ timeslotId }: { timeslotId: string 
   const isLoading = timeslotQuery.isLoading || tasksQuery.isLoading
 
   const timeblock = timeslot
-    ? getTimeblock({ startTime: timeslot.start_time_string, endTime: timeslot.end_time_string })
+    ? getTimeblock({ startTime: timeslot.start_time, endTime: timeslot.end_time })
     : null
 
   const timeslotStatus = getTimeslotStatus({
-    date: timeslot?.date_string ?? "",
-    startTime: timeslot?.start_time_string ?? "",
-    endTime: timeslot?.end_time_string ?? "",
+    date: timeslot?.date ?? "",
+    startTime: timeslot?.start_time ?? "",
+    endTime: timeslot?.end_time ?? "",
   })
 
   return (
@@ -57,7 +57,7 @@ export default function TimeslotTasksPanel({ timeslotId }: { timeslotId: string 
               <timeblock.Icon />
             </div>
             <h2 className="font-semibold">
-              {formatDate(parse(timeslot?.date_string ?? "", "yyyy-MM-dd", new Date()), {
+              {formatDate(parse(timeslot?.date ?? "", "yyyy-MM-dd", new Date()), {
                 withWeekday: true,
               })}
             </h2>

@@ -32,7 +32,7 @@ model User {
   tasklists        Tasklist[]
   timeslots        Timeslot[]
 
-  inbox_task_order String[]
+  task_order String[]
 
   @@auth
   @@map("users")
@@ -97,9 +97,9 @@ model Tasklist extends WithMetadata {
 }
 
 model Timeslot extends WithMetadata {
-  date_string       String   @length(min: 10, max: 10, "date must be in YYYY-MM-DD format")
-  start_time_string String   @length(min: 5, max: 5, "start_time must be in HH:MM format")
-  end_time_string   String   @length(min: 5, max: 5, "end_time must be in HH:MM format")
+  date       String   @length(min: 10, max: 10, "date must be in YYYY-MM-DD format")
+  start_time String   @length(min: 5, max: 5, "start_time must be in HH:MM format")
+  end_time   String   @length(min: 5, max: 5, "end_time must be in HH:MM format")
   task_order        String[]
 
   tasklist_id       String

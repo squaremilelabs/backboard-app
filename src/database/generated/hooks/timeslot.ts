@@ -328,7 +328,7 @@ export function useSuspenseCountTimeslot<TArgs extends Prisma.TimeslotCountArgs,
     return useSuspenseModelQuery<TQueryFnData, TData, TError>('Timeslot', `${endpoint}/timeslot/count`, args, options, fetch);
 }
 
-export function useCheckTimeslot<TError = DefaultError>(args: { operation: PolicyCrudKind; where?: { id?: string; created_by_id?: string; date_string?: string; start_time_string?: string; end_time_string?: string; task_order?: string; tasklist_id?: string }; }, options?: (Omit<UseQueryOptions<boolean, TError, boolean>, 'queryKey'> & ExtraQueryOptions)) {
+export function useCheckTimeslot<TError = DefaultError>(args: { operation: PolicyCrudKind; where?: { id?: string; created_by_id?: string; date?: string; start_time?: string; end_time?: string; task_order?: string; tasklist_id?: string }; }, options?: (Omit<UseQueryOptions<boolean, TError, boolean>, 'queryKey'> & ExtraQueryOptions)) {
     const { endpoint, fetch } = getHooksContext();
     return useModelQuery<boolean, boolean, TError>('Timeslot', `${endpoint}/timeslot/check`, args, options, fetch);
 }

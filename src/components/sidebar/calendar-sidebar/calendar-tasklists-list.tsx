@@ -19,7 +19,7 @@ export default function CalendarTasklistGridList() {
     where: { archived_at: null },
     include: {
       tasks: {
-        where: { timeslot: { date_string: { in: weekDates } } },
+        where: { timeslot: { date: { in: weekDates } } },
       },
     },
   })

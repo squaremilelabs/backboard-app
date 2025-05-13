@@ -49,8 +49,8 @@ const metadata = {
                     isDataModel: true,
                     isArray: true,
                     backLink: 'created_by',
-                }, inbox_task_order: {
-                    name: "inbox_task_order",
+                }, task_order: {
+                    name: "task_order",
                     type: "String",
                     isArray: true,
                 },
@@ -265,14 +265,14 @@ const metadata = {
                     name: "archived_at",
                     type: "DateTime",
                     isOptional: true,
-                }, date_string: {
-                    name: "date_string",
+                }, date: {
+                    name: "date",
                     type: "String",
-                }, start_time_string: {
-                    name: "start_time_string",
+                }, start_time: {
+                    name: "start_time",
                     type: "String",
-                }, end_time_string: {
-                    name: "end_time_string",
+                }, end_time: {
+                    name: "end_time",
                     type: "String",
                 }, task_order: {
                     name: "task_order",

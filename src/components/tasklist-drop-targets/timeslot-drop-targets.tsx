@@ -35,19 +35,19 @@ export default function TimeslotDropTargets({
   const timeslotsQuery = useFindManyTimeslot({
     where: {
       tasklist_id: tasklistId,
-      date_string: activeTimeslotId ? { in: weekDates } : { gte: todayDateString },
+      date: activeTimeslotId ? { in: weekDates } : { gte: todayDateString },
       id: { not: activeTimeslotId },
     },
     include: { tasks: true },
-    orderBy: [{ date_string: "asc" }, { start_time_string: "asc" }],
+    orderBy: [{ date: "asc" }, { start_time: "asc" }],
   })
   const timeslotsByDate: Record<string, TimeslotWithTasks[]> =
     timeslotsQuery.data?.reduce(
       (result, timeslot) => {
-        if (!result[timeslot.date_string]) {
-          result[timeslot.date_string] = []
+        if (!result[timeslot.date]) {
+          result[timeslot.date] = []
         }
-        result[timeslot.date_string].push(timeslot)
+        result[timeslot.date].push(timeslot)
         return result
       },
       {} as Record<string, TimeslotWithTasks[]>
@@ -137,15 +137,15 @@ function TimeslotDropTarget({
   }
 
   const timeblock = getTimeblock({
-    startTime: timeslot.start_time_string,
-    endTime: timeslot.end_time_string,
+    startTime: timeslot.start_time,
+    endTime: timeslot.end_time,
   })
 
-  const isoWeek = getISOWeekString(parse(timeslot.date_string, "yyyy-MM-dd", new Date()))
+  const isoWeek = getISOWeekString(parse(timeslot.date, "yyyy-MM-dd", new Date()))
   const weekStatus = getTimeslotStatus({
-    date: timeslot.date_string,
-    startTime: timeslot.start_time_string,
-    endTime: timeslot.end_time_string,
+    date: timeslot.date,
+    startTime: timeslot.start_time,
+    endTime: timeslot.end_time,
   })
 
   return (
