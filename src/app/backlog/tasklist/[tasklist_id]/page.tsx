@@ -1,6 +1,6 @@
 import TasklistTasksPanel from "./tasklist-tasks-panel"
+import TasklistHeader from "./tasklist-header"
 import TimeslotDropTargets from "@/components/tasklist-drop-targets/timeslot-drop-targets"
-import TasklistEditableTitle from "@/components/primitives/tasklist/tasklist-editable-title"
 
 export default async function TasklistPage({
   params,
@@ -10,7 +10,7 @@ export default async function TasklistPage({
   const { tasklist_id: tasklistId } = await params
   return (
     <div className="grid max-h-full grid-rows-[auto_minmax(0,1fr)] gap-16 p-16">
-      <TasklistEditableTitle tasklistId={tasklistId} />
+      <TasklistHeader tasklistId={tasklistId} />
       <div className="flex items-start gap-16">
         <div className="flex max-h-full w-sm gap-16">
           <TasklistTasksPanel tasklistId={tasklistId} />
