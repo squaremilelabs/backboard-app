@@ -69,7 +69,11 @@ export default function TaskItem({
           onPress={() => setIsPickerOpen(true)}
           className={twMerge(interactive(), "rounded-full")}
         >
-          <TaskSizeChip minutes={task.size_minutes} status={task.status} useOverdueColor={useOverdueColor} />
+          <TaskSizeChip
+            minutes={task.size_minutes}
+            status={task.status}
+            useOverdueColor={useOverdueColor}
+          />
         </Button>
         <TaskPropertyPicker
           triggerRef={propertyPickerRef}

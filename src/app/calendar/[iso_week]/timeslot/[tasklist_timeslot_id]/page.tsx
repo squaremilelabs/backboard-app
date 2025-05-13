@@ -1,6 +1,6 @@
 import TimeslotTasksPanel from "./timeslot-tasks-panel"
+import TasklistHeader from "./tasklist-header"
 import TimeslotDropTargets from "@/components/tasklist-drop-targets/timeslot-drop-targets"
-import TasklistEditableTitle from "@/components/primitives/tasklist/tasklist-editable-title"
 import BacklogDropTarget from "@/components/tasklist-drop-targets/backlog-drop-target"
 
 export default async function TasklistPage({
@@ -12,9 +12,7 @@ export default async function TasklistPage({
   const [tasklistId, timeslotId] = tasklistTimeslotId.split("-")
   return (
     <div className="grid max-h-full grid-rows-[auto_minmax(0,1fr)] gap-16 p-16">
-      <div className="flex items-center gap-8">
-        <TasklistEditableTitle tasklistId={tasklistId} />
-      </div>
+      <TasklistHeader tasklistId={tasklistId} />
       <div className="flex items-start gap-16">
         <div className="flex max-h-full w-sm gap-16">
           <TimeslotTasksPanel timeslotId={timeslotId} />

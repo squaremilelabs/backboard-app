@@ -90,7 +90,6 @@ export default function TimeblockTimeslots({
               className={twMerge(
                 iconBox(),
                 interactive({ hover: "background" }),
-                "text-red-700",
                 "hidden group-data-hovered:flex",
                 "opacity-100 starting:opacity-0",
                 "transition-opacity",
