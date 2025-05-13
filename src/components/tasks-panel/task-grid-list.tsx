@@ -12,11 +12,13 @@ export default function TaskGridList({
   selectableStatuses,
   handleReorder,
   isLoading,
+  useOverdueColor,
 }: {
   list: AsyncListData<Task>
   selectableStatuses: TaskStatus[]
   handleReorder: (reorderedIds: string[]) => void
   isLoading: boolean
+  useOverdueColor?: boolean
 }) {
   const updateTaskMutation = useUpdateTask()
   const deleteTaskMutation = useDeleteTask()
@@ -120,6 +122,7 @@ export default function TaskGridList({
               onDelete={() => onDeleteTask(task.id)}
               onUpdate={(values) => onUpdateTask(task.id, values)}
               selectableStatuses={selectableStatuses}
+              useOverdueColor={useOverdueColor}
             />
           </GridListItem>
         )

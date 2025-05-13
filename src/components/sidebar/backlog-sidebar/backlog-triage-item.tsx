@@ -56,7 +56,10 @@ export default function BacklogTriageItem() {
           <InboxIcon />
         </div>
         <p className="ml-4 grow font-medium">Triage</p>
-        <TaskSizeSummaryChips tasks={triageTasksQuery.data ?? []} />
+        <TaskSizeSummaryChips
+          tasks={triageTasksQuery.data ?? []}
+          consistentWeightVariant="medium"
+        />
       </Link>
     </div>
   )

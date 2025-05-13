@@ -84,7 +84,7 @@ export default function BacklogTasklistGridList() {
         >
           <Emoji code={tasklist.emoji?.code ?? defaultTasklistEmojiCode} />
           <p className="ml-4 grow truncate font-medium">{tasklist.title}</p>
-          <TaskSizeSummaryChips tasks={tasklist.tasks} />
+          <TaskSizeSummaryChips tasks={tasklist.tasks} consistentWeightVariant="medium" />
         </GridListItem>
       )}
     </GridList>

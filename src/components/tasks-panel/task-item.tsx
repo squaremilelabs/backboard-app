@@ -21,11 +21,13 @@ export default function TaskItem({
   onUpdate,
   onDelete,
   selectableStatuses,
+  useOverdueColor,
 }: {
   task: Task
   onUpdate: (values: TaskItemValues) => void
   onDelete: () => void
   selectableStatuses: TaskStatus[]
+  useOverdueColor?: boolean
 }) {
   const [isExpanded, setIsExpanded] = useState(false)
   const propertyPickerRef = useRef<HTMLButtonElement | null>(null)
@@ -67,7 +69,7 @@ export default function TaskItem({
           onPress={() => setIsPickerOpen(true)}
           className={twMerge(interactive(), "rounded-full")}
         >
-          <TaskSizeChip minutes={task.size_minutes} status={task.status} />
+          <TaskSizeChip minutes={task.size_minutes} status={task.status} useOverdueColor={useOverdueColor} />
         </Button>
         <TaskPropertyPicker
           triggerRef={propertyPickerRef}
@@ -76,6 +78,7 @@ export default function TaskItem({
           onOpenChange={setIsPickerOpen}
           onSelect={onUpdate}
           selectableStatuses={selectableStatuses}
+          useOverdueColor={useOverdueColor}
         />
       </Heading>
       <DisclosurePanel className="flex w-full flex-col gap-4">

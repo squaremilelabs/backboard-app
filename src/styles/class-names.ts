@@ -112,12 +112,12 @@ export const chip = tv({
     },
     {
       color: "blue",
-      weight: "heavy",
+      weight: "medium",
       class: "bg-blue-200 border-blue-300 text-blue-600",
     },
     {
       color: "blue",
-      weight: "medium",
+      weight: "heavy",
       class: "bg-blue-400 border-blue-300 text-blue-50",
     },
     // red

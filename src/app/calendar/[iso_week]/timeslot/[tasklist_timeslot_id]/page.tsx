@@ -12,7 +12,9 @@ export default async function TasklistPage({
   const [tasklistId, timeslotId] = tasklistTimeslotId.split("-")
   return (
     <div className="grid max-h-full grid-rows-[auto_minmax(0,1fr)] gap-16 p-16">
-      <TasklistEditableTitle tasklistId={tasklistId} />
+      <div className="flex items-center gap-8">
+        <TasklistEditableTitle tasklistId={tasklistId} />
+      </div>
       <div className="flex items-start gap-16">
         <div className="flex max-h-full w-sm gap-16">
           <TimeslotTasksPanel timeslotId={timeslotId} />

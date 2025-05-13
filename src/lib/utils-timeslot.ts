@@ -9,7 +9,7 @@ import {
   Clock9Icon,
   LucideIcon,
 } from "lucide-react"
-import { getISOWeek, getISOWeekYear } from "date-fns"
+import { add, format, getISOWeek, getISOWeekYear, parse, startOfDay } from "date-fns"
 import { getTaskSummary } from "./utils-task"
 import { formatTimeString } from "./utils-common"
 
@@ -138,4 +138,13 @@ export function getISOWeekString(date: Date) {
   const isoWeekYear = getISOWeekYear(date)
   const isoWeek = getISOWeek(date)
   return `${isoWeekYear}-W${String(isoWeek).padStart(2, "0")}`
+}
+
+export function getISOWeekDates(isoWeekString: string) {
+  const [year, week] = isoWeekString.split("-W").map(Number)
+  const firstDay = startOfDay(parse(`${year} ${week}`, "R I", new Date()))
+  return Array.from({ length: 7 }, (_, i) => {
+    const date = add(firstDay, { days: i })
+    return format(date, "yyyy-MM-dd")
+  })
 }

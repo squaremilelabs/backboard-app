@@ -66,7 +66,7 @@ export default function BacklogDropTarget({ tasklistId }: { tasklistId: string }
         </div>
         <p className="font-medium">Backlog</p>
         <div className="grow" />
-        <TaskSizeSummaryChips tasks={backlogTasksQuery.data ?? []} />
+        <TaskSizeSummaryChips tasks={backlogTasksQuery.data ?? []} showEmptyChip />
       </Link>
     </div>
   )

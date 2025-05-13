@@ -18,6 +18,7 @@ export default function TasksPanel({
   selectableStatuses,
   defaultTaskValues,
   handleReorder,
+  useOverdueColor,
 }: {
   headerContent: React.ReactNode
   isLoading: boolean
@@ -25,6 +26,7 @@ export default function TasksPanel({
   taskOrder: string[]
   selectableStatuses: TaskStatus[]
   defaultTaskValues: Partial<Task>
+  useOverdueColor?: boolean
   handleReorder: (reorderedIds: string[]) => void
 }) {
   const list = useAsyncList({
@@ -60,7 +62,12 @@ export default function TasksPanel({
       <div className="flex items-center p-8">
         {headerContent}
         <div className="grow" />
-        <TaskSizeSummaryChips tasks={list.items} />
+        <TaskSizeSummaryChips
+          tasks={list.items}
+          consistentWeightVariant="medium"
+          useOverdueColor={useOverdueColor}
+          showFullMinutes
+        />
       </div>
       <div className="bg-canvas flex grow flex-col overflow-auto rounded-md border">
         {hasSelections ? (
@@ -84,6 +91,7 @@ export default function TasksPanel({
             selectableStatuses={selectableStatuses}
             handleReorder={handleReorder}
             isLoading={isLoading}
+            useOverdueColor={useOverdueColor}
           />
         </div>
       </div>

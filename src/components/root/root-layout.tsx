@@ -116,8 +116,8 @@ function NavLink({ id }: { id: "backlog" | "calendar" }) {
       className={twMerge(
         interactive({ hover: "background" }),
         "flex items-center gap-4",
-        "rounded-md border px-8 py-2 text-neutral-500",
-        isActive ? "bg-canvas border-neutral-300 font-medium text-neutral-950" : ""
+        "rounded-md border-2 border-transparent px-8 py-2 text-neutral-500",
+        isActive ? "bg-canvas border-neutral-200 font-medium text-neutral-950" : ""
       )}
     >
       <div className={iconBox({ size: "small", className: isActive ? "text-gold-500" : "" })}>

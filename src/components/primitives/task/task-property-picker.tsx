@@ -3,8 +3,8 @@ import { useState } from "react"
 import { ListBox, ListBoxItem, Popover, Selection } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
 import { TaskSizeChip } from "./task-size"
-import { taskSizeOptions, taskStatusUIMap } from "@/lib/utils-task"
-import { chip, ChipProps, interactive, popover } from "@/styles/class-names"
+import { getTaskStatusChipColor, taskSizeOptions, taskStatusUIMap } from "@/lib/utils-task"
+import { chip, interactive, popover } from "@/styles/class-names"
 
 export type TaskPropertyValues = {
   size_minutes: number
@@ -19,6 +19,7 @@ export default function TaskPropertyPicker({
   onSelect,
   closeOnSelect,
   selectableStatuses,
+  useOverdueColor,
 }: {
   triggerRef: React.RefObject<Element | null>
   isOpen: boolean
@@ -27,6 +28,7 @@ export default function TaskPropertyPicker({
   onSelect: (values: Partial<TaskPropertyValues>) => void
   closeOnSelect?: boolean
   selectableStatuses: TaskStatus[]
+  useOverdueColor?: boolean
 }) {
   const [innerValues, setInnerValues] = useState<TaskPropertyValues>(
     values ?? { size_minutes: 5, status: "DRAFT" }
@@ -80,7 +82,10 @@ export default function TaskPropertyPicker({
                   textValue={statusUI.label}
                   className={twMerge(
                     interactive(),
-                    chip({ color: statusUI.color as ChipProps["color"], weight: "medium" }),
+                    chip({
+                      color: getTaskStatusChipColor(status, { useOverdueColor }),
+                      weight: "medium",
+                    }),
                     "not-focus-visible:data-selected:outline-2 not-focus-visible:data-selected:outline-neutral-400"
                   )}
                 >
@@ -112,7 +117,11 @@ export default function TaskPropertyPicker({
                 "not-focus-visible:data-selected:outline-2 not-focus-visible:data-selected:outline-neutral-400"
               )}
             >
-              <TaskSizeChip minutes={option.value} status={innerValues.status ?? "DRAFT"} />
+              <TaskSizeChip
+                minutes={option.value}
+                status={innerValues.status ?? "DRAFT"}
+                useOverdueColor={useOverdueColor}
+              />
             </ListBoxItem>
           ))}
         </ListBox>

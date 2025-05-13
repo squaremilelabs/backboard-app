@@ -29,7 +29,7 @@ export default function TasklistEditableTitle({ tasklistId }: { tasklistId: stri
           <EditableText
             initialValue={tasklist?.title}
             onSave={(title) => handleUpdate({ title })}
-            className={() => "text-lg font-semibold"}
+            className={() => "text-lg font-medium"}
           />
         </>
       ) : null}

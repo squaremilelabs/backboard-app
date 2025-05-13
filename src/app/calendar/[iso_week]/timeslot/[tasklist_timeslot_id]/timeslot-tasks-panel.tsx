@@ -9,7 +9,7 @@ import {
 } from "@/database/generated/hooks"
 import { formatDate } from "@/lib/utils-common"
 import { iconBox } from "@/styles/class-names"
-import { getTimeblock } from "@/lib/utils-timeslot"
+import { getTimeblock, getTimeslotStatus } from "@/lib/utils-timeslot"
 
 export default function TimeslotTasksPanel({ timeslotId }: { timeslotId: string }) {
   const timeslotQuery = useFindUniqueTimeslot({ where: { id: timeslotId } })
@@ -31,6 +31,12 @@ export default function TimeslotTasksPanel({ timeslotId }: { timeslotId: string 
     ? getTimeblock({ startTime: timeslot.start_time_string, endTime: timeslot.end_time_string })
     : null
 
+  const timeslotStatus = getTimeslotStatus({
+    date: timeslot?.date_string ?? "",
+    startTime: timeslot?.start_time_string ?? "",
+    endTime: timeslot?.end_time_string ?? "",
+  })
+
   return (
     <TasksPanel
       tasksQuery={tasksQuery}
@@ -43,6 +49,7 @@ export default function TimeslotTasksPanel({ timeslotId }: { timeslotId: string 
         timeslot_id: timeslotId,
       }}
       selectableStatuses={["DONE", "TODO"]}
+      useOverdueColor={timeslotStatus === "past"}
       headerContent={
         timeblock ? (
           <div className="flex items-center gap-4">

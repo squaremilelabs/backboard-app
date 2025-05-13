@@ -38,11 +38,13 @@ export function TaskSizeSummaryChips({
   useOverdueColor,
   consistentWeightVariant,
   showEmptyChip,
+  showFullMinutes,
 }: {
   tasks: Task[]
   consistentWeightVariant?: ChipProps["weight"]
   showEmptyChip?: boolean
   useOverdueColor?: boolean
+  showFullMinutes?: boolean
 }) {
   const taskSummary = getTaskSummary(tasks)
   const displayedStatuses: TaskStatus[] = [
@@ -62,7 +64,7 @@ export function TaskSizeSummaryChips({
             minutes={summary.minutes}
             fixedWeight={consistentWeightVariant}
             useOverdueColor={useOverdueColor}
-            useCondensedMinutes
+            useCondensedMinutes={!showFullMinutes}
           />
         )
       })}
