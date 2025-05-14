@@ -20,7 +20,7 @@ export type Timeblock = {
 export const presetTimeblocks: Timeblock[] = [
   {
     startTime: "00:00",
-    endTime: "09:00",
+    endTime: "12:00",
     label: "Morning",
     subLabel: "Before 12pm",
     Icon: BirdIcon,
