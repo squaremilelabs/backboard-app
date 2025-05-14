@@ -22,14 +22,14 @@ export const presetTimeblocks: Timeblock[] = [
     startTime: "00:00",
     endTime: "12:00",
     label: "Morning",
-    subLabel: "Before 12pm",
+    subLabel: "Before noon",
     Icon: BirdIcon,
   },
   {
     startTime: "12:00",
     endTime: "17:00",
     label: "Afternoon",
-    subLabel: "Before 5pm",
+    subLabel: "Noon to 5pm",
     Icon: SunIcon,
   },
   {

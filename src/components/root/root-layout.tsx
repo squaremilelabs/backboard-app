@@ -60,6 +60,7 @@ function Header() {
           "transition-opacity"
         )}
       >
+        <Icon path={mdiMenu} size="20px" className="text-neutral-400" />
         <Image
           alt="Backboard"
           src="/images/backboard-logo.svg"
@@ -67,7 +68,6 @@ function Header() {
           height={20}
           className="shadow-md"
         />
-        <Icon path={mdiMenu} size="20px" className="text-neutral-400" />
       </Button>
       <div className="flex items-center gap-8">
         <WeekNavigator />
@@ -147,12 +147,6 @@ function WeekNavigator() {
       )}
     >
       <div className="flex items-center">
-        <Link
-          href="/calendar"
-          className={twMerge(interactive({ hover: "background" }), iconBox({ size: "base" }))}
-        >
-          <CalendarIcon />
-        </Link>
         <Button
           onPress={setToPrevWeek}
           className={twMerge(interactive({ hover: "background" }), iconBox({ size: "large" }))}
@@ -167,7 +161,13 @@ function WeekNavigator() {
         </Button>
       </div>
       <div className="flex grow items-center justify-center gap-8">
-        <p className={twMerge("font-medium")}>{activeWeek}</p>
+        <Link
+          href="/calendar"
+          className={twMerge("font-medium", interactive({ hover: "underline" }))}
+          isDisabled={pathname === "/calendar"}
+        >
+          {activeWeek}
+        </Link>
         <span
           className={twMerge(
             "text-sm text-neutral-500",
