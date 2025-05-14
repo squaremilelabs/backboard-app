@@ -3,12 +3,11 @@ import { twMerge } from "tailwind-merge"
 import {
   ArrowLeftCircle,
   ArrowRightCircle,
-  CalendarIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   Moon,
   SunDim,
-} from "lucide-react"
+} from "lucide-react";
 import { Button, Link } from "react-aria-components"
 import { useTheme } from "next-themes"
 import React, { useEffect, useState } from "react"
