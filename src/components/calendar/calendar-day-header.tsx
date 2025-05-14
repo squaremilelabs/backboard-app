@@ -1,14 +1,13 @@
 "use client"
-
-import { useParams } from "next/navigation"
 import { twMerge } from "tailwind-merge"
 import { format, parse } from "date-fns"
 import { getISOWeekDates } from "@/lib/utils-timeslot"
 import { formatDate } from "@/lib/utils-common"
+import useWeekState from "@/lib/week-state"
 
 export default function CalendarDayHeader() {
-  const { iso_week: isoWeek } = useParams<{ iso_week: string }>()
-  const weekDates = getISOWeekDates(isoWeek)
+  const { activeWeek } = useWeekState()
+  const weekDates = getISOWeekDates(activeWeek)
 
   return (
     <div

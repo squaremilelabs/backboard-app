@@ -74,7 +74,7 @@ export default function BacklogTasklistGridList() {
           textValue={tasklist.title}
           className={({ isDropTarget }) =>
             twMerge(
-              interactive({ hover: "underline" }),
+              interactive(),
               "flex items-start px-4 py-6",
               "rounded-lg border border-neutral-200 bg-neutral-100",
               activeTasklistId === tasklist.id ? "bg-canvas" : "",

@@ -9,7 +9,7 @@ import {
 } from "@/database/generated/hooks"
 import { iconBox } from "@/styles/class-names"
 
-export default function TasklistTasksPanel({ tasklistId }: { tasklistId: string }) {
+export default function BacklogTasksPanel({ tasklistId }: { tasklistId: string }) {
   const tasklistQuery = useFindUniqueTasklist({ where: { id: tasklistId } })
   const tasksQuery = useFindManyTask({ where: { tasklist_id: tasklistId, timeslot_id: null } })
   const taskOrder = tasklistQuery.data?.task_order ?? []

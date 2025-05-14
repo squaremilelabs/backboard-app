@@ -9,14 +9,20 @@ import { twMerge } from "tailwind-merge"
 import { TaskSizeSummaryChips } from "../primitives/task/task-size"
 import { iconBox, interactive } from "@/styles/class-names"
 import { useFindManyTask, useUpdateManyTask } from "@/database/generated/hooks"
+import useRouterUtility from "@/lib/router-utility"
 
 export default function BacklogDropTarget({ tasklistId }: { tasklistId: string }) {
   const backlogTasksQuery = useFindManyTask({
     where: { tasklist_id: tasklistId, timeslot_id: null },
   })
+
+  const router = useRouterUtility<{ timeslot: string | null }>()
+  const isActive = !router.query.timeslot
+
   const ref = useRef<HTMLDivElement>(null)
   const { dropProps, isDropTarget } = useDrop({
     ref,
+    isDisabled: isActive,
     getDropOperation: (draggedItemTypes) => {
       return draggedItemTypes.has("task") ? "move" : "cancel"
     },
@@ -53,12 +59,13 @@ export default function BacklogDropTarget({ tasklistId }: { tasklistId: string }
   return (
     <div ref={ref} {...dropProps}>
       <Link
-        href={`/backlog/tasklist/${tasklistId}`}
+        href={`/tasklist/${tasklistId}`}
         className={twMerge(
           interactive({ hover: "fade" }),
           "flex items-center gap-4 px-4 py-6",
-          "rounded-lg border-2",
-          isDropTarget ? "outline" : ""
+          "rounded-lg border bg-neutral-100",
+          isDropTarget ? "outline" : "",
+          isActive ? "bg-canvas border-2" : ""
         )}
       >
         <div className={iconBox({ size: "small" })}>

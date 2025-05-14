@@ -36,7 +36,8 @@ export const chip = tv({
   base: [
     "inline-flex items-center justify-center gap-4",
     "text-sm border min-w-40 w-fit px-8 py-1 truncate font-semibold",
-    "[&_svg]:!size-14 [&_img]:!size-14",
+    "[&_svg]:!size-14 [&_img]:!size-14 *:!text-sm",
+    "!no-underline",
   ],
   variants: {
     shape: {

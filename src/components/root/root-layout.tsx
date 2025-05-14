@@ -1,6 +1,6 @@
 "use client"
 import { twMerge } from "tailwind-merge"
-import { CalendarIcon, LayersIcon, Moon, SunDim } from "lucide-react"
+import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon, Moon, SunDim } from "lucide-react"
 import { Button, Link } from "react-aria-components"
 import { useTheme } from "next-themes"
 import React, { useEffect, useState } from "react"
@@ -8,11 +8,14 @@ import Image from "next/image"
 import Icon from "@mdi/react"
 import { mdiMenu, mdiMenuOpen } from "@mdi/js"
 import { SignedIn, UserButton } from "@clerk/nextjs"
+import { parse } from "date-fns"
+import { usePathname } from "next/navigation"
 import SidebarContent from "../sidebar"
 import { useSessionStorageUtility } from "@/lib/browser"
 import { iconBox, interactive } from "@/styles/class-names"
-import useRouterUtility from "@/lib/router-utility"
-import { getISOWeekString } from "@/lib/utils-timeslot"
+import { getISOWeekDates } from "@/lib/utils-timeslot"
+import useWeekState from "@/lib/week-state"
+import { formatDate } from "@/lib/utils-common"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen] = useSessionStorageUtility("sidebar-open", true)
@@ -59,8 +62,7 @@ function Header() {
         <Icon path={mdiMenu} size="20px" className="text-neutral-400" />
       </Button>
       <div className="flex items-center gap-8">
-        <NavLink id="backlog" />
-        <NavLink id="calendar" />
+        <WeekNavigator />
       </div>
       <div className="grow" />
       <SignedIn>
@@ -100,33 +102,6 @@ function Sidebar() {
     </div>
   )
 }
-function NavLink({ id }: { id: "backlog" | "calendar" }) {
-  const router = useRouterUtility()
-  const currentISOWeek = getISOWeekString(new Date())
-  const isActive = router.pathParts[0] === id
-
-  const Icon = id === "backlog" ? LayersIcon : CalendarIcon
-  const label = id === "backlog" ? "Backlog" : "Calendar"
-  const href = id === "backlog" ? "/backlog/triage" : `/calendar/${currentISOWeek}`
-
-  return (
-    <Link
-      href={href}
-      isDisabled={isActive}
-      className={twMerge(
-        interactive({ hover: "background" }),
-        "flex items-center gap-4",
-        "rounded-md border-2 border-transparent px-8 py-2 text-neutral-500",
-        isActive ? "bg-canvas border-neutral-200 font-medium text-neutral-950" : ""
-      )}
-    >
-      <div className={iconBox({ size: "small", className: isActive ? "text-gold-500" : "" })}>
-        <Icon />
-      </div>
-      <p>{label}</p>
-    </Link>
-  )
-}
 
 function ThemeButton() {
   const { setTheme, resolvedTheme } = useTheme()
@@ -147,5 +122,66 @@ function ThemeButton() {
     >
       <Icon />
     </Button>
+  )
+}
+
+function WeekNavigator() {
+  const pathname = usePathname()
+  const { activeWeek, isCurrentWeek, setToNextWeek, setToPrevWeek, setToThisWeek } = useWeekState()
+  const weekDates = getISOWeekDates(activeWeek)
+  const firstDate = parse(weekDates[0], "yyyy-MM-dd", new Date())
+  return (
+    <div
+      className={twMerge(
+        "flex items-center gap-4 rounded-lg border p-4",
+        pathname === "/calendar" ? "bg-canvas" : ""
+      )}
+    >
+      <div className="flex items-center">
+        <Link
+          href="/calendar"
+          className={twMerge(interactive({ hover: "background" }), iconBox({ size: "base" }))}
+        >
+          <CalendarIcon />
+        </Link>
+        <Button
+          onPress={setToPrevWeek}
+          className={twMerge(interactive({ hover: "background" }), iconBox({ size: "large" }))}
+        >
+          <ChevronLeftIcon />
+        </Button>
+        <Button
+          onPress={setToNextWeek}
+          className={twMerge(interactive({ hover: "background" }), iconBox({ size: "large" }))}
+        >
+          <ChevronRightIcon />
+        </Button>
+      </div>
+      <div className="flex grow items-center justify-center gap-8">
+        <p className={twMerge("font-medium")}>{activeWeek}</p>
+        <span
+          className={twMerge(
+            "text-sm text-neutral-500",
+            isCurrentWeek ? "text-gold-500 font-semibold" : ""
+          )}
+        >
+          {isCurrentWeek ? "This week" : `Week of ${formatDate(firstDate)}`}
+        </span>
+      </div>
+      {!isCurrentWeek ? (
+        <Button
+          onPress={setToThisWeek}
+          className={twMerge(
+            interactive({ hover: "background" }),
+            iconBox({ size: "large" }),
+            "text-neutral-400"
+          )}
+        >
+          <p className="font-bold">T</p>
+        </Button>
+      ) : (
+        <div className="w-4" />
+      )}
+    </div>
   )
 }

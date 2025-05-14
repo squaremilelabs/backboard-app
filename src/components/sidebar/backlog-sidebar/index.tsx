@@ -6,8 +6,10 @@ import TasklistCreateModal from "@/components/primitives/tasklist/tasklist-creat
 export default function BacklogSidebar() {
   return (
     <div className="flex flex-col gap-8 overflow-auto p-16">
-      <BacklogTriageItem />
-      <BacklogTasklistGridList />
+      <div className="flex flex-col">
+        <BacklogTriageItem />
+        <BacklogTasklistGridList />
+      </div>
       <TasklistCreateModal />
     </div>
   )

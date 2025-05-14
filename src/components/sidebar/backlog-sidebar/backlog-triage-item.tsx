@@ -14,7 +14,7 @@ export default function BacklogTriageItem() {
   const triageTasksQuery = useFindManyTask({
     where: { tasklist_id: null, timeslot_id: null, archived_at: null },
   })
-  const isActive = pathname === `/backlog/triage`
+  const isActive = pathname === `/triage`
 
   const ref = useRef<HTMLDivElement>(null)
   const { dropProps, isDropTarget } = useDrop({
@@ -43,16 +43,17 @@ export default function BacklogTriageItem() {
   return (
     <div ref={ref} {...dropProps}>
       <Link
-        href="/backlog/triage"
+        href="/triage"
         className={twMerge(
-          interactive({ hover: "underline" }),
-          "flex items-center px-4 py-6",
-          "rounded-lg border border-neutral-200 bg-neutral-100",
-          isActive ? "bg-canvas" : "",
+          interactive(),
+          "flex items-start px-4 py-6 pl-8",
+          "rounded-lg",
+          "-outline-offset-2",
+          isActive ? "bg-canvas border" : "",
           isDropTarget ? "outline" : ""
         )}
       >
-        <div className={iconBox()}>
+        <div className={iconBox({ className: "text-neutral-500" })}>
           <InboxIcon />
         </div>
         <p className="ml-4 grow font-medium">Triage</p>

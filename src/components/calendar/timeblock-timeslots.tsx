@@ -63,15 +63,9 @@ export default function TimeblockTimeslots({
         return (
           <GridListItem
             id={timeslot.id}
-            href={`/calendar/${isoWeekString}/timeslot/${timeslot.tasklist_id}-${timeslot.id}`}
+            href={`/tasklist/${timeslot.tasklist_id}?timeslot=${timeslot.id}`}
             textValue={timeslot.tasklist.title}
-            className={twMerge(
-              interactive(),
-              "flex items-center gap-2",
-              "rounded-lg border bg-neutral-100",
-              "px-4 py-6",
-              "group"
-            )}
+            className={twMerge(interactive(), "flex items-center gap-2", "py-6", "group")}
           >
             <Button
               slot="drag"

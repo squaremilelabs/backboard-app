@@ -1,83 +1,44 @@
 "use client"
 import { Task } from "@prisma/client"
 import { Timeslot } from "@zenstackhq/runtime/models"
-import { format, parse } from "date-fns"
+import { parse } from "date-fns"
 import { useRef } from "react"
 import { isTextDropItem, useDrop } from "react-aria"
 import { twMerge } from "tailwind-merge"
 import { Link } from "react-aria-components"
-import { useParams } from "next/navigation"
+import { CalendarIcon } from "lucide-react"
 import { TaskSizeSummaryChips } from "../primitives/task/task-size"
 import { useFindManyTimeslot, useUpdateManyTask } from "@/database/generated/hooks"
 import { formatDate } from "@/lib/utils-common"
-import {
-  getISOWeekDates,
-  getISOWeekString,
-  getTimeblock,
-  getTimeslotStatus,
-} from "@/lib/utils-timeslot"
+import { getISOWeekDates, getTimeblock, getTimeslotStatus } from "@/lib/utils-timeslot"
 import { iconBox, interactive } from "@/styles/class-names"
+import useWeekState from "@/lib/week-state"
+import useRouterUtility from "@/lib/router-utility"
 
 type TimeslotWithTasks = Timeslot & { tasks: Task[] }
 
-const todayDateString = format(new Date(), "yyyy-MM-dd")
-
-export default function TimeslotDropTargets({
-  tasklistId,
-  activeTimeslotId,
-}: {
-  tasklistId: string
-  activeTimeslotId?: string
-}) {
-  const { iso_week: isoWeek } = useParams<{ iso_week?: string }>()
-  const weekDates = isoWeek ? getISOWeekDates(isoWeek) : []
+export default function TimeslotDropTargets({ tasklistId }: { tasklistId: string }) {
+  const { activeWeek } = useWeekState()
+  const weekDates = getISOWeekDates(activeWeek)
 
   const timeslotsQuery = useFindManyTimeslot({
     where: {
       tasklist_id: tasklistId,
-      date: activeTimeslotId ? { in: weekDates } : { gte: todayDateString },
-      id: { not: activeTimeslotId },
+      date: { in: weekDates },
     },
     include: { tasks: true },
     orderBy: [{ date: "asc" }, { start_time: "asc" }],
   })
-  const timeslotsByDate: Record<string, TimeslotWithTasks[]> =
-    timeslotsQuery.data?.reduce(
-      (result, timeslot) => {
-        if (!result[timeslot.date]) {
-          result[timeslot.date] = []
-        }
-        result[timeslot.date].push(timeslot)
-        return result
-      },
-      {} as Record<string, TimeslotWithTasks[]>
-    ) ?? {}
-
   return (
     <div className="flex flex-col gap-8">
       {timeslotsQuery.isLoading ? (
         <div className="p-8 text-neutral-500">Loading timeslots...</div>
       ) : !timeslotsQuery.data?.length ? (
-        <div className="rounded-lg border p-16 text-neutral-500">
-          {activeTimeslotId ? "No other timeslots this week" : "No upcoming timeslots"}
-        </div>
+        <div className="rounded-lg border p-16 text-neutral-500">{"No timeslots this week"}</div>
       ) : (
-        Object.entries(timeslotsByDate).map(([date, timeslots]) => {
+        timeslotsQuery.data.map((timeslot) => {
           return (
-            <div key={date} className="flex flex-col gap-4">
-              <p className="text-sm font-medium text-neutral-500">
-                {formatDate(parse(date, "yyyy-MM-dd", new Date()), { withWeekday: true })}
-              </p>
-              {timeslots.map((timeslot) => {
-                return (
-                  <TimeslotDropTarget
-                    key={timeslot.id}
-                    tasklistId={tasklistId}
-                    timeslot={timeslot}
-                  />
-                )
-              })}
-            </div>
+            <TimeslotDropTarget key={timeslot.id} tasklistId={tasklistId} timeslot={timeslot} />
           )
         })
       )}
@@ -141,30 +102,35 @@ function TimeslotDropTarget({
     endTime: timeslot.end_time,
   })
 
-  const isoWeek = getISOWeekString(parse(timeslot.date, "yyyy-MM-dd", new Date()))
   const weekStatus = getTimeslotStatus({
     date: timeslot.date,
     startTime: timeslot.start_time,
     endTime: timeslot.end_time,
   })
 
+  const router = useRouterUtility<{ timeslot: string | null }>()
+  const isActive = router.query.timeslot === timeslot.id
+
   return (
     <div ref={ref} {...dropProps}>
       <Link
-        href={`/calendar/${isoWeek}/timeslot/${tasklistId}-${timeslot.id}`}
+        href={`/tasklist/${tasklistId}?timeslot=${timeslot.id}`}
         className={twMerge(
           interactive({ hover: "fade" }),
           "flex items-center gap-4 px-4 py-6",
-          "rounded-lg border-2 bg-neutral-100",
-          isDropTarget ? "outline" : ""
+          "rounded-lg border bg-neutral-100",
+          isDropTarget ? "outline" : "",
+          isActive ? "bg-canvas border-2" : ""
         )}
       >
         <div className={iconBox({ size: "small" })}>
-          <timeblock.Icon />
+          <CalendarIcon />
         </div>
-        <p className="font-medium">{timeblock.label}</p>
+        <p className="font-medium">
+          {formatDate(parse(timeslot.date, "yyyy-MM-dd", new Date()), { withWeekday: true })}
+        </p>
         {timeblock.subLabel ? (
-          <p className="text-sm text-neutral-500">({timeblock.subLabel})</p>
+          <p className="text-sm text-neutral-500">({timeblock.label})</p>
         ) : null}
         <div className="grow" />
         <TaskSizeSummaryChips

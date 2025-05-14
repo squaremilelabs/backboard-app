@@ -1,14 +1,7 @@
 "use client"
 
 import { Task, Timeslot } from "@zenstackhq/runtime/models"
-import {
-  CircleIcon,
-  Clock12Icon,
-  Clock5Icon,
-  Clock7Icon,
-  Clock9Icon,
-  LucideIcon,
-} from "lucide-react"
+import { BirdIcon, CircleIcon, LucideIcon, MoonIcon, SunIcon } from "lucide-react"
 import { add, format, getISOWeek, getISOWeekYear, parse, startOfDay } from "date-fns"
 import { getTaskSummary } from "./utils-task"
 import { formatTimeString } from "./utils-common"
@@ -28,30 +21,23 @@ export const presetTimeblocks: Timeblock[] = [
   {
     startTime: "00:00",
     endTime: "09:00",
-    label: "Early Morning",
-    subLabel: "Before 9am",
-    Icon: Clock7Icon,
-  },
-  {
-    startTime: "09:00",
-    endTime: "12:00",
     label: "Morning",
-    subLabel: "9am to 12pm",
-    Icon: Clock9Icon,
+    subLabel: "Before 12pm",
+    Icon: BirdIcon,
   },
   {
     startTime: "12:00",
     endTime: "17:00",
     label: "Afternoon",
-    subLabel: "12pm to 5pm",
-    Icon: Clock12Icon,
+    subLabel: "Before 5pm",
+    Icon: SunIcon,
   },
   {
     startTime: "17:00",
     endTime: "23:59",
     label: "Evening",
     subLabel: "After 5pm",
-    Icon: Clock5Icon,
+    Icon: MoonIcon,
   },
 ]
 
@@ -141,6 +127,7 @@ export function getISOWeekString(date: Date) {
 }
 
 export function getISOWeekDates(isoWeekString: string) {
+  if (!isoWeekString) return []
   const [year, week] = isoWeekString.split("-W").map(Number)
   const firstDay = startOfDay(parse(`${year} ${week}`, "R I", new Date()))
   return Array.from({ length: 7 }, (_, i) => {

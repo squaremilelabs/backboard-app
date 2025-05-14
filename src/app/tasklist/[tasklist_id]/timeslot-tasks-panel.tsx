@@ -1,6 +1,7 @@
 "use client"
 
 import { parse } from "date-fns"
+import { CalendarIcon } from "lucide-react"
 import TasksPanel from "@/components/tasks-panel"
 import {
   useFindManyTask,
@@ -54,15 +55,19 @@ export default function TimeslotTasksPanel({ timeslotId }: { timeslotId: string 
         timeblock ? (
           <div className="flex items-center gap-4">
             <div className={iconBox()}>
-              <timeblock.Icon />
+              <CalendarIcon />
             </div>
             <h2 className="font-semibold">
               {formatDate(parse(timeslot?.date ?? "", "yyyy-MM-dd", new Date()), {
                 withWeekday: true,
               })}
             </h2>
-            <p className="ml-4 text-neutral-600">{timeblock.label}</p>
-            {timeblock.subLabel ? <p className="text-neutral-500">({timeblock.subLabel})</p> : null}
+            <div className="flex items-center gap-2">
+              <div className={iconBox({ size: "small" })}>
+                {timeblock.Icon && <timeblock.Icon />}
+              </div>
+              <p className="text-neutral-600">{timeblock.label}</p>
+            </div>
           </div>
         ) : (
           "Loading..."

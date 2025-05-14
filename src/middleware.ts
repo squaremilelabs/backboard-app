@@ -15,7 +15,7 @@ export default clerkMiddleware(async (auth, req) => {
   if (req.nextUrl.pathname === "/") {
     const { userId } = await auth()
     if (userId) {
-      return NextResponse.redirect(new URL("/backlog/triage", req.url))
+      return NextResponse.redirect(new URL("/calendar", req.url))
     }
   }
 })

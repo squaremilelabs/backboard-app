@@ -25,10 +25,12 @@ export function TaskSizeChip({
         shape: "pill",
         color: getTaskStatusChipColor(status, { useOverdueColor }),
         weight: fixedWeight ?? getTaskSizeChipWeight(minutes),
-        className,
+        className: twMerge(className),
       })}
     >
-      {formatMinutes(minutes, { condense: useCondensedMinutes })}
+      <span className="text-inherit !no-underline">
+        {formatMinutes(minutes, { condense: useCondensedMinutes })}
+      </span>
     </div>
   )
 }
