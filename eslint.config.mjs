@@ -14,7 +14,7 @@ export default [
   ...compat.extends("next/core-web-vitals", "next/typescript", "plugin:prettier/recommended"),
   {
     rules: {
-      "import/order": "error",
+      "import/order": "warn",
       "no-console": "warn",
       "import/no-default-export": "off",
       "react/hook-use-state": "off",
@@ -27,7 +27,7 @@ export default [
         },
       ],
       "prettier/prettier": [
-        "error",
+        "warn",
         {
           plugins: [
             "prettier-plugin-tailwindcss",
@@ -42,12 +42,6 @@ export default [
           quoteProps: "consistent",
         },
       ],
-    },
-    languageOptions: {
-      globals: {
-        React: true,
-        JSX: true,
-      },
     },
   },
   {

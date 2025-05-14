@@ -1,4 +1,4 @@
-import React from "react"
+import { useState } from "react"
 import { Button, Dialog, DialogTrigger, Modal, ModalOverlay } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
 import { interactive } from "@/styles/class-names"
@@ -16,7 +16,7 @@ export default function ConfirmationButton({
   isDestructive?: boolean
   children: React.ReactNode
 }) {
-  const [isOpen, setIsOpen] = React.useState(false)
+  const [isOpen, setIsOpen] = useState(false)
 
   const handleConfirm = () => {
     onConfirm()
