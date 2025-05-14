@@ -1,11 +1,10 @@
 import { Button, GridList, GridListItem, useDragAndDrop } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
 import { GripVerticalIcon, LoaderIcon, XIcon } from "lucide-react"
-import { parse } from "date-fns"
 import { Emoji } from "../primitives/common/emoji"
 import { TaskSizeSummaryChips } from "../primitives/task/task-size"
 import { useDeleteTimeslot, useFindManyTimeslot } from "@/database/generated/hooks"
-import { getISOWeekString, getTimeslotStatus, sortTimeslots, Timeblock } from "@/lib/utils-timeslot"
+import { getTimeslotStatus, sortTimeslots, Timeblock } from "@/lib/utils-timeslot"
 import { defaultTasklistEmojiCode } from "@/lib/utils-tasklist"
 import { iconBox, interactive } from "@/styles/class-names"
 
@@ -38,8 +37,6 @@ export default function TimeblockTimeslots({
     },
   })
 
-  const isoWeekString = getISOWeekString(parse(dateString, "yyyy-MM-dd", new Date()))
-
   const sortedTimeslots = sortTimeslots(timeslotsQuery.data ?? [], {
     doneSort: timeblockStatus === "past" ? "desc" : "asc",
   })
@@ -58,6 +55,9 @@ export default function TimeblockTimeslots({
       items={sortedTimeslots}
       className="flex flex-col gap-2 px-8 pb-8"
       dependencies={[deleteTimeslotMutation]}
+      renderEmptyState={() =>
+        timeslotsQuery.isLoading ? <div className="text-neutral px-16 py-8">Loading...</div> : null
+      }
     >
       {(timeslot) => {
         return (

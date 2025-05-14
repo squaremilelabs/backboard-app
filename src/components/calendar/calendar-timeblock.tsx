@@ -40,6 +40,8 @@ export default function CalendarTimeblock({
           })
       )
       if (timeslots.length > 0) {
+        if (timeslots[0].date === dateString && timeslots[0].start_time === timeblock.startTime)
+          return
         handleTimeslotsDrop(timeslots)
       }
       // handle tasklist drop
@@ -110,7 +112,7 @@ export default function CalendarTimeblock({
         <p className="text-sm text-neutral-500">({timeblock.subLabel})</p>
         <div className="grow" />
         {isDropPending && (
-          <div className={iconBox({ size: "small", className: "text-gold-500 animate-spin" })}>
+          <div className={iconBox({ size: "base", className: "text-gold-500 animate-spin" })}>
             <LoaderIcon />
           </div>
         )}

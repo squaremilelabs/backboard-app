@@ -102,6 +102,11 @@ export default function Sidebar() {
         items={sortedTasklists}
         dependencies={[params.tasklist_id]}
         className="flex flex-col gap-2"
+        renderEmptyState={() =>
+          tasklistsQuery.isLoading ? (
+            <div className="text-neutral px-16 py-8">Loading...</div>
+          ) : null
+        }
       >
         {(tasklist) => {
           return (
