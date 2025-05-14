@@ -1,6 +1,14 @@
 "use client"
 import { twMerge } from "tailwind-merge"
-import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon, Moon, SunDim } from "lucide-react"
+import {
+  ArrowLeftCircle,
+  ArrowRightCircle,
+  CalendarIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  Moon,
+  SunDim,
+} from "lucide-react"
 import { Button, Link } from "react-aria-components"
 import { useTheme } from "next-themes"
 import React, { useEffect, useState } from "react"
@@ -130,6 +138,7 @@ function WeekNavigator() {
   const { activeWeek, isCurrentWeek, setToNextWeek, setToPrevWeek, setToThisWeek } = useWeekState()
   const weekDates = getISOWeekDates(activeWeek)
   const firstDate = parse(weekDates[0], "yyyy-MM-dd", new Date())
+  const isBeforeToday = firstDate < new Date()
   return (
     <div
       className={twMerge(
@@ -173,11 +182,11 @@ function WeekNavigator() {
           onPress={setToThisWeek}
           className={twMerge(
             interactive({ hover: "background" }),
-            iconBox({ size: "large" }),
-            "text-neutral-400"
+            iconBox({ size: "base" }),
+            "text-gold-400"
           )}
         >
-          <p className="font-bold">T</p>
+          {isBeforeToday ? <ArrowRightCircle /> : <ArrowLeftCircle />}
         </Button>
       ) : (
         <div className="w-4" />

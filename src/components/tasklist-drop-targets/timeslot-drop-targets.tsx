@@ -34,7 +34,9 @@ export default function TimeslotDropTargets({ tasklistId }: { tasklistId: string
       {timeslotsQuery.isLoading ? (
         <div className="p-8 text-neutral-500">Loading timeslots...</div>
       ) : !timeslotsQuery.data?.length ? (
-        <div className="rounded-lg border p-16 text-neutral-500">{"No timeslots this week"}</div>
+        <div className="rounded-lg border p-16 text-neutral-500">
+          No time committed in {activeWeek}
+        </div>
       ) : (
         timeslotsQuery.data.map((timeslot) => {
           return (
@@ -129,9 +131,7 @@ function TimeslotDropTarget({
         <p className="font-medium">
           {formatDate(parse(timeslot.date, "yyyy-MM-dd", new Date()), { withWeekday: true })}
         </p>
-        {timeblock.subLabel ? (
-          <p className="text-sm text-neutral-500">({timeblock.label})</p>
-        ) : null}
+        {timeblock.subLabel ? <p className="text-sm text-neutral-500">{timeblock.label}</p> : null}
         <div className="grow" />
         <TaskSizeSummaryChips
           tasks={timeslot.tasks}
