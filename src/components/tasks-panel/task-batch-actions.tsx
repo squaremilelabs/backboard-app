@@ -5,6 +5,7 @@ import { AsyncListData } from "react-stately"
 import { twMerge } from "tailwind-merge"
 import { useEffect, useRef, useState } from "react"
 import TaskPropertyPicker from "../primitives/task/task-property-picker"
+import ConfirmationButton from "../primitives/common/confirmation-button"
 import { chip, ChipProps, interactive } from "@/styles/class-names"
 import { taskStatusUIMap } from "@/lib/utils-task"
 import { useDeleteManyTask, useUpdateManyTask } from "@/database/generated/hooks"
@@ -96,13 +97,19 @@ export default function TaskBatchActions({
           closeOnSelect
         />
         {/* Delete Button */}
-        <Button
-          isDisabled={isPending}
-          className={twMerge(interactive(), chip({ color: "red", weight: "zero", shape: "box" }))}
-          onPress={handleBatchDelete}
+        <ConfirmationButton
+          onConfirm={handleBatchDelete}
+          helpText={`Are you sure you want to delete ${selectedIds.length} task${selectedIds.length > 1 ? "s" : ""}? This action cannot be undone.`}
+          isDestructive
+          confirmButtonText="Delete"
         >
-          Delete
-        </Button>
+          <Button
+            isDisabled={isPending}
+            className={twMerge(interactive(), chip({ color: "red", weight: "zero", shape: "box" }))}
+          >
+            Delete
+          </Button>
+        </ConfirmationButton>
         {isPending && <LoaderIcon size={16} className="text-gold-500 animate-spin" />}
       </div>
     </div>

@@ -3,6 +3,7 @@ import { twMerge } from "tailwind-merge"
 import { GripVerticalIcon, LoaderIcon, XIcon } from "lucide-react"
 import { Emoji } from "../primitives/common/emoji"
 import { TaskSizeSummaryChips } from "../primitives/task/task-size"
+import ConfirmationButton from "../primitives/common/confirmation-button"
 import { useDeleteTimeslot, useFindManyTimeslot } from "@/database/generated/hooks"
 import { getTimeslotStatus, sortTimeslots, Timeblock } from "@/lib/utils-timeslot"
 import { defaultTasklistEmojiCode } from "@/lib/utils-tasklist"
@@ -79,19 +80,24 @@ export default function TimeblockTimeslots({
             </Button>
             <Emoji code={timeslot.tasklist.emoji?.code ?? defaultTasklistEmojiCode} />
             <p className="grow truncate font-medium">{timeslot.tasklist.title}</p>
-            <Button
-              onPress={() => handleDelete(timeslot.id)}
-              className={twMerge(
-                iconBox(),
-                interactive({ hover: "background" }),
-                "hidden group-data-hovered:flex",
-                "opacity-100 starting:opacity-0",
-                "transition-opacity",
-                deleteTimeslotMutation.isPending ? "hidden" : ""
-              )}
+            <ConfirmationButton
+              onConfirm={() => handleDelete(timeslot.id)}
+              helpText="Are you sure you want to remove this timeslot from your calendar? Any tasks will be moved to the Backlog."
+              confirmButtonText="Remove"
             >
-              <XIcon />
-            </Button>
+              <Button
+                className={twMerge(
+                  iconBox(),
+                  interactive({ hover: "background" }),
+                  "hidden group-data-hovered:flex",
+                  "opacity-100 starting:opacity-0",
+                  "transition-opacity",
+                  deleteTimeslotMutation.isPending ? "hidden" : ""
+                )}
+              >
+                <XIcon />
+              </Button>
+            </ConfirmationButton>
             {deleteTimeslotMutation.isPending && (
               <div className={iconBox({ className: "text-gold-500", size: "small" })}>
                 <LoaderIcon className="animate-spin" />

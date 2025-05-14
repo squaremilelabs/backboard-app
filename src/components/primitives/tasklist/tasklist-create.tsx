@@ -55,7 +55,10 @@ export default function TasklistCreateModal() {
         <PlusIcon size={16} />
         <span>New List</span>
       </Button>
-      <ModalOverlay className={"fixed inset-0 z-60 bg-neutral-100/30 backdrop-blur-xs"}>
+      <ModalOverlay
+        isDismissable
+        className={"fixed inset-0 z-60 bg-neutral-100/30 backdrop-blur-xs"}
+      >
         <Modal className={"fixed inset-0 flex h-dvh w-dvw flex-col items-center pt-[10%]"}>
           <Dialog className="bg-canvas rounded-xl border-2 p-16 !outline-0">
             <div className="flex w-300 flex-col gap-16">
