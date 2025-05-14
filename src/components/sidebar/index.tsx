@@ -96,6 +96,7 @@ export default function Sidebar() {
   return (
     <div className="flex flex-col gap-4 overflow-auto p-16">
       <BacklogTriageItem />
+      <div className="h-1 bg-neutral-200" />
       <GridList
         aria-label="Tasklists"
         dragAndDropHooks={dragAndDropHooks}
@@ -148,6 +149,7 @@ export default function Sidebar() {
           )
         }}
       </GridList>
+      <div className="h-1 bg-neutral-200" />
       <TasklistCreateModal />
     </div>
   )

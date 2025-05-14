@@ -1,4 +1,4 @@
-import { InboxIcon } from "lucide-react"
+import { DotIcon, InboxIcon } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { Link } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
@@ -46,14 +46,17 @@ export default function BacklogTriageItem() {
         href="/triage"
         className={twMerge(
           interactive(),
-          "flex items-start px-4 py-6 pl-8",
+          "flex items-center px-4 py-6",
           "rounded-lg",
           "-outline-offset-2",
           isActive ? "bg-canvas border" : "",
           isDropTarget ? "outline" : ""
         )}
       >
-        <div className={iconBox({ className: "text-neutral-500" })}>
+        <div className={iconBox({ className: "text-neutral-400" })}>
+          <DotIcon />
+        </div>
+        <div className={iconBox({ className: "text-neutral-400" })}>
           <InboxIcon />
         </div>
         <p className="ml-4 grow font-medium">Triage</p>
