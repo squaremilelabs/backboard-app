@@ -1,59 +1,60 @@
 "use client"
+import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation"
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { useCallback, useMemo } from "react"
+type Params = {
+  tasklist_id?: string
+}
 
-export default function useRouterUtility<T extends Record<string, string | null>>() {
+type SearchParams = {
+  timeslot?: string | null
+}
+
+export default function useRouterUtility() {
   const pathname = usePathname()
+  const params = useParams<Params>()
   const searchParams = useSearchParams()
   const router = useRouter()
 
-  const currentPath = useMemo(() => pathname, [pathname])
-  const currentPathParts = useMemo(() => pathname.split("/").filter(Boolean), [pathname])
-  const currentHref = useMemo(
-    () => pathname + (searchParams.size ? `?${searchParams.toString()}` : ""),
-    [pathname, searchParams]
-  )
-  const currentQuery = useMemo(
-    () => Object.fromEntries(searchParams.entries()) as T,
-    [searchParams]
-  )
+  const currentParams = params
+  const currentPath = pathname
+  const currentPathParts = pathname.split("/").filter(Boolean)
+  const currentHref = pathname + (searchParams.size ? `?${searchParams.toString()}` : "")
+  const currentQuery = Object.fromEntries(searchParams.entries()) as SearchParams
+  const currentBasePath = currentPathParts[0] ?? ""
 
-  const constructHref = useCallback(
-    (params: { path: "CURRENT" | string; query?: Partial<T> | null; merge?: boolean }) => {
-      let constructedSearchParams = new URLSearchParams()
-      if (params.query) {
-        if (params.merge) {
-          constructedSearchParams = new URLSearchParams(searchParams.toString())
-        }
-        Object.entries(params.query).forEach(([key, value]) => {
-          if (value === null) constructedSearchParams.delete(key)
-          if (typeof value === "string") constructedSearchParams.set(key, value)
-          // if undefined, do nothing
-        })
+  const getHref = (params: { path?: string; query?: SearchParams | null; merge?: boolean }) => {
+    let constructedSearchParams = new URLSearchParams()
+    if (params.query) {
+      // if merge not set – will reset query
+      if (params.merge) {
+        constructedSearchParams = new URLSearchParams(searchParams.toString())
       }
-      const constructedPath = params.path === "CURRENT" ? pathname : params.path
-      return (
-        constructedPath + (constructedSearchParams.toString() ? `?${constructedSearchParams}` : "")
-      )
-    },
-    [searchParams, pathname]
-  )
+      Object.entries(params.query).forEach(([key, value]) => {
+        if (value === null) constructedSearchParams.delete(key)
+        if (typeof value === "string") constructedSearchParams.set(key, value)
+        // if undefined, do nothing
+      })
+    }
+    // if path not provided, use current path
+    const constructedPath = params.path ?? pathname
+    return (
+      constructedPath + (constructedSearchParams.toString() ? `?${constructedSearchParams}` : "")
+    )
+  }
 
-  const push = useCallback(
-    () => (params: { path: "CURRENT" | string; query?: Partial<T> | null }) => {
-      const constructedHref = constructHref(params)
-      router.push(constructedHref)
-    },
-    [router, constructHref]
-  )
+  const push = () => (params: { path?: string; query?: SearchParams | null; merge?: boolean }) => {
+    const constructedHref = getHref(params)
+    router.push(constructedHref)
+  }
 
   return {
     push,
-    constructHref,
+    getHref,
     path: currentPath,
     pathParts: currentPathParts,
+    basePath: currentBasePath,
     href: currentHref,
     query: currentQuery,
+    params: currentParams,
   }
 }

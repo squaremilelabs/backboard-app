@@ -1,7 +1,6 @@
 import { Task, Tasklist } from "@zenstackhq/runtime/models"
 import { getTaskSummary } from "./utils-task"
 
-export const inboxEmojiCode = "1f4e5"
 export const defaultTasklistEmojiCode = "1f4cb" // Default emoji code for tasklist
 
 export function sortTasklists<T extends Tasklist & { tasks: Task[] }>(tasklists: T[]): T[] {

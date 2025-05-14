@@ -1,5 +1,2 @@
-import Calendar from "@/components/calendar"
-
-export default function CalendarPage() {
-  return <Calendar />
-}
+import { CalendarPage } from "@/components/page-calendar"
+export default CalendarPage

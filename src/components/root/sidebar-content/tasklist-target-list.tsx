@@ -1,0 +1,146 @@
+"use client"
+
+import {
+  Button,
+  GridList,
+  GridListItem,
+  isTextDropItem,
+  useDragAndDrop,
+} from "react-aria-components"
+import { twMerge } from "tailwind-merge"
+import { AsteriskIcon, GripVerticalIcon } from "lucide-react"
+import { Task } from "@prisma/client"
+import { useFindManyTasklist, useUpdateManyTask } from "@/database/generated/hooks"
+import { getISOWeekDates, getTemporalStatus } from "@/lib/utils-temporal"
+import { defaultTasklistEmojiCode, sortTasklists } from "@/lib/utils-tasklist"
+import { Emoji } from "@/components/primitives/emoji"
+import { iconBox, interactive } from "@/styles/class-names"
+import { TaskSizeSummaryChips } from "@/components/primitives/task-size"
+import useWeekState from "@/lib/week-state"
+import useRouterUtility from "@/lib/router-utility"
+
+export function TasklistTargetList() {
+  const router = useRouterUtility()
+  const { activeWeek } = useWeekState()
+  const weekDates = getISOWeekDates(activeWeek)
+  const temporalStatus = getTemporalStatus({
+    // using last minute of the week
+    date: weekDates[6],
+    startTime: "23:59",
+    endTime: "23:59",
+  })
+
+  const tasklistsQuery = useFindManyTasklist({
+    where: { archived_at: null },
+    include: {
+      tasks: {
+        where: { timeslot: { date: { in: weekDates } } },
+      },
+      _count: {
+        select: {
+          tasks: { where: { timeslot_id: null, status: "TODO" } },
+        },
+      },
+    },
+  })
+  const sortedTasklists = sortTasklists(tasklistsQuery.data ?? [])
+
+  const { dragAndDropHooks } = useDragAndDrop({
+    getItems: (keys) => {
+      return [...keys].map((key) => {
+        const tasklist = tasklistsQuery.data?.find((t) => t.id === key)
+        return {
+          "text/plain": tasklist?.title ?? "-",
+          "tasklist": JSON.stringify(tasklist),
+        }
+      })
+    },
+    acceptedDragTypes: ["task"],
+    onItemDrop: async (e) => {
+      const tasklistId = e.target.key as string
+      const tasks = await Promise.all<Task>(
+        e.items.filter(isTextDropItem).map(async (task) => {
+          return JSON.parse(await task.getText("task"))
+        })
+      )
+      handleTasksDrop(tasklistId, tasks)
+    },
+  })
+
+  const updateManyTaskMutation = useUpdateManyTask()
+  const handleTasksDrop = (tasklistId: string, tasks: Task[]) => {
+    // handle done tasks
+    const doneTasks = tasks.filter(
+      (task) => task.status === "DONE" && task.tasklist_id !== tasklistId
+    )
+    if (doneTasks.length > 0) {
+      updateManyTaskMutation.mutate({
+        where: { id: { in: doneTasks.map((task) => task.id) } },
+        data: { status: "TODO", tasklist_id: tasklistId, timeslot_id: null },
+      })
+    }
+    // handle undone tasks
+    const undoneTasks = tasks.filter(
+      (task) => task.status !== "DONE" && task.tasklist_id !== tasklistId
+    )
+    if (undoneTasks.length > 0) {
+      updateManyTaskMutation.mutate({
+        where: { id: { in: undoneTasks.map((task) => task.id) } },
+        data: { tasklist_id: tasklistId, timeslot_id: null },
+      })
+    }
+  }
+
+  return (
+    <GridList
+      aria-label="Tasklists"
+      dragAndDropHooks={dragAndDropHooks}
+      items={sortedTasklists}
+      dependencies={[router.params.tasklist_id]}
+      className="flex flex-col gap-2"
+      renderEmptyState={() =>
+        tasklistsQuery.isLoading ? <div className="text-neutral px-16 py-8">Loading...</div> : null
+      }
+    >
+      {(tasklist) => {
+        return (
+          <GridListItem
+            id={tasklist.id}
+            href={`/tasklist/${tasklist.id}`}
+            textValue={tasklist.title}
+            className={({ isDropTarget }) =>
+              twMerge(
+                interactive(),
+                "flex items-start px-4 py-6",
+                "rounded-lg",
+                "-outline-offset-2",
+                router.params.tasklist_id === tasklist.id ? "bg-canvas border" : "",
+                isDropTarget ? "outline" : ""
+              )
+            }
+          >
+            <Button
+              slot="drag"
+              className={twMerge(interactive(), iconBox({ className: "text-neutral-400" }))}
+            >
+              <GripVerticalIcon />
+            </Button>
+            <Emoji code={tasklist.emoji?.code ?? defaultTasklistEmojiCode} />
+            <p className="ml-4 truncate font-medium">{tasklist.title}</p>
+            {tasklist._count.tasks > 0 ? (
+              <div className={iconBox({ className: "text-gold-500" })}>
+                <AsteriskIcon />
+              </div>
+            ) : null}
+            <div className="grow" />
+            <TaskSizeSummaryChips
+              tasks={tasklist.tasks}
+              useOverdueColor={temporalStatus === "past"}
+              consistentWeightVariant="medium"
+            />
+          </GridListItem>
+        )
+      }}
+    </GridList>
+  )
+}

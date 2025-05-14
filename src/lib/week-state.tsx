@@ -1,7 +1,7 @@
 import { add, sub, parse } from "date-fns"
 import { useCallback } from "react"
-import { useLocalStorageUtility } from "./browser"
-import { getISOWeekDates, getISOWeekString } from "./utils-timeslot"
+import { useLocalStorageUtility } from "./storage-utility"
+import { getISOWeekDates, getISOWeekString } from "./utils-temporal"
 
 const currentIsoWeek = getISOWeekString(new Date())
 

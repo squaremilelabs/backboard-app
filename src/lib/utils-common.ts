@@ -1,13 +1,24 @@
-import { format } from "date-fns"
+import { format, parse } from "date-fns"
 
 export function formatDate(
-  date: Date | null | undefined,
+  dateInput: Date | string | null | undefined,
   options?: { withTime?: boolean; customNoneLabel?: string; withWeekday?: boolean }
 ): string {
+  let date = dateInput
+
+  if (typeof date === "string") {
+    try {
+      date = parse(date, "yyyy-MM-dd", new Date())
+    } catch (_) {
+      throw new Error(`Invalid date string: ${date}`)
+    }
+  }
+
   if (!date || !(date instanceof Date)) {
     if (options?.customNoneLabel) return options.customNoneLabel
     return "-"
   }
+
   const currentYear = new Date().getFullYear()
   const inputYear = date.getFullYear()
   let dateFormat = inputYear !== currentYear ? "MMM do, yy" : "MMM do"
@@ -23,8 +34,19 @@ export function formatDate(
   return format(date, dateFormat)
 }
 
-export function isEqualStringArrays(arr1: string[], arr2: string[]) {
-  return arr1.every((value, index) => value === arr2[index])
+export function formatTimeString(timeString: string, options?: { withMinutes: boolean }) {
+  const timeRegex = /^([01]?\d|2[0-3]):[0-5]\d$/
+  if (!timeRegex.test(timeString)) {
+    return options?.withMinutes ? "-:--" : "-"
+  }
+
+  const [hours, minutes] = timeString.split(":").map(Number)
+  const formattedHours = hours % 12 || 12
+  const formattedMinutes = minutes.toString().padStart(2, "0")
+  const period = hours < 12 ? "am" : "pm"
+  return options?.withMinutes
+    ? `${formattedHours}:${formattedMinutes}${period}`
+    : `${formattedHours}${period}`
 }
 
 export function formatMinutes(
@@ -73,19 +95,4 @@ export function sortItemsByOrder<T extends GenericListItem>({
     }
     return aIndex - bIndex
   })
-}
-
-export function formatTimeString(timeString: string, options?: { withMinutes: boolean }) {
-  const timeRegex = /^([01]?\d|2[0-3]):[0-5]\d$/
-  if (!timeRegex.test(timeString)) {
-    return options?.withMinutes ? "-:--" : "-"
-  }
-
-  const [hours, minutes] = timeString.split(":").map(Number)
-  const formattedHours = hours % 12 || 12
-  const formattedMinutes = minutes.toString().padStart(2, "0")
-  const period = hours < 12 ? "am" : "pm"
-  return options?.withMinutes
-    ? `${formattedHours}:${formattedMinutes}${period}`
-    : `${formattedHours}${period}`
 }
