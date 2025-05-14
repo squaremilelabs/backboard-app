@@ -97,7 +97,7 @@ export default function TaskGridList({
             id={task.id}
             textValue={task.title}
             className={twMerge(
-              "group",
+              "group/task-grid-list-item",
               "flex items-start rounded-md p-4",
               "data-selected:bg-neutral-100",
               "hover:bg-neutral-50",

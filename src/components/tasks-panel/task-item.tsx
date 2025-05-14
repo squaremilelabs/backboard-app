@@ -5,6 +5,7 @@ import { twMerge } from "tailwind-merge"
 import { useRef, useState } from "react"
 import { TaskSizeChip } from "../primitives/task/task-size"
 import TaskPropertyPicker from "../primitives/task/task-property-picker"
+import ConfirmationButton from "../primitives/common/confirmation-button"
 import EditableText from "@/components/primitives/common/editable-text"
 import { formatDate } from "@/lib/utils-common"
 import { interactive } from "@/styles/class-names"
@@ -99,7 +100,9 @@ export default function TaskItem({
           className={twMerge(
             "flex w-full items-start gap-8 p-4",
             "rounded-md border border-neutral-100 bg-neutral-50",
-            "focus-within:outline has-[button[data-pressed]]:outline"
+            "focus-within:outline has-[button[data-pressed]]:outline",
+            "group-data-selected/task-grid-list-item:bg-canvas",
+            "group-hover/task-grid-list-item:bg-canvas"
           )}
         >
           <div className="flex h-20 min-w-fit items-center text-neutral-400">
@@ -116,17 +119,22 @@ export default function TaskItem({
         </div>
         <div className="flex items-center gap-8">
           <div className="grow" />
-          <Button
-            onPress={onDelete}
-            className={twMerge(
-              "flex items-center gap-4 rounded-md px-2 text-sm",
-              "cursor-pointer",
-              "text-neutral-400 hover:text-red-700"
-            )}
+          <ConfirmationButton
+            helpText="Are you sure you want to delete this task? This action is irreversable."
+            isDestructive
+            onConfirm={onDelete}
           >
-            Delete task
-            <DeleteIcon size={12} />
-          </Button>
+            <Button
+              className={twMerge(
+                "flex items-center gap-4 rounded-md px-2 text-sm",
+                "cursor-pointer",
+                "text-neutral-400 hover:text-red-700"
+              )}
+            >
+              Delete task
+              <DeleteIcon size={12} />
+            </Button>
+          </ConfirmationButton>
         </div>
       </DisclosurePanel>
     </Disclosure>
