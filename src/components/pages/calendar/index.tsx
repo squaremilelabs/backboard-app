@@ -13,7 +13,7 @@ export function CalendarPage() {
         <CalendarHeader />
       </div>
       <div
-        className="grid min-w-fit grow grid-rows-1 gap-4 border-2 border-transparent"
+        className="grid grow grid-rows-1 gap-4 border-2 border-transparent"
         style={{
           gridTemplateColumns: `repeat(${activeWeekDisplayedDates.length}, minmax(var(--container-xs), 1fr))`,
         }}

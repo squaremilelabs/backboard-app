@@ -24,7 +24,7 @@ export function TasklistTargets({ tasklistId }: { tasklistId: string | undefined
           <p className="font-medium">Time committments</p>
           <div className="grow" />
           <p className="text-sm text-neutral-500">
-            {isCurrentWeek ? (hidePastDaysEnabled ? "Rest of this week" : "This week") : activeWeek}
+            {isCurrentWeek ? (hidePastDaysEnabled ? "Rest of week" : "This week") : activeWeek}
           </p>
         </div>
         <TimeslotsGridList tasklistId={tasklistId} />

@@ -25,7 +25,6 @@ export function WeekNavigator() {
   const weekDates = getISOWeekDates(activeWeek)
   const firstDate = parse(weekDates[0], "yyyy-MM-dd", new Date())
   const isBeforeToday = firstDate < new Date()
-  const todayIsMonday = new Date().getDay() === 1
 
   return (
     <div
@@ -60,10 +59,16 @@ export function WeekNavigator() {
         <span
           className={twMerge(
             "text-sm text-neutral-500",
-            isCurrentWeek ? "text-gold-500 font-semibold" : ""
+            isCurrentWeek
+              ? [hidePastDaysEnabled ? "font-semibold" : "text-gold-500 font-semibold"]
+              : ""
           )}
         >
-          {isCurrentWeek ? "This week" : `Week of ${formatDate(firstDate)}`}
+          {isCurrentWeek
+            ? hidePastDaysEnabled
+              ? "Rest of week"
+              : "This week"
+            : `Week of ${formatDate(firstDate)}`}
         </span>
       </Link>
       {!isCurrentWeek && (
@@ -78,13 +83,13 @@ export function WeekNavigator() {
           {isBeforeToday ? <ArrowRightCircle /> : <ArrowLeftCircle />}
         </Button>
       )}
-      {isCurrentWeek && !todayIsMonday && (
+      {isCurrentWeek && (
         <Button
           onPress={toggleHidePastDaysEnabled}
           className={twMerge(
             interactive({ hover: "background" }),
             iconBox({ size: "base" }),
-            hidePastDaysEnabled ? "text-neutral-600" : "text-neutral-400"
+            hidePastDaysEnabled ? "text-gold-500" : "text-neutral-400"
           )}
         >
           <Icon path={hidePastDaysEnabled ? mdiCalendarRangeOutline : mdiCalendarEndOutline} />
