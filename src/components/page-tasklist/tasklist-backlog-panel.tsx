@@ -28,6 +28,7 @@ export function TasklistBacklogPanel({ tasklistId }: { tasklistId: string | unde
       taskOrder={tasklist?.task_order ?? []}
       isLoading={tasklistQuery.isLoading || tasksQuery.isLoading}
       handleReorder={handleReorder}
+      isReorderPending={updateTasklistMutation.isPending}
       defaultTaskValues={{
         status: "DRAFT",
         tasklist_id: tasklistId,

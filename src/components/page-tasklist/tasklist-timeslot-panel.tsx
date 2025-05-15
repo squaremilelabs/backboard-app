@@ -42,6 +42,7 @@ export function TasklistTimeslotPanel({ timeslotId }: { timeslotId: string }) {
       taskOrder={taskOrder}
       isLoading={isLoading}
       handleReorder={handleReorder}
+      isReorderPending={updateTimeslotMutation.isPending}
       defaultTaskValues={{
         status: "TODO",
         tasklist_id: timeslot?.tasklist_id,

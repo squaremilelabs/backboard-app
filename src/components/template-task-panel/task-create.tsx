@@ -45,7 +45,7 @@ export default function TaskCreate({
         setTitle("")
       }}
       className={twMerge(
-        "flex items-center gap-4 p-4",
+        "flex grow items-center gap-4 p-4",
         "bg-canvas",
         "rounded-md border border-transparent",
         "opacity-50",

@@ -37,6 +37,7 @@ export function TriagePanel() {
       defaultTaskValues={{ status: "DRAFT", tasklist_id: null, timeslot_id: null }}
       selectableStatuses={[]}
       handleReorder={handleReorder}
+      isReorderPending={updateUserMutation.isPending}
       headerContent={
         <div className="flex items-center gap-4">
           <div className={iconBox()}>
