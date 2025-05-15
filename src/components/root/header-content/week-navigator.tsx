@@ -76,7 +76,7 @@ export function WeekNavigator() {
           onPress={setToThisWeek}
           className={twMerge(
             interactive({ hover: "background" }),
-            iconBox({ size: "large" }),
+            iconBox({ size: "base" }),
             "text-gold-500"
           )}
         >
