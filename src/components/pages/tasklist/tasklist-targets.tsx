@@ -11,14 +11,24 @@ import { iconBox, interactive } from "@/styles/class-names"
 import { useFindManyTask, useFindManyTimeslot, useUpdateManyTask } from "@/database/generated/hooks"
 import { useRouterUtility } from "@/lib/router-utility"
 import { useWeekState } from "@/lib/week-state"
-import { getISOWeekDates, getTemporalStatusFromTimeslot, getTimeblock } from "@/lib/utils-temporal"
+import { getTemporalStatusFromTimeslot, getTimeblock } from "@/lib/utils-temporal"
 import { formatDate } from "@/lib/utils-common"
 
 export function TasklistTargets({ tasklistId }: { tasklistId: string | undefined }) {
+  const { activeWeek, isCurrentWeek, hidePastDaysEnabled } = useWeekState()
   return (
     <div className="flex flex-col gap-16">
       <Backlog tasklistId={tasklistId} />
-      <TimeslotsGridList tasklistId={tasklistId} />
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center px-4">
+          <p className="font-medium">Time committments</p>
+          <div className="grow" />
+          <p className="text-sm text-neutral-500">
+            {isCurrentWeek ? (hidePastDaysEnabled ? "Rest of this week" : "This week") : activeWeek}
+          </p>
+        </div>
+        <TimeslotsGridList tasklistId={tasklistId} />
+      </div>
     </div>
   )
 }
@@ -95,13 +105,12 @@ function Backlog({ tasklistId }: { tasklistId: string | undefined }) {
 
 function TimeslotsGridList({ tasklistId }: { tasklistId: string | undefined }) {
   const router = useRouterUtility()
-  const { activeWeek } = useWeekState()
-  const weekDates = getISOWeekDates(activeWeek)
+  const { activeWeek, activeWeekDisplayedDates } = useWeekState()
 
   const timeslotsQuery = useFindManyTimeslot({
     where: {
       tasklist_id: tasklistId,
-      date: { in: weekDates },
+      date: { in: activeWeekDisplayedDates },
     },
     include: { tasks: true },
     orderBy: [{ date: "asc" }, { start_time: "asc" }],
@@ -159,9 +168,7 @@ function TimeslotsGridList({ tasklistId }: { tasklistId: string | undefined }) {
         timeslotsQuery.isLoading ? (
           <div className="p-8 text-neutral-500">Loading...</div>
         ) : (
-          <div className="rounded-lg border p-16 text-neutral-500">
-            No time committed in {activeWeek}
-          </div>
+          <div className="rounded-lg border p-16 text-neutral-500">None</div>
         )
       }
     >
@@ -184,10 +191,7 @@ function TimeslotsGridList({ tasklistId }: { tasklistId: string | undefined }) {
                 "rounded-lg border bg-neutral-100",
                 "-outline-offset-1",
                 isDropTarget ? "outline" : "",
-                isActive ? "bg-canvas border-2" : "",
-                temporalStatus === "current" && Number(timeslotsQuery.data?.length) > 1
-                  ? "mt-12"
-                  : ""
+                isActive ? "bg-canvas border-2" : ""
               )
             }
           >

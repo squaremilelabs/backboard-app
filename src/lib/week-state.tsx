@@ -1,12 +1,16 @@
-import { add, sub, parse } from "date-fns"
+import { add, sub, parse, startOfToday } from "date-fns"
 import { useCallback } from "react"
 import { useLocalStorageUtility } from "./storage-utility"
-import { getISOWeekDates, getISOWeekString } from "./utils-temporal"
+import { getISOWeekDates, getISOWeekString, getTemporalStatus } from "./utils-temporal"
 
 const currentIsoWeek = getISOWeekString(new Date())
 
 export function useWeekState() {
   const [activeWeek, setActiveWeek] = useLocalStorageUtility("active-week", currentIsoWeek)
+  const [hidePastDaysEnabled, setHidePastDaysEnabled] = useLocalStorageUtility(
+    "hide-past-days-setting",
+    false
+  )
 
   const setToNextWeek = useCallback(() => {
     const weekDates = getISOWeekDates(activeWeek)
@@ -28,9 +32,33 @@ export function useWeekState() {
     setActiveWeek(currentIsoWeek)
   }
 
+  const toggleHidePastDaysEnabled = () => {
+    setHidePastDaysEnabled((prev) => !prev)
+  }
+
+  const isCurrentWeek = activeWeek === currentIsoWeek
+
+  const activeWeekDates = getISOWeekDates(activeWeek)
+  const activeWeekDisplayedDates = activeWeekDates.filter((date) => {
+    if (!hidePastDaysEnabled) return true
+    if (!isCurrentWeek) return true
+    return parse(date, "yyyy-MM-dd", new Date()) >= startOfToday()
+  })
+
+  const activeWeekTemporalStatus = getTemporalStatus({
+    date: activeWeekDates[6],
+    startTime: "23:59",
+    endTime: "23:59",
+  })
+
   return {
     activeWeek,
-    isCurrentWeek: activeWeek === currentIsoWeek,
+    isCurrentWeek,
+    activeWeekDates,
+    activeWeekDisplayedDates,
+    activeWeekTemporalStatus,
+    hidePastDaysEnabled,
+    toggleHidePastDaysEnabled,
     setToNextWeek,
     setToPrevWeek,
     setToThisWeek,

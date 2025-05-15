@@ -3,6 +3,8 @@ import { twMerge } from "tailwind-merge"
 import { ArrowLeftCircle, ArrowRightCircle, ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import { Button, Link } from "react-aria-components"
 import { parse } from "date-fns"
+import Icon from "@mdi/react"
+import { mdiCalendarEndOutline, mdiCalendarRangeOutline } from "@mdi/js"
 import { iconBox, interactive } from "@/styles/class-names"
 import { getISOWeekDates } from "@/lib/utils-temporal"
 import { useWeekState } from "@/lib/week-state"
@@ -11,10 +13,20 @@ import { useRouterUtility } from "@/lib/router-utility"
 
 export function WeekNavigator() {
   const router = useRouterUtility()
-  const { activeWeek, isCurrentWeek, setToNextWeek, setToPrevWeek, setToThisWeek } = useWeekState()
+  const {
+    activeWeek,
+    isCurrentWeek,
+    setToNextWeek,
+    setToPrevWeek,
+    setToThisWeek,
+    hidePastDaysEnabled,
+    toggleHidePastDaysEnabled,
+  } = useWeekState()
   const weekDates = getISOWeekDates(activeWeek)
   const firstDate = parse(weekDates[0], "yyyy-MM-dd", new Date())
   const isBeforeToday = firstDate < new Date()
+  const todayIsMonday = new Date().getDay() === 1
+
   return (
     <div
       className={twMerge(
@@ -64,6 +76,18 @@ export function WeekNavigator() {
           )}
         >
           {isBeforeToday ? <ArrowRightCircle /> : <ArrowLeftCircle />}
+        </Button>
+      )}
+      {isCurrentWeek && !todayIsMonday && (
+        <Button
+          onPress={toggleHidePastDaysEnabled}
+          className={twMerge(
+            interactive({ hover: "background" }),
+            iconBox({ size: "base" }),
+            hidePastDaysEnabled ? "text-neutral-600" : "text-neutral-400"
+          )}
+        >
+          <Icon path={hidePastDaysEnabled ? mdiCalendarRangeOutline : mdiCalendarEndOutline} />
         </Button>
       )}
     </div>

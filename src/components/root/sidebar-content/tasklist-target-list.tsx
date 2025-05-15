@@ -1,5 +1,4 @@
 "use client"
-
 import {
   Button,
   GridList,
@@ -11,7 +10,6 @@ import { twMerge } from "tailwind-merge"
 import { AsteriskIcon, GripVerticalIcon } from "lucide-react"
 import { Task, Tasklist } from "@zenstackhq/runtime/models"
 import { useFindManyTasklist, useUpdateManyTask } from "@/database/generated/hooks"
-import { getISOWeekDates, getTemporalStatus } from "@/lib/utils-temporal"
 import { defaultTasklistEmojiCode } from "@/lib/utils-tasklist"
 import { Emoji } from "@/components/primitives/emoji"
 import { iconBox, interactive } from "@/styles/class-names"
@@ -30,25 +28,18 @@ type TasklistQueryResult = Tasklist & {
 
 export function TasklistTargetList() {
   const router = useRouterUtility()
-  const { activeWeek } = useWeekState()
-  const weekDates = getISOWeekDates(activeWeek)
-  const temporalStatus = getTemporalStatus({
-    // using last minute of the week
-    date: weekDates[6],
-    startTime: "23:59",
-    endTime: "23:59",
-  })
+  const { activeWeekDisplayedDates, activeWeekTemporalStatus } = useWeekState()
 
   const tasklistsQuery = useFindManyTasklist({
     where: { archived_at: null },
     include: {
       tasks: {
-        where: { timeslot: { date: { in: weekDates } } },
+        where: { timeslot: { date: { in: activeWeekDisplayedDates } } },
       },
       _count: {
         select: {
           tasks: { where: { timeslot_id: null, status: "TODO" } },
-          timeslots: { where: { date: { in: weekDates } } },
+          timeslots: { where: { date: { in: activeWeekDisplayedDates } } },
         },
       },
     },
@@ -146,7 +137,7 @@ export function TasklistTargetList() {
             <div className="grow" />
             <TaskSizeSummaryChips
               tasks={tasklist.tasks}
-              useOverdueColor={temporalStatus === "past"}
+              useOverdueColor={activeWeekTemporalStatus === "past"}
               consistentWeightVariant="medium"
               showEmptyChip={tasklist._count.timeslots > 0}
             />
