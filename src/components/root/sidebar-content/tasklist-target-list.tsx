@@ -7,7 +7,7 @@ import {
   useDragAndDrop,
 } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
-import { AsteriskIcon, GripVerticalIcon } from "lucide-react"
+import { ArrowRightIcon, AsteriskIcon, GripVerticalIcon } from "lucide-react"
 import { Task, Tasklist } from "@zenstackhq/runtime/models"
 import { useFindManyTasklist, useUpdateManyTask } from "@/database/generated/hooks"
 import { defaultTasklistEmojiCode } from "@/lib/utils-tasklist"
@@ -105,6 +105,7 @@ export function TasklistTargetList() {
       }
     >
       {(tasklist) => {
+        const isActive = router.params.tasklist_id === tasklist.id
         return (
           <GridListItem
             id={tasklist.id}
@@ -116,7 +117,6 @@ export function TasklistTargetList() {
                 "flex items-start px-4 py-6",
                 "rounded-lg",
                 "-outline-offset-2",
-                router.params.tasklist_id === tasklist.id ? "bg-canvas border" : "",
                 isDropTarget ? "outline" : ""
               )
             }
@@ -128,7 +128,7 @@ export function TasklistTargetList() {
               <GripVerticalIcon />
             </Button>
             <Emoji code={tasklist.emoji?.code ?? defaultTasklistEmojiCode} />
-            <p className="ml-4 truncate font-medium">{tasklist.title}</p>
+            <p className={twMerge("ml-4 truncate font-medium")}>{tasklist.title}</p>
             {tasklist._count.tasks > 0 ? (
               <div className={iconBox({ className: "text-gold-500" })}>
                 <AsteriskIcon />
@@ -141,6 +141,11 @@ export function TasklistTargetList() {
               consistentWeightVariant="medium"
               showEmptyChip={tasklist._count.timeslots > 0}
             />
+            {isActive && (
+              <div className={iconBox({ className: "text-neutral-500" })}>
+                <ArrowRightIcon />
+              </div>
+            )}
           </GridListItem>
         )
       }}

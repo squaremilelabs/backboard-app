@@ -1,4 +1,4 @@
-import { DotIcon, InboxIcon } from "lucide-react"
+import { ArrowRightIcon, InboxIcon } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { Link } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
@@ -49,21 +49,23 @@ export function TriageTarget() {
           "flex items-center px-4 py-6",
           "rounded-lg",
           "-outline-offset-2",
-          isActive ? "bg-canvas border" : "",
           isDropTarget ? "outline" : ""
         )}
       >
         <div className={iconBox({ className: "text-neutral-400" })}>
-          <DotIcon />
-        </div>
-        <div className={iconBox({ className: "text-neutral-400" })}>
           <InboxIcon />
         </div>
-        <p className="ml-4 grow font-medium">Triage</p>
+        <p className={twMerge("ml-4 truncate font-medium")}>Triage</p>
+        <div className="grow" />
         <TaskSizeSummaryChips
           tasks={triageTasksQuery.data ?? []}
           consistentWeightVariant="medium"
         />
+        {isActive && (
+          <div className={iconBox({ className: "text-neutral-500" })}>
+            <ArrowRightIcon />
+          </div>
+        )}
       </Link>
     </div>
   )
