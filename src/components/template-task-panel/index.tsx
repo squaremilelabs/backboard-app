@@ -67,6 +67,7 @@ export function TaskPanel({
           consistentWeightVariant="medium"
           useOverdueColor={useOverdueColor}
           showFullMinutes
+          showEmptyChip
         />
       </div>
       <div className="bg-canvas flex grow flex-col overflow-auto rounded-md border">

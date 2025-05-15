@@ -16,7 +16,7 @@ import { formatDate } from "@/lib/utils-common"
 
 export function TasklistTargets({ tasklistId }: { tasklistId: string | undefined }) {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-16">
       <Backlog tasklistId={tasklistId} />
       <TimeslotsGridList tasklistId={tasklistId} />
     </div>
@@ -77,6 +77,7 @@ function Backlog({ tasklistId }: { tasklistId: string | undefined }) {
           interactive({ hover: "fade" }),
           "flex items-center gap-4 px-4 py-6",
           "rounded-lg border bg-neutral-100",
+          "-outline-offset-1",
           isDropTarget ? "outline" : "",
           isActive ? "bg-canvas border-2" : ""
         )}
@@ -181,8 +182,12 @@ function TimeslotsGridList({ tasklistId }: { tasklistId: string | undefined }) {
                 interactive({ hover: "fade" }),
                 "flex items-center gap-4 px-4 py-6",
                 "rounded-lg border bg-neutral-100",
+                "-outline-offset-1",
                 isDropTarget ? "outline" : "",
-                isActive ? "bg-canvas border-2" : ""
+                isActive ? "bg-canvas border-2" : "",
+                temporalStatus === "current" && Number(timeslotsQuery.data?.length) > 1
+                  ? "mt-12"
+                  : ""
               )
             }
           >
@@ -191,7 +196,12 @@ function TimeslotsGridList({ tasklistId }: { tasklistId: string | undefined }) {
             </div>
             <p className="font-medium">{formatDate(timeslot.date, { withWeekday: true })}</p>
             {timeblock.subLabel ? (
-              <p className="text-sm text-neutral-500">{timeblock.label}</p>
+              <div className="flex items-center gap-2 text-sm text-neutral-500">
+                <div className={iconBox({ size: "small" })}>
+                  <timeblock.Icon />
+                </div>
+                {timeblock.label}
+              </div>
             ) : null}
             <div className="grow" />
             <TaskSizeSummaryChips

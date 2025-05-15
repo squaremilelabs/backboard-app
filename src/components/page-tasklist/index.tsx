@@ -22,7 +22,7 @@ export function TasklistPage() {
             <TasklistBacklogPanel tasklistId={tasklistId} />
           )}
         </div>
-        <div className="flex max-h-full w-xs flex-col">
+        <div className="flex max-h-full w-xs flex-col overflow-auto p-2">
           <TasklistTargets tasklistId={tasklistId} />
         </div>
       </div>

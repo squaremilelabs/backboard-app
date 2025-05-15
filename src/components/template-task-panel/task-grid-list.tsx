@@ -80,7 +80,7 @@ export default function TaskGridList({
 
   return (
     <GridList
-      aria-label="Editable Tasks"
+      aria-label="Tasks"
       dragAndDropHooks={dragAndDropHooks}
       items={list.items}
       selectionMode="multiple"
@@ -101,7 +101,7 @@ export default function TaskGridList({
               "flex items-start rounded-md p-4",
               "data-selected:bg-neutral-100",
               "hover:bg-neutral-50",
-              "-outline-offset-2 outline-neutral-300 focus-visible:outline-2"
+              "-outline-offset-1 outline-neutral-300 focus-visible:outline"
             )}
           >
             <Button slot="drag" className={twMerge(iconBox(), interactive(), "text-neutral-400")}>

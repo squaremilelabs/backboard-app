@@ -9,15 +9,24 @@ import {
 } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
 import { AsteriskIcon, GripVerticalIcon } from "lucide-react"
-import { Task } from "@prisma/client"
+import { Task, Tasklist } from "@zenstackhq/runtime/models"
 import { useFindManyTasklist, useUpdateManyTask } from "@/database/generated/hooks"
 import { getISOWeekDates, getTemporalStatus } from "@/lib/utils-temporal"
-import { defaultTasklistEmojiCode, sortTasklists } from "@/lib/utils-tasklist"
+import { defaultTasklistEmojiCode } from "@/lib/utils-tasklist"
 import { Emoji } from "@/components/primitives/emoji"
 import { iconBox, interactive } from "@/styles/class-names"
 import { TaskSizeSummaryChips } from "@/components/primitives/task-size"
 import useWeekState from "@/lib/week-state"
 import useRouterUtility from "@/lib/router-utility"
+import { getTaskSummary } from "@/lib/utils-task"
+
+type TasklistQueryResult = Tasklist & {
+  tasks: Task[]
+  _count: {
+    tasks: number
+    timeslots: number
+  }
+}
 
 export function TasklistTargetList() {
   const router = useRouterUtility()
@@ -39,10 +48,12 @@ export function TasklistTargetList() {
       _count: {
         select: {
           tasks: { where: { timeslot_id: null, status: "TODO" } },
+          timeslots: { where: { date: { in: weekDates } } },
         },
       },
     },
   })
+
   const sortedTasklists = sortTasklists(tasklistsQuery.data ?? [])
 
   const { dragAndDropHooks } = useDragAndDrop({
@@ -137,10 +148,45 @@ export function TasklistTargetList() {
               tasks={tasklist.tasks}
               useOverdueColor={temporalStatus === "past"}
               consistentWeightVariant="medium"
+              showEmptyChip={tasklist._count.timeslots > 0}
             />
           </GridListItem>
         )
       }}
     </GridList>
   )
+}
+
+function sortTasklists(tasklists: TasklistQueryResult[]) {
+  return tasklists.sort((a, b) => {
+    const aTasksSummary = getTaskSummary(a.tasks)
+    const bTasksSummary = getTaskSummary(b.tasks)
+    const aTodoMinutes = aTasksSummary.status.TODO.minutes
+    const bTodoMinutes = bTasksSummary.status.TODO.minutes
+    const aDoneMinutes = aTasksSummary.status.DONE.minutes
+    const bDoneMinutes = bTasksSummary.status.DONE.minutes
+
+    // Compare by TODO minutes in descending order
+    if (bTodoMinutes !== aTodoMinutes) {
+      return bTodoMinutes - aTodoMinutes
+    }
+
+    // Compare by count of timeslots in descending order
+    if (b._count.timeslots !== a._count.timeslots) {
+      return b._count.timeslots - a._count.timeslots
+    }
+
+    // Compare by count of backlog tasks in descending order
+    if (b._count.tasks !== a._count.tasks) {
+      return b._count.tasks - a._count.tasks
+    }
+
+    // Compare by DONE minutes in descending order
+    if (bDoneMinutes !== aDoneMinutes) {
+      return bDoneMinutes - aDoneMinutes
+    }
+
+    // Fallback to comparing by created_at in ascending order
+    return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+  })
 }
