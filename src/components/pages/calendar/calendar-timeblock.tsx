@@ -8,7 +8,7 @@ import { getTemporalStatus, Timeblock } from "@/lib/utils-temporal"
 import { iconBox } from "@/styles/class-names"
 import { useCreateTimeslot, useUpdateManyTimeslot } from "@/database/generated/hooks"
 
-export default function CalendarTimeblock({
+export function CalendarTimeblock({
   dateString,
   timeblock,
 }: {

@@ -5,7 +5,7 @@ import { AsyncListData } from "react-stately"
 import { twMerge } from "tailwind-merge"
 import { iconBox, interactive } from "@/styles/class-names"
 
-export default function TaskSelection({ list }: { list: AsyncListData<Task> }) {
+export function TaskSelection({ list }: { list: AsyncListData<Task> }) {
   const selectedIds =
     list.selectedKeys === "all"
       ? list.items.map((task) => task.id)

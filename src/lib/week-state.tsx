@@ -5,7 +5,7 @@ import { getISOWeekDates, getISOWeekString } from "./utils-temporal"
 
 const currentIsoWeek = getISOWeekString(new Date())
 
-export default function useWeekState() {
+export function useWeekState() {
   const [activeWeek, setActiveWeek] = useLocalStorageUtility("active-week", currentIsoWeek)
 
   const setToNextWeek = useCallback(() => {

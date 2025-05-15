@@ -9,7 +9,7 @@ type SearchParams = {
   timeslot?: string | null
 }
 
-export default function useRouterUtility() {
+export function useRouterUtility() {
   const pathname = usePathname()
   const params = useParams<Params>()
   const searchParams = useSearchParams()

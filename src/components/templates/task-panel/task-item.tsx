@@ -3,10 +3,10 @@ import { ChevronDownIcon, DeleteIcon, TextIcon } from "lucide-react"
 import { Button, Disclosure, DisclosurePanel, Heading } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
 import { useRef, useState } from "react"
-import { TaskSizeChip } from "../primitives/task-size"
-import ConfirmationButton from "../primitives/confirmation-button"
-import TaskPropertyPicker from "./task-property-picker"
-import EditableText from "@/components/primitives/editable-text"
+import { TaskPropertyPicker } from "./task-property-picker"
+import { TaskSizeChip } from "@/components/primitives/task-size"
+import { ConfirmationButton } from "@/components/primitives/confirmation-button"
+import { EditableText } from "@/components/primitives/editable-text"
 import { formatDate } from "@/lib/utils-common"
 import { interactive } from "@/styles/class-names"
 
@@ -17,7 +17,7 @@ export interface TaskItemValues {
   size_minutes?: number
 }
 
-export default function TaskItem({
+export function TaskItem({
   task,
   onUpdate,
   onDelete,

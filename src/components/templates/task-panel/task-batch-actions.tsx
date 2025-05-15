@@ -1,16 +1,18 @@
+"use client"
+
 import { Prisma, Task, TaskStatus } from "@zenstackhq/runtime/models"
 import { LoaderIcon } from "lucide-react"
 import { Button } from "react-aria-components"
 import { AsyncListData } from "react-stately"
 import { twMerge } from "tailwind-merge"
 import { useEffect, useRef, useState } from "react"
-import ConfirmationButton from "../primitives/confirmation-button"
-import TaskPropertyPicker from "./task-property-picker"
+import { TaskPropertyPicker } from "./task-property-picker"
+import { ConfirmationButton } from "@/components/primitives/confirmation-button"
 import { chip, ChipProps, interactive } from "@/styles/class-names"
 import { taskStatusUIMap } from "@/lib/utils-task"
 import { useDeleteManyTask, useUpdateManyTask } from "@/database/generated/hooks"
 
-export default function TaskBatchActions({
+export function TaskBatchActions({
   list,
   selectableStatuses,
 }: {

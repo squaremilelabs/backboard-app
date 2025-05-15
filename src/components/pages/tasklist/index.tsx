@@ -4,7 +4,7 @@ import { TasklistHeader } from "./tasklist-header"
 import { TasklistTimeslotPanel } from "./tasklist-timeslot-panel"
 import { TasklistBacklogPanel } from "./tasklist-backlog-panel"
 import { TasklistTargets } from "./tasklist-targets"
-import useRouterUtility from "@/lib/router-utility"
+import { useRouterUtility } from "@/lib/router-utility"
 
 export function TasklistPage() {
   const router = useRouterUtility()

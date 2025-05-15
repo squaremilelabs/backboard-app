@@ -1,13 +1,15 @@
+"use client"
+
 import { Task, TaskStatus } from "@zenstackhq/runtime/models"
 import { GripVerticalIcon, SquareCheckIcon, SquareIcon } from "lucide-react"
 import { Button, Checkbox, GridList, GridListItem, useDragAndDrop } from "react-aria-components"
 import { AsyncListData } from "react-stately"
 import { twMerge } from "tailwind-merge"
-import TaskItem, { TaskItemValues } from "./task-item"
+import { TaskItem, TaskItemValues } from "./task-item"
 import { iconBox, interactive } from "@/styles/class-names"
 import { useDeleteTask, useUpdateTask } from "@/database/generated/hooks"
 
-export default function TaskGridList({
+export function TaskGridList({
   list,
   selectableStatuses,
   handleReorder,

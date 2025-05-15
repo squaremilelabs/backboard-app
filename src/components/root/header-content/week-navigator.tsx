@@ -5,9 +5,9 @@ import { Button, Link } from "react-aria-components"
 import { parse } from "date-fns"
 import { iconBox, interactive } from "@/styles/class-names"
 import { getISOWeekDates } from "@/lib/utils-temporal"
-import useWeekState from "@/lib/week-state"
+import { useWeekState } from "@/lib/week-state"
 import { formatDate } from "@/lib/utils-common"
-import useRouterUtility from "@/lib/router-utility"
+import { useRouterUtility } from "@/lib/router-utility"
 
 export function WeekNavigator() {
   const router = useRouterUtility()

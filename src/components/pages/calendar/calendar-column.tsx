@@ -1,4 +1,4 @@
-import CalendarTimeblock from "./calendar-timeblock"
+import { CalendarTimeblock } from "./calendar-timeblock"
 import { presetTimeblocks } from "@/lib/utils-temporal"
 
 export function CalendarColumn({ dateString }: { dateString: string }) {

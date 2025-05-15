@@ -16,8 +16,8 @@ import { defaultTasklistEmojiCode } from "@/lib/utils-tasklist"
 import { Emoji } from "@/components/primitives/emoji"
 import { iconBox, interactive } from "@/styles/class-names"
 import { TaskSizeSummaryChips } from "@/components/primitives/task-size"
-import useWeekState from "@/lib/week-state"
-import useRouterUtility from "@/lib/router-utility"
+import { useWeekState } from "@/lib/week-state"
+import { useRouterUtility } from "@/lib/router-utility"
 import { getTaskSummary } from "@/lib/utils-task"
 
 type TasklistQueryResult = Tasklist & {

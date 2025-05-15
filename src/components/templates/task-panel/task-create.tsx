@@ -9,7 +9,7 @@ import { iconBox } from "@/styles/class-names"
 import { draftTask } from "@/lib/utils-task"
 import { useCreateTask } from "@/database/generated/hooks"
 
-export default function TaskCreate({
+export function TaskCreate({
   list,
   defaultTaskValues,
 }: {

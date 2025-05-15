@@ -3,7 +3,7 @@ import { twMerge } from "tailwind-merge"
 import { format, parse } from "date-fns"
 import { getISOWeekDates } from "@/lib/utils-temporal"
 import { formatDate } from "@/lib/utils-common"
-import useWeekState from "@/lib/week-state"
+import { useWeekState } from "@/lib/week-state"
 
 export function CalendarHeader() {
   const { activeWeek } = useWeekState()

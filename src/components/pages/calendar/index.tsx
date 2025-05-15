@@ -3,7 +3,7 @@
 import { CalendarHeader } from "./calendar-header"
 import { CalendarColumn } from "./calendar-column"
 import { getISOWeekDates } from "@/lib/utils-temporal"
-import useWeekState from "@/lib/week-state"
+import { useWeekState } from "@/lib/week-state"
 
 export function CalendarPage() {
   const { activeWeek } = useWeekState()

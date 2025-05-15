@@ -3,7 +3,7 @@ import { Button, Dialog, DialogTrigger, Modal, ModalOverlay } from "react-aria-c
 import { twMerge } from "tailwind-merge"
 import { interactive } from "@/styles/class-names"
 
-export default function ConfirmationButton({
+export function ConfirmationButton({
   onConfirm,
   helpText,
   confirmButtonText,

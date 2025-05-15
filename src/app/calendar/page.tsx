@@ -1,2 +1,2 @@
-import { CalendarPage } from "@/components/page-calendar"
+import { CalendarPage } from "@/components/pages/calendar"
 export default CalendarPage

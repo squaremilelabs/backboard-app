@@ -14,7 +14,7 @@ export type TextToInputClassNameProp =
   | ClassNameValue
   | ((params: { isActive: boolean; isButton: boolean; isInput: boolean }) => ClassNameValue)
 
-export default function TextToInput({
+export function TextToInput({
   value,
   onValueChange,
   placeholder,

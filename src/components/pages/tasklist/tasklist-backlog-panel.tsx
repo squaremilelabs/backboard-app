@@ -1,7 +1,7 @@
 "use client"
 
 import { LayersIcon } from "lucide-react"
-import { TaskPanel } from "@/components/template-task-panel"
+import { TaskPanel } from "@/components/templates/task-panel"
 import {
   useFindManyTask,
   useFindUniqueTasklist,

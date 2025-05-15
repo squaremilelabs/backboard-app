@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react"
 import { twMerge } from "tailwind-merge"
-import TextToInput, { TextToInputCallbackParams, TextToInputClassNameProp } from "./text-to-input"
+import { TextToInput, TextToInputCallbackParams, TextToInputClassNameProp } from "./text-to-input"
 
-export default function EditableText({
+export function EditableText({
   initialValue,
   onSave,
   className,

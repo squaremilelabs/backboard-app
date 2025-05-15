@@ -12,7 +12,7 @@ import { Provider as ZenstackHooksProvider } from "@/database/generated/hooks"
 
 const queryClient = new QueryClient()
 
-export default function RootProviders({ children }: { children: React.ReactNode }) {
+export function RootProviders({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   return (
     <>

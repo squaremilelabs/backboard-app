@@ -3,7 +3,7 @@
 import { useUser } from "@clerk/nextjs"
 import { InboxIcon } from "lucide-react"
 import { useFindManyTask, useFindUniqueUser, useUpdateUser } from "@/database/generated/hooks"
-import { TaskPanel } from "@/components/template-task-panel"
+import { TaskPanel } from "@/components/templates/task-panel"
 import { iconBox } from "@/styles/class-names"
 
 export function TriagePanel() {

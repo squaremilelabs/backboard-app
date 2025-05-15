@@ -1,2 +1,2 @@
-import { TriagePage } from "@/components/page-triage"
+import { TriagePage } from "@/components/pages/triage"
 export default TriagePage

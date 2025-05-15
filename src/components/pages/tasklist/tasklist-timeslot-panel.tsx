@@ -2,7 +2,7 @@
 
 import { parse } from "date-fns"
 import { CalendarIcon } from "lucide-react"
-import { TaskPanel } from "@/components/template-task-panel"
+import { TaskPanel } from "@/components/templates/task-panel"
 import {
   useFindManyTask,
   useFindUniqueTimeslot,

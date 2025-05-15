@@ -12,7 +12,7 @@ import { ThemeButton } from "./header-content/theme-button"
 import { useSessionStorageUtility } from "@/lib/storage-utility"
 import { iconBox, interactive } from "@/styles/class-names"
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export function RootLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen] = useSessionStorageUtility("sidebar-open", true)
   return (
     <div className={"flex h-dvh max-h-dvh w-dvw max-w-dvw items-start"}>
