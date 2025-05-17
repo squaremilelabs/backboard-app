@@ -105,7 +105,7 @@ export function TasklistTargetList() {
       dependencies={[router.params.tasklist_id]}
       className="flex flex-col gap-2"
       renderEmptyState={() =>
-        tasklistsQuery.isLoading ? <div className="text-neutral px-16 py-8">Loading...</div> : null
+        tasklistsQuery.isLoading ? <div className="p-8 text-neutral-500">Loading...</div> : null
       }
     >
       {(tasklist) => {
