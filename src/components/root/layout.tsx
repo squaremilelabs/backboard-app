@@ -73,20 +73,18 @@ function Header() {
               tasklistId={router.params.tasklist_id}
             />
           )}
-          {router.basePath === "triage" && (
-            <Link
-              href="/calendar"
-              className={twMerge(
-                interactive({ hover: "background" }),
-                "flex h-24 items-center gap-8",
-                "text-neutral-500",
-                "rounded-md px-4"
-              )}
-            >
-              <ArrowLeftIcon size={16} />
-              Back to calendar
-            </Link>
-          )}
+          <Link
+            href="/calendar"
+            className={twMerge(
+              interactive({ hover: "background" }),
+              "flex h-24 items-center gap-4",
+              "text-neutral-500",
+              "rounded-md px-4"
+            )}
+          >
+            <ArrowLeftIcon size={16} />
+            Back to calendar
+          </Link>
         </div>
       )}
       <SignedIn>

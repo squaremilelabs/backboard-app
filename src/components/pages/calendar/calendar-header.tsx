@@ -2,7 +2,7 @@
 import { twMerge } from "tailwind-merge"
 import { format, parse } from "date-fns"
 import { Button } from "react-aria-components"
-import { ArrowLeftFromLineIcon, ArrowRightFromLineIcon } from "lucide-react"
+import { ArrowLeftToLineIcon, ArrowRightFromLineIcon } from "lucide-react"
 import { formatDate } from "@/lib/utils-common"
 import { useWeekState } from "@/lib/week-state"
 import { iconBox, interactive } from "@/styles/class-names"
@@ -36,7 +36,7 @@ export function CalendarHeader() {
                   "mr-8",
                 ])}
               >
-                <ArrowLeftFromLineIcon />
+                <ArrowLeftToLineIcon />
               </Button>
             ) : null}
             <p className="font-semibold">{formatDate(date, { withWeekday: true })}</p>
