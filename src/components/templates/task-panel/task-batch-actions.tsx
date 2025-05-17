@@ -101,7 +101,7 @@ export function TaskBatchActions({
         {/* Delete Button */}
         <ConfirmationButton
           onConfirm={handleBatchDelete}
-          helpText={`Are you sure you want to delete ${selectedIds.length} task${selectedIds.length > 1 ? "s" : ""}? This action cannot be undone.`}
+          content={`Are you sure you want to delete ${selectedIds.length} task${selectedIds.length > 1 ? "s" : ""}? This action cannot be undone.`}
           isDestructive
           confirmButtonText="Delete"
         >

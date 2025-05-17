@@ -1,6 +1,6 @@
 "use client"
 import { twMerge } from "tailwind-merge"
-import { Button, Link } from "react-aria-components"
+import { Button, Dialog, DialogTrigger, Link, Popover } from "react-aria-components"
 import { Loader, PlusCircleIcon } from "lucide-react"
 import { Timeslot } from "@prisma/client"
 import { Task } from "@zenstackhq/runtime/models"
@@ -14,16 +14,14 @@ import {
   Timeblock,
 } from "@/lib/utils-temporal"
 import { useWeekState } from "@/lib/week-state"
-import { iconBox } from "@/styles/class-names"
+import { iconBox, interactive, popover } from "@/styles/class-names"
 import {
   useCreateTimeslot,
   useFindManyTimeslot,
-  useFindUniqueTasklist,
   useUpdateManyTask,
 } from "@/database/generated/hooks"
 import { TaskSizeSummaryChips } from "@/components/primitives/task-size"
 import { useRouterUtility } from "@/lib/router-utility"
-import { ConfirmationButton } from "@/components/primitives/confirmation-button"
 
 export default function TasklistCalendarGrid({ tasklistId }: { tasklistId: string | undefined }) {
   const { activeWeekDates } = useWeekState()
@@ -103,7 +101,6 @@ function TimeblockCell({
   timeslot?: Timeslot & { tasks: Task[] }
   tasklistId: string | undefined
 }) {
-  const { data: tasklist } = useFindUniqueTasklist({ where: { id: tasklistId } })
   const router = useRouterUtility()
   const isActive = router.query.timeslot && router.query.timeslot === timeslot?.id
   const temporalStatus = getTemporalStatus({
@@ -179,7 +176,8 @@ function TimeblockCell({
         "group/timeblock-cell grid",
         "rounded-md border",
         "cursor-pointer hover:scale-105",
-        isActive ? "rounded-xl border-2 border-neutral-300" : "",
+        "has-[button[data-pressed]]:rounded-full has-[button[data-pressed]]:border-neutral-400",
+        isActive ? "border-neutral-950" : "",
         temporalStatus === "past" ? "bg-neutral-100" : "bg-canvas",
         isDropTarget ? "outline" : ""
       )}
@@ -197,12 +195,8 @@ function TimeblockCell({
           />
         </Link>
       ) : (
-        <ConfirmationButton
-          helpText={`Commit [${tasklist?.title ?? "tasklist"}] to [${formatDate(date, { withWeekday: true })} ${timeblock.label}]?`}
-          confirmButtonText="Confirm"
-          onConfirm={handleCreateTimeslot}
-        >
-          <Button className="cursor-pointer rounded-md">
+        <DialogTrigger>
+          <Button className="group/inner-button cursor-pointer rounded-md">
             <TimeblockCellInnerContent
               timeblock={timeblock}
               timeslot={timeslot}
@@ -210,7 +204,25 @@ function TimeblockCell({
               temporalStatus={temporalStatus}
             />
           </Button>
-        </ConfirmationButton>
+          <Popover offset={4} placement="bottom left">
+            <Dialog
+              className={popover({
+                className: [
+                  "border-1 border-neutral-400 !outline-0",
+                  "flex items-center gap-4",
+                  "rounded-full px-12 py-4",
+                ],
+              })}
+            >
+              <Button
+                onPress={handleCreateTimeslot}
+                className={twMerge(interactive({ hover: "underline", className: "text-sm" }))}
+              >
+                Add to calendar
+              </Button>
+            </Dialog>
+          </Popover>
+        </DialogTrigger>
       )}
     </div>
   )
@@ -228,13 +240,17 @@ function TimeblockCellInnerContent({
   temporalStatus?: TemporalStatus
 }) {
   return (
-    <div className="flex items-center justify-between p-4">
+    <div className="flex items-center justify-between overflow-hidden p-4">
       <div
         className={iconBox({
           size: "small",
           className: timeslot
             ? "text-neutral-950"
-            : "text-neutral-400 group-hover/timeblock-cell:text-neutral-950",
+            : [
+                "text-neutral-400",
+                "group-hover/timeblock-cell:text-neutral-950",
+                "group-data-pressed/inner-button:text-neutral-950",
+              ],
         })}
       >
         {isPending ? <Loader className="text-gold-500 animate-spin" /> : <timeblock.Icon />}
@@ -251,7 +267,13 @@ function TimeblockCellInnerContent({
           className={twMerge(
             iconBox({
               size: "small",
-              className: "hidden group-hover/timeblock-cell:flex",
+              className: [
+                "hidden",
+                "group-hover/timeblock-cell:flex",
+                "group-data-pressed/inner-button:flex",
+                "text-neutral-400",
+                "group-data-pressed/inner-button:text-neutral-950",
+              ],
             })
           )}
         >

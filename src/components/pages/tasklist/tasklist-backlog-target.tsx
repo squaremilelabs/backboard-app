@@ -64,14 +64,18 @@ export function TasklistBacklogTarget({ tasklistId }: { tasklistId: string | und
           "flex items-center gap-4 p-4",
           "rounded-md",
           "cursor-pointer",
-          isActive ? "bg-canvas rounded-xl border-2 border-neutral-300" : "hover:scale-105",
+          "border border-transparent",
+          isActive ? "bg-canvas border-neutral-950 px-8" : "hover:scale-105",
           isDropTarget ? "outline" : ""
         )}
       >
         <div className={iconBox({ size: "small" })}>
           <LayersIcon />
         </div>
-        <TaskSizeSummaryChips tasks={backlogTasksQuery.data ?? []} showEmptyChip size="small" />
+        <p className={twMerge("mr-4 text-sm", isActive ? "text-neutral-950" : "text-neutral-500")}>
+          Backlog
+        </p>
+        <TaskSizeSummaryChips tasks={backlogTasksQuery.data ?? []} size="small" />
       </Link>
     </div>
   )

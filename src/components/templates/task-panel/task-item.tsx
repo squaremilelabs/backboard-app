@@ -120,7 +120,7 @@ export function TaskItem({
         <div className="flex items-center gap-8">
           <div className="grow" />
           <ConfirmationButton
-            helpText="Are you sure you want to delete this task? This action is irreversable."
+            content="Are you sure you want to delete this task? This action is irreversable."
             isDestructive
             onConfirm={onDelete}
           >

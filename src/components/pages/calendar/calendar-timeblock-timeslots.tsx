@@ -82,7 +82,7 @@ export function CalendarTimeblockTimeslots({
             <p className="grow truncate font-medium">{timeslot.tasklist.title}</p>
             <ConfirmationButton
               onConfirm={() => handleDelete(timeslot.id)}
-              helpText="Are you sure you want to remove this tasklist from your calendar? Any tasks will be moved to the Backlog."
+              content="Any tasks will be moved to the Backlog."
               confirmButtonText="Remove"
               isDestructive
             >

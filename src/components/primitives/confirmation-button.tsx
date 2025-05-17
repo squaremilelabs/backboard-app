@@ -1,17 +1,17 @@
-import { useState } from "react"
+import React, { useState } from "react"
 import { Button, Dialog, DialogTrigger, Modal, ModalOverlay } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
 import { interactive } from "@/styles/class-names"
 
 export function ConfirmationButton({
   onConfirm,
-  helpText,
+  content,
   confirmButtonText,
   isDestructive,
   children,
 }: {
   onConfirm: () => void
-  helpText: string
+  content: React.ReactNode
   confirmButtonText?: string
   isDestructive?: boolean
   children: React.ReactNode
@@ -31,7 +31,7 @@ export function ConfirmationButton({
           className="fixed inset-0 flex h-dvh w-dvw flex-col items-center pt-[10%]"
         >
           <Dialog className="bg-canvas flex w-300 flex-col gap-16 rounded-lg border-2 p-16 !outline-0">
-            <p>{helpText}</p>
+            {content}
             <div className="flex justify-stretch gap-16">
               <Button
                 onPress={() => setIsOpen(false)}

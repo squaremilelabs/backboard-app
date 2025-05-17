@@ -61,7 +61,7 @@ export function TaskSizeSummaryChips({
   ].filter((t) => t !== null)
 
   return displayedStatuses.length ? (
-    <div className={twMerge("flex items-center -space-x-4")}>
+    <div className={twMerge("flex items-center -space-x-4", size === "small" ? "-space-x-6" : "")}>
       {displayedStatuses.map((status) => {
         const summary = taskSummary.status[status]
         return (

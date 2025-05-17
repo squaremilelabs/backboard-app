@@ -6,7 +6,7 @@ import Image from "next/image"
 import Icon from "@mdi/react"
 import { mdiMenu, mdiMenuOpen } from "@mdi/js"
 import { SignedIn, UserButton } from "@clerk/nextjs"
-import { ArrowLeftIcon } from "lucide-react"
+import { CalendarDaysIcon } from "lucide-react"
 import { WeekNavigator } from "../portables/week-navigator"
 import { ThemeButton } from "../portables/theme-button"
 import { TasklistHeader } from "../pages/tasklist/tasklist-header"
@@ -67,20 +67,25 @@ function Header() {
         </>
       ) : (
         <div className="flex grow items-center gap-8">
+          <div className="grow">
+            {router.basePath === "tasklist" && (
+              <TasklistHeader
+                key={router.params.tasklist_id}
+                tasklistId={router.params.tasklist_id}
+              />
+            )}
+            {router.basePath === "triage" && <h1 className="text-lg font-medium">Triage</h1>}
+          </div>
           <Link
             href="/calendar"
             className={twMerge(
               iconBox({ size: "large" }),
               interactive({ hover: "background" }),
-              "text-neutral-500"
+              "text-neutral-950"
             )}
           >
-            <ArrowLeftIcon />
+            <CalendarDaysIcon />
           </Link>
-          {router.basePath === "tasklist" && (
-            <TasklistHeader tasklistId={router.params.tasklist_id} />
-          )}
-          {router.basePath === "triage" && <h1 className="text-lg font-medium">Triage</h1>}
         </div>
       )}
       <SignedIn>

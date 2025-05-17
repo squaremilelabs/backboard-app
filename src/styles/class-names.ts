@@ -41,7 +41,7 @@ export const chip = tv({
         "[&_svg]:!size-14 [&_img]:!size-14 *:!text-sm",
       ],
       small: [
-        "text-xs min-w-30 w-fit px-4 truncate font-medium",
+        "text-xs min-w-30 w-fit px-4 truncate font-semibold",
         "[&_svg]:!size-12 [&_img]:!size-12 *:!text-xs",
       ],
     },

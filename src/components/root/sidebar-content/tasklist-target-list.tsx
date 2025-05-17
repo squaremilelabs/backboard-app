@@ -118,12 +118,12 @@ export function TasklistTargetList() {
             textValue={tasklist.title}
             className={({ isDropTarget }) =>
               twMerge(
-                interactive(),
+                interactive({ className: isActive ? "!opacity-100" : "" }),
+                "group/tasklist-item",
                 "flex items-start px-4 py-6",
                 "rounded-lg",
                 "-outline-offset-2",
-                isDropTarget ? "outline" : "",
-                isFaded ? "opacity-50" : ""
+                isDropTarget ? "outline" : ""
               )
             }
           >
@@ -134,19 +134,26 @@ export function TasklistTargetList() {
               <GripVerticalIcon />
             </Button>
             <Emoji code={tasklist.emoji?.code ?? defaultTasklistEmojiCode} />
-            <p className={twMerge("ml-4 truncate font-medium")}>{tasklist.title}</p>
-            {tasklist._count.tasks > 0 ? (
-              <div className={iconBox({ className: "text-gold-500" })}>
-                <AsteriskIcon />
-              </div>
-            ) : null}
-            <div className="grow" />
-            <TaskSizeSummaryChips
-              tasks={tasklist.tasks}
-              useOverdueColor={isPastWeek}
-              consistentWeightVariant="medium"
-              showEmptyChip={tasklist._count.timeslots > 0}
-            />
+            <div
+              className={twMerge(
+                "flex grow items-start",
+                isFaded ? "opacity-20 group-hover/tasklist-item:opacity-100" : ""
+              )}
+            >
+              <p className={twMerge("ml-4 truncate font-medium")}>{tasklist.title}</p>
+              {tasklist._count.tasks > 0 ? (
+                <div className={iconBox({ className: "text-gold-500" })}>
+                  <AsteriskIcon />
+                </div>
+              ) : null}
+              <div className="grow" />
+              <TaskSizeSummaryChips
+                tasks={tasklist.tasks}
+                useOverdueColor={isPastWeek}
+                consistentWeightVariant="medium"
+                showEmptyChip={tasklist._count.timeslots > 0}
+              />
+            </div>
           </GridListItem>
         )
       }}

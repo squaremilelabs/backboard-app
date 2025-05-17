@@ -39,7 +39,7 @@ export function TasklistPage() {
           <TasklistTimeslotPanel timeslotId={timeslotId} />
           <ConfirmationButton
             onConfirm={handleDeleteTimeslot}
-            helpText="Remove from calendar? Any tasks will be moved to the Backlog."
+            content="Any tasks will be moved to the Backlog."
             confirmButtonText="Remove"
             isDestructive
           >
