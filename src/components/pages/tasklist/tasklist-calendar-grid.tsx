@@ -1,7 +1,7 @@
 "use client"
 import { twMerge } from "tailwind-merge"
 import { Button, Dialog, DialogTrigger, Link, Popover } from "react-aria-components"
-import { Loader, PlusCircleIcon } from "lucide-react"
+import { Loader, PlusIcon } from "lucide-react"
 import { Timeslot } from "@prisma/client"
 import { Task } from "@zenstackhq/runtime/models"
 import { useRef } from "react"
@@ -177,6 +177,7 @@ function TimeblockCell({
         "rounded-md border",
         "cursor-pointer hover:scale-105",
         "has-[button[data-pressed]]:rounded-full has-[button[data-pressed]]:border-neutral-400",
+        timeslot ? "border-neutral-300" : "",
         isActive ? "border-neutral-950" : "",
         temporalStatus === "past" ? "bg-neutral-100" : "bg-canvas",
         isDropTarget ? "outline" : ""
@@ -247,7 +248,7 @@ function TimeblockCellInnerContent({
           className: timeslot
             ? "text-neutral-950"
             : [
-                "text-neutral-400",
+                "text-neutral-50",
                 "group-hover/timeblock-cell:text-neutral-950",
                 "group-data-pressed/inner-button:text-neutral-950",
               ],
@@ -277,7 +278,7 @@ function TimeblockCellInnerContent({
             })
           )}
         >
-          <PlusCircleIcon />
+          <PlusIcon />
         </div>
       )}
     </div>
