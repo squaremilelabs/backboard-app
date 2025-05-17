@@ -217,7 +217,9 @@ function TimeblockCell({
             >
               <Button
                 onPress={handleCreateTimeslot}
-                className={twMerge(interactive({ hover: "underline", className: "text-sm" }))}
+                className={twMerge(
+                  interactive({ hover: "underline", className: "min-w-fit text-sm text-nowrap" })
+                )}
               >
                 Add to calendar
               </Button>

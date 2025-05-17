@@ -9,7 +9,6 @@ import { SignedIn, UserButton } from "@clerk/nextjs"
 import { ArrowLeftIcon } from "lucide-react"
 import { WeekNavigator } from "../portables/week-navigator"
 import { ThemeButton } from "../portables/theme-button"
-import { TasklistHeader } from "../pages/tasklist/tasklist-header"
 import { SidebarContent } from "./sidebar-content"
 import { useSessionStorageUtility } from "@/lib/storage-utility"
 import { iconBox, interactive } from "@/styles/class-names"
@@ -67,12 +66,6 @@ function Header() {
         </>
       ) : (
         <div className="flex grow items-center gap-8">
-          {router.basePath === "tasklist" && (
-            <TasklistHeader
-              key={router.params.tasklist_id}
-              tasklistId={router.params.tasklist_id}
-            />
-          )}
           <Link
             href="/calendar"
             className={twMerge(
