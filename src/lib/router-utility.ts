@@ -42,7 +42,7 @@ export function useRouterUtility() {
     )
   }
 
-  const push = () => (params: { path?: string; query?: SearchParams | null; merge?: boolean }) => {
+  const push = (params: { path?: string; query?: SearchParams | null; merge?: boolean }) => {
     const constructedHref = getHref(params)
     router.push(constructedHref)
   }

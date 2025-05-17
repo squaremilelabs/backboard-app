@@ -7,7 +7,7 @@ import {
   useDragAndDrop,
 } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
-import { ArrowRightIcon, AsteriskIcon, GripVerticalIcon } from "lucide-react"
+import { AsteriskIcon, GripVerticalIcon } from "lucide-react"
 import { Task, Tasklist } from "@zenstackhq/runtime/models"
 import { useFindManyTasklist, useUpdateManyTask } from "@/database/generated/hooks"
 import { defaultTasklistEmojiCode } from "@/lib/utils-tasklist"
@@ -28,18 +28,22 @@ type TasklistQueryResult = Tasklist & {
 
 export function TasklistTargetList() {
   const router = useRouterUtility()
-  const { activeWeekDisplayedDates, activeWeekTemporalStatus } = useWeekState()
+  const { activeWeekDates, activeWeekDisplayedDates, isPastWeek } = useWeekState()
+
+  const datesFilter = router.basePath === "calendar" ? activeWeekDisplayedDates : activeWeekDates
 
   const tasklistsQuery = useFindManyTasklist({
-    where: { archived_at: null },
+    where: {
+      OR: [{ archived_at: null }, { timeslots: { some: { date: { in: datesFilter } } } }],
+    },
     include: {
       tasks: {
-        where: { timeslot: { date: { in: activeWeekDisplayedDates } } },
+        where: { timeslot: { date: { in: datesFilter } } },
       },
       _count: {
         select: {
           tasks: { where: { timeslot_id: null, status: "TODO" } },
-          timeslots: { where: { date: { in: activeWeekDisplayedDates } } },
+          timeslots: { where: { date: { in: datesFilter } } },
         },
       },
     },
@@ -106,6 +110,7 @@ export function TasklistTargetList() {
     >
       {(tasklist) => {
         const isActive = router.params.tasklist_id === tasklist.id
+        const isFaded = !isActive && router.params.tasklist_id
         return (
           <GridListItem
             id={tasklist.id}
@@ -117,7 +122,8 @@ export function TasklistTargetList() {
                 "flex items-start px-4 py-6",
                 "rounded-lg",
                 "-outline-offset-2",
-                isDropTarget ? "outline" : ""
+                isDropTarget ? "outline" : "",
+                isFaded ? "opacity-50" : ""
               )
             }
           >
@@ -137,15 +143,10 @@ export function TasklistTargetList() {
             <div className="grow" />
             <TaskSizeSummaryChips
               tasks={tasklist.tasks}
-              useOverdueColor={activeWeekTemporalStatus === "past"}
+              useOverdueColor={isPastWeek}
               consistentWeightVariant="medium"
               showEmptyChip={tasklist._count.timeslots > 0}
             />
-            {isActive && (
-              <div className={iconBox({ className: "text-neutral-500" })}>
-                <ArrowRightIcon />
-              </div>
-            )}
           </GridListItem>
         )
       }}

@@ -1,7 +1,8 @@
-import { add, sub, parse, startOfToday } from "date-fns"
-import { useCallback } from "react"
+import { add, sub, parse, startOfToday, nextMonday, format, previousMonday } from "date-fns"
+import { useCallback, useMemo } from "react"
 import { useLocalStorageUtility } from "./storage-utility"
-import { getISOWeekDates, getISOWeekString, getTemporalStatus } from "./utils-temporal"
+import { getISOWeekDates, getISOWeekString } from "./utils-temporal"
+import { formatDate } from "./utils-common"
 
 const currentIsoWeek = getISOWeekString(new Date())
 
@@ -37,6 +38,8 @@ export function useWeekState() {
   }
 
   const isCurrentWeek = activeWeek === currentIsoWeek
+  const isPastWeek = activeWeek.localeCompare(currentIsoWeek) < 0
+  const isUpcomingWeek = activeWeek.localeCompare(currentIsoWeek) > 0
 
   const activeWeekDates = getISOWeekDates(activeWeek)
   const activeWeekDisplayedDates = activeWeekDates.filter((date) => {
@@ -45,18 +48,23 @@ export function useWeekState() {
     return parse(date, "yyyy-MM-dd", new Date()) >= startOfToday()
   })
 
-  const activeWeekTemporalStatus = getTemporalStatus({
-    date: activeWeekDates[6],
-    startTime: "23:59",
-    endTime: "23:59",
-  })
+  const activeWeekLabel = useMemo(() => {
+    if (activeWeek === currentIsoWeek) return "This week"
+    const firstDateOfWeek = activeWeekDates[0]
+    if (firstDateOfWeek === format(nextMonday(new Date()), "yyyy-MM-dd")) return "Next week"
+    if (firstDateOfWeek === format(previousMonday(sub(new Date(), { days: 6 })), "yyyy-MM-dd"))
+      return "Last week"
+    return `Week of ${formatDate(firstDateOfWeek)}`
+  }, [activeWeek, activeWeekDates])
 
   return {
     activeWeek,
+    activeWeekLabel,
     isCurrentWeek,
+    isPastWeek,
+    isUpcomingWeek,
     activeWeekDates,
     activeWeekDisplayedDates,
-    activeWeekTemporalStatus,
     hidePastDaysEnabled,
     toggleHidePastDaysEnabled,
     setToNextWeek,

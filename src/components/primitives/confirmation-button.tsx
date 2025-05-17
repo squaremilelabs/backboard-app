@@ -30,12 +30,12 @@ export function ConfirmationButton({
           isDismissable
           className="fixed inset-0 flex h-dvh w-dvw flex-col items-center pt-[10%]"
         >
-          <Dialog className="bg-canvas flex w-300 flex-col gap-16 rounded-xl border-2 p-16 !outline-0">
+          <Dialog className="bg-canvas flex w-300 flex-col gap-16 rounded-lg border-2 p-16 !outline-0">
             <p>{helpText}</p>
             <div className="flex justify-stretch gap-16">
               <Button
                 onPress={() => setIsOpen(false)}
-                className={twMerge(interactive(), "grow rounded-md py-8", "border")}
+                className={twMerge(interactive(), "grow rounded-md py-4", "border")}
               >
                 Cancel
               </Button>
@@ -43,8 +43,8 @@ export function ConfirmationButton({
                 onPress={handleConfirm}
                 className={twMerge(
                   interactive(),
-                  "grow rounded-md py-8 font-semibold",
-                  isDestructive ? "bg-red-700 text-red-50" : "bg-neutral-600 text-neutral-50"
+                  "grow rounded-md py-4 font-semibold",
+                  isDestructive ? "bg-red-700 text-red-50" : "bg-neutral-500 text-neutral-50"
                 )}
               >
                 {confirmButtonText || "OK"}

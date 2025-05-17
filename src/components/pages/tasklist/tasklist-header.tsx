@@ -29,12 +29,7 @@ export function TasklistHeader({ tasklistId }: { tasklistId: string | undefined 
   }
 
   return (
-    <div className="flex items-start gap-8">
-      {tasklist?.archived_at ? (
-        <div className={iconBox({ size: "large" })}>
-          <Archive />
-        </div>
-      ) : null}
+    <div className="flex grow items-start gap-8">
       <div className="flex min-h-24 items-start gap-4">
         {!!tasklist && (
           <>
@@ -47,12 +42,17 @@ export function TasklistHeader({ tasklistId }: { tasklistId: string | undefined 
             <EditableText
               initialValue={tasklist?.title}
               onSave={(title) => handleUpdate({ title })}
-              className={() => "text-lg font-medium"}
+              className={() => "grow text-lg font-medium"}
             />
           </>
         )}
       </div>
       <div className="grow" />
+      {tasklist?.archived_at ? (
+        <div className={iconBox({ size: "large", className: "text-neutral-500" })}>
+          <Archive />
+        </div>
+      ) : null}
       <DialogTrigger>
         <Button
           className={twMerge(

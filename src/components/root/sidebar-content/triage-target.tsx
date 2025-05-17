@@ -1,5 +1,4 @@
-import { ArrowRightIcon, InboxIcon } from "lucide-react"
-import { usePathname } from "next/navigation"
+import { InboxIcon } from "lucide-react"
 import { Link } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
 import { isTextDropItem, useDrop } from "react-aria"
@@ -8,13 +7,15 @@ import { Task } from "@zenstackhq/runtime/models"
 import { iconBox, interactive } from "@/styles/class-names"
 import { useFindManyTask, useUpdateManyTask } from "@/database/generated/hooks"
 import { TaskSizeSummaryChips } from "@/components/primitives/task-size"
+import { useRouterUtility } from "@/lib/router-utility"
 
 export function TriageTarget() {
-  const pathname = usePathname()
+  const router = useRouterUtility()
   const triageTasksQuery = useFindManyTask({
     where: { tasklist_id: null, timeslot_id: null, archived_at: null },
   })
-  const isActive = pathname === `/triage`
+  const isActive = router.basePath === `triage`
+  const isFaded = router.params.tasklist_id
 
   const ref = useRef<HTMLDivElement>(null)
   const { dropProps, isDropTarget } = useDrop({
@@ -49,10 +50,15 @@ export function TriageTarget() {
           "flex items-center px-4 py-6",
           "rounded-lg",
           "-outline-offset-2",
-          isDropTarget ? "outline" : ""
+          isDropTarget ? "outline" : "",
+          isFaded ? "opacity-50" : ""
         )}
       >
-        <div className={iconBox({ className: "text-neutral-400" })}>
+        <div
+          className={iconBox({
+            className: ["text-neutral-400", isActive ? "text-neutral-950" : null],
+          })}
+        >
           <InboxIcon />
         </div>
         <p className={twMerge("ml-4 truncate font-medium")}>Triage</p>
@@ -61,11 +67,6 @@ export function TriageTarget() {
           tasks={triageTasksQuery.data ?? []}
           consistentWeightVariant="medium"
         />
-        {isActive && (
-          <div className={iconBox({ className: "text-neutral-500" })}>
-            <ArrowRightIcon />
-          </div>
-        )}
       </Link>
     </div>
   )

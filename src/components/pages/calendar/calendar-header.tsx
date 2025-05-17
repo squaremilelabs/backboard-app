@@ -1,39 +1,61 @@
 "use client"
 import { twMerge } from "tailwind-merge"
 import { format, parse } from "date-fns"
+import { Button } from "react-aria-components"
+import { ArrowLeftFromLineIcon, ArrowRightFromLineIcon } from "lucide-react"
 import { formatDate } from "@/lib/utils-common"
 import { useWeekState } from "@/lib/week-state"
+import { iconBox, interactive } from "@/styles/class-names"
 
 export function CalendarHeader() {
-  const { activeWeekDisplayedDates } = useWeekState()
+  const { activeWeekDisplayedDates, hidePastDaysEnabled, toggleHidePastDaysEnabled } =
+    useWeekState()
 
   return (
-    <div
-      className={twMerge(
-        "grid min-w-fit items-stretch gap-4",
-        "rounded-lg border-2 border-neutral-300 bg-neutral-300/50 backdrop-blur-lg"
-      )}
-      style={{
-        gridTemplateColumns: `repeat(${activeWeekDisplayedDates.length}, minmax(var(--container-xs), 1fr))`,
-      }}
-    >
+    <>
       {activeWeekDisplayedDates.map((dateString) => {
         const date = parse(dateString, "yyyy-MM-dd", new Date())
         const isToday = dateString === format(new Date(), "yyyy-MM-dd")
+        const isMonday = date.getDay() === 1
         return (
           <div
             key={dateString}
             className={twMerge(
-              "min-w-xs",
               "flex items-center rounded-lg px-16 py-4",
               "text-neutral-600",
               isToday ? "bg-canvas text-neutral-950" : ""
             )}
           >
+            {isToday && !isMonday && hidePastDaysEnabled ? (
+              <Button
+                onPress={toggleHidePastDaysEnabled}
+                className={twMerge([
+                  iconBox(),
+                  interactive({ hover: "background" }),
+                  "text-neutral-500",
+                  "mr-8",
+                ])}
+              >
+                <ArrowLeftFromLineIcon />
+              </Button>
+            ) : null}
             <p className="font-semibold">{formatDate(date, { withWeekday: true })}</p>
+            <div className="grow" />
+            {isToday && !isMonday && !hidePastDaysEnabled ? (
+              <Button
+                onPress={toggleHidePastDaysEnabled}
+                className={twMerge([
+                  iconBox(),
+                  interactive({ hover: "background" }),
+                  "text-neutral-500",
+                ])}
+              >
+                <ArrowRightFromLineIcon />
+              </Button>
+            ) : null}
           </div>
         )
       })}
-    </div>
+    </>
   )
 }

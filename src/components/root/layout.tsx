@@ -1,16 +1,19 @@
 "use client"
 import { twMerge } from "tailwind-merge"
-import { Button } from "react-aria-components"
+import { Button, Link } from "react-aria-components"
 import React from "react"
 import Image from "next/image"
 import Icon from "@mdi/react"
 import { mdiMenu, mdiMenuOpen } from "@mdi/js"
 import { SignedIn, UserButton } from "@clerk/nextjs"
+import { ArrowLeftIcon } from "lucide-react"
+import { WeekNavigator } from "../portables/week-navigator"
+import { ThemeButton } from "../portables/theme-button"
+import { TasklistHeader } from "../pages/tasklist/tasklist-header"
 import { SidebarContent } from "./sidebar-content"
-import { WeekNavigator } from "./header-content/week-navigator"
-import { ThemeButton } from "./header-content/theme-button"
 import { useSessionStorageUtility } from "@/lib/storage-utility"
 import { iconBox, interactive } from "@/styles/class-names"
+import { useRouterUtility } from "@/lib/router-utility"
 
 export function RootLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen] = useSessionStorageUtility("sidebar-open", true)
@@ -34,6 +37,7 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
 }
 
 function Header() {
+  const router = useRouterUtility()
   const [sidebarOpen, setSidebarOpen] = useSessionStorageUtility("sidebar-open", true)
   return (
     <header className="flex h-50 items-center gap-16 px-16">
@@ -51,15 +55,34 @@ function Header() {
         <Image
           alt="Backboard"
           src="/images/backboard-logo.svg"
-          width={20}
-          height={20}
+          width={16}
+          height={16}
           className="shadow-md"
         />
       </Button>
-      <div className="flex items-center gap-8">
-        <WeekNavigator />
-      </div>
-      <div className="grow" />
+      {router.basePath === "calendar" ? (
+        <>
+          <WeekNavigator />
+          <div className="grow" />
+        </>
+      ) : (
+        <div className="flex grow items-center gap-8">
+          <Link
+            href="/calendar"
+            className={twMerge(
+              iconBox({ size: "large" }),
+              interactive({ hover: "background" }),
+              "text-neutral-500"
+            )}
+          >
+            <ArrowLeftIcon />
+          </Link>
+          {router.basePath === "tasklist" && (
+            <TasklistHeader tasklistId={router.params.tasklist_id} />
+          )}
+          {router.basePath === "triage" && <h1 className="text-lg font-medium">Triage</h1>}
+        </div>
+      )}
       <SignedIn>
         <ThemeButton />
         <UserButton />

@@ -11,6 +11,7 @@ export function TaskSizeChip({
   useCondensedMinutes,
   fixedWeight,
   className,
+  size,
 }: {
   minutes: number | null | undefined
   status: TaskStatus
@@ -18,10 +19,12 @@ export function TaskSizeChip({
   fixedWeight?: ChipProps["weight"]
   useOverdueColor?: boolean
   useCondensedMinutes?: boolean
+  size?: ChipProps["size"]
 }) {
   return (
     <div
       className={chip({
+        size,
         shape: "pill",
         color: getTaskStatusChipColor(status, { useOverdueColor }),
         weight: fixedWeight ?? getTaskSizeChipWeight(minutes),
@@ -41,12 +44,14 @@ export function TaskSizeSummaryChips({
   consistentWeightVariant,
   showEmptyChip,
   showFullMinutes,
+  size,
 }: {
   tasks: Task[]
   consistentWeightVariant?: ChipProps["weight"]
   showEmptyChip?: boolean
   useOverdueColor?: boolean
   showFullMinutes?: boolean
+  size?: ChipProps["size"]
 }) {
   const taskSummary = getTaskSummary(tasks)
   const displayedStatuses: TaskStatus[] = [
@@ -67,11 +72,12 @@ export function TaskSizeSummaryChips({
             fixedWeight={consistentWeightVariant}
             useOverdueColor={useOverdueColor}
             useCondensedMinutes={!showFullMinutes}
+            size={size}
           />
         )
       })}
     </div>
   ) : showEmptyChip ? (
-    <TaskSizeChip status="DRAFT" minutes={0} />
+    <TaskSizeChip status="DRAFT" minutes={0} size={size} />
   ) : null
 }

@@ -2,7 +2,12 @@ import { format, parse } from "date-fns"
 
 export function formatDate(
   dateInput: Date | string | null | undefined,
-  options?: { withTime?: boolean; customNoneLabel?: string; withWeekday?: boolean }
+  options?: {
+    withTime?: boolean
+    customNoneLabel?: string
+    withWeekday?: boolean
+    onlyWeekday?: boolean
+  }
 ): string {
   let date = dateInput
 
@@ -29,6 +34,10 @@ export function formatDate(
 
   if (options?.withWeekday) {
     dateFormat = "EEE " + dateFormat
+  }
+
+  if (options?.onlyWeekday) {
+    dateFormat = "EEE"
   }
 
   return format(date, dateFormat)

@@ -33,13 +33,18 @@ export const iconBox = tv({
 export type IconBoxProps = VariantProps<typeof iconBox>
 
 export const chip = tv({
-  base: [
-    "inline-flex items-center justify-center gap-4",
-    "text-sm border min-w-40 w-fit px-8 py-1 truncate font-semibold",
-    "[&_svg]:!size-14 [&_img]:!size-14 *:!text-sm",
-    "!no-underline",
-  ],
+  base: ["inline-flex items-center justify-center gap-4 border", "!no-underline"],
   variants: {
+    size: {
+      base: [
+        "text-sm min-w-40 w-fit px-8 py-1 truncate font-semibold",
+        "[&_svg]:!size-14 [&_img]:!size-14 *:!text-sm",
+      ],
+      small: [
+        "text-xs min-w-30 w-fit px-4 truncate font-medium",
+        "[&_svg]:!size-12 [&_img]:!size-12 *:!text-xs",
+      ],
+    },
     shape: {
       pill: "rounded-full",
       box: "rounded-md",
@@ -144,6 +149,7 @@ export const chip = tv({
     },
   ],
   defaultVariants: {
+    size: "base",
     shape: "pill",
     color: "neutral",
     weight: "light",
