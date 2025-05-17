@@ -1,6 +1,7 @@
 "use client"
-import { Button } from "react-aria-components"
+import { Button, Link } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
+import { CalendarIcon } from "lucide-react"
 import { TasklistTimeslotPanel } from "./tasklist-timeslot-panel"
 import { TasklistBacklogPanel } from "./tasklist-backlog-panel"
 import TasklistCalendarGrid from "./tasklist-calendar-grid"
@@ -9,7 +10,7 @@ import { useRouterUtility } from "@/lib/router-utility"
 import { WeekNavigator } from "@/components/portables/week-navigator"
 import { useDeleteTimeslot } from "@/database/generated/hooks"
 import { ConfirmationButton } from "@/components/primitives/confirmation-button"
-import { interactive } from "@/styles/class-names"
+import { iconBox, interactive } from "@/styles/class-names"
 
 export function TasklistPage() {
   const router = useRouterUtility()
@@ -28,6 +29,16 @@ export function TasklistPage() {
     <div className="flex w-sm max-w-full flex-col gap-16 p-16">
       <div className="flex flex-col gap-8">
         <div className="flex items-center">
+          <Link
+            href="/calendar"
+            className={twMerge(
+              iconBox({ size: "base" }),
+              interactive({ hover: "background" }),
+              "text-neutral-500"
+            )}
+          >
+            <CalendarIcon />
+          </Link>
           <WeekNavigator className="rounded-md border-none bg-transparent p-0" />
           <div className="grow" />
           <TasklistBacklogTarget tasklistId={tasklistId} />

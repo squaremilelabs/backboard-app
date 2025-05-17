@@ -15,7 +15,6 @@ export function TriageTarget() {
     where: { tasklist_id: null, timeslot_id: null, archived_at: null },
   })
   const isActive = router.basePath === `triage`
-  const isFaded = router.params.tasklist_id
 
   const ref = useRef<HTMLDivElement>(null)
   const { dropProps, isDropTarget } = useDrop({
@@ -48,10 +47,10 @@ export function TriageTarget() {
         className={twMerge(
           interactive(),
           "flex items-center px-4 py-6",
-          "rounded-lg",
+          "rounded-lg border border-transparent",
           "-outline-offset-2",
           isDropTarget ? "outline" : "",
-          isFaded ? "opacity-50" : ""
+          isActive ? "border-neutral-300 bg-neutral-100" : ""
         )}
       >
         <div

@@ -6,7 +6,7 @@ import Image from "next/image"
 import Icon from "@mdi/react"
 import { mdiMenu, mdiMenuOpen } from "@mdi/js"
 import { SignedIn, UserButton } from "@clerk/nextjs"
-import { CalendarIcon, InboxIcon } from "lucide-react"
+import { ArrowLeftIcon } from "lucide-react"
 import { WeekNavigator } from "../portables/week-navigator"
 import { ThemeButton } from "../portables/theme-button"
 import { TasklistHeader } from "../pages/tasklist/tasklist-header"
@@ -67,37 +67,28 @@ function Header() {
         </>
       ) : (
         <div className="flex grow items-center gap-8">
-          <div className="grow">
-            {router.basePath === "tasklist" && (
-              <TasklistHeader
-                key={router.params.tasklist_id}
-                tasklistId={router.params.tasklist_id}
-              />
-            )}
-            {router.basePath === "triage" && <h1 className="text-lg font-medium">Triage</h1>}
-          </div>
+          {router.basePath === "tasklist" && (
+            <TasklistHeader
+              key={router.params.tasklist_id}
+              tasklistId={router.params.tasklist_id}
+            />
+          )}
+          {router.basePath === "triage" && (
+            <Link
+              href="/calendar"
+              className={twMerge(
+                interactive({ hover: "background" }),
+                "flex h-24 items-center gap-8",
+                "text-neutral-500",
+                "rounded-md px-4"
+              )}
+            >
+              <ArrowLeftIcon size={16} />
+              Back to calendar
+            </Link>
+          )}
         </div>
       )}
-      <Link
-        href="/calendar"
-        className={twMerge(
-          iconBox({ size: "large" }),
-          interactive({ hover: "background" }),
-          router.basePath === "calendar" ? "text-neutral-950" : "text-neutral-400"
-        )}
-      >
-        <CalendarIcon />
-      </Link>
-      <Link
-        href="/triage"
-        className={twMerge(
-          iconBox({ size: "large" }),
-          interactive({ hover: "background" }),
-          router.basePath === "triage" ? "text-neutral-950" : "text-neutral-400"
-        )}
-      >
-        <InboxIcon />
-      </Link>
       <SignedIn>
         <ThemeButton />
         <UserButton />

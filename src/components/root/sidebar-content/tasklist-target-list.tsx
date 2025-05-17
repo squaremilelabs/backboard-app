@@ -110,7 +110,6 @@ export function TasklistTargetList() {
     >
       {(tasklist) => {
         const isActive = router.params.tasklist_id === tasklist.id
-        const isFaded = !isActive && router.params.tasklist_id
         return (
           <GridListItem
             id={tasklist.id}
@@ -118,12 +117,13 @@ export function TasklistTargetList() {
             textValue={tasklist.title}
             className={({ isDropTarget }) =>
               twMerge(
-                interactive({ className: isActive ? "!opacity-100" : "" }),
+                "cursor-pointer",
                 "group/tasklist-item",
                 "flex items-start px-4 py-6",
-                "rounded-lg",
+                "rounded-lg border border-transparent",
                 "-outline-offset-2",
-                isDropTarget ? "outline" : ""
+                isDropTarget ? "outline" : "",
+                isActive ? "border-neutral-300 bg-neutral-100" : ""
               )
             }
           >
@@ -134,13 +134,16 @@ export function TasklistTargetList() {
               <GripVerticalIcon />
             </Button>
             <Emoji code={tasklist.emoji?.code ?? defaultTasklistEmojiCode} />
-            <div
-              className={twMerge(
-                "flex grow items-start",
-                isFaded ? "opacity-20 group-hover/tasklist-item:opacity-100" : ""
-              )}
-            >
-              <p className={twMerge("ml-4 truncate font-medium")}>{tasklist.title}</p>
+            <div className={twMerge("flex grow items-start")}>
+              <p
+                className={twMerge(
+                  "ml-4 truncate font-medium",
+                  "group-hover/tasklist-item:underline",
+                  "underline-offset-4"
+                )}
+              >
+                {tasklist.title}
+              </p>
               {tasklist._count.tasks > 0 ? (
                 <div className={iconBox({ className: "text-gold-500" })}>
                   <AsteriskIcon />
