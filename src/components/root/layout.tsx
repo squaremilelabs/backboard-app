@@ -6,7 +6,7 @@ import Image from "next/image"
 import Icon from "@mdi/react"
 import { mdiMenu, mdiMenuOpen } from "@mdi/js"
 import { SignedIn, UserButton } from "@clerk/nextjs"
-import { CalendarIcon } from "lucide-react"
+import { CalendarIcon, InboxIcon } from "lucide-react"
 import { WeekNavigator } from "../portables/week-navigator"
 import { ThemeButton } from "../portables/theme-button"
 import { TasklistHeader } from "../pages/tasklist/tasklist-header"
@@ -76,18 +76,28 @@ function Header() {
             )}
             {router.basePath === "triage" && <h1 className="text-lg font-medium">Triage</h1>}
           </div>
-          <Link
-            href="/calendar"
-            className={twMerge(
-              iconBox({ size: "large" }),
-              interactive({ hover: "background" }),
-              "text-neutral-950"
-            )}
-          >
-            <CalendarIcon />
-          </Link>
         </div>
       )}
+      <Link
+        href="/calendar"
+        className={twMerge(
+          iconBox({ size: "large" }),
+          interactive({ hover: "background" }),
+          router.basePath === "calendar" ? "text-neutral-950" : "text-neutral-400"
+        )}
+      >
+        <CalendarIcon />
+      </Link>
+      <Link
+        href="/triage"
+        className={twMerge(
+          iconBox({ size: "large" }),
+          interactive({ hover: "background" }),
+          router.basePath === "triage" ? "text-neutral-950" : "text-neutral-400"
+        )}
+      >
+        <InboxIcon />
+      </Link>
       <SignedIn>
         <ThemeButton />
         <UserButton />
