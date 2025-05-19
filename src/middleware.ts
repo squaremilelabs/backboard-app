@@ -1,5 +1,7 @@
-import { clerkMiddleware } from "@clerk/nextjs/server"
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server"
 import { NextResponse } from "next/server"
+
+const isProtectedRoute = createRouteMatcher(["/", "/calendar(.*)", "/tasklist(.*)", "/triage(.*)"])
 
 export const config = {
   matcher: [
@@ -11,7 +13,7 @@ export const config = {
 }
 
 export default clerkMiddleware(async (auth, req) => {
-  await auth.protect()
+  if (isProtectedRoute(req)) await auth.protect()
   if (req.nextUrl.pathname === "/") {
     const { userId } = await auth()
     if (userId) {
