@@ -64,8 +64,8 @@ export function TasklistBacklogTarget({ tasklistId }: { tasklistId: string | und
           "flex items-center gap-4 p-4",
           "rounded-md",
           "cursor-pointer",
-          "border border-transparent",
-          isActive ? "bg-canvas border-neutral-950 px-8" : "hover:scale-105",
+          "border-2 border-transparent",
+          isActive ? "border-neutral-400 px-8" : "hover:scale-105",
           isDropTarget ? "outline" : ""
         )}
       >

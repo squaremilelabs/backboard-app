@@ -52,12 +52,15 @@ export default function TasklistCalendarGrid({ tasklistId }: { tasklistId: strin
             <div
               key={date}
               className={twMerge(
-                "flex items-center",
-                "rounded-md border border-neutral-300 px-4 py-2",
-                temporalStatus === "current" ? "bg-canvas border" : "bg-neutral-200"
+                "flex items-center justify-center",
+                "rounded-md px-4",
+                "font-medium text-neutral-600",
+                temporalStatus === "current" ? "text-gold-500 font-semibold" : ""
               )}
             >
-              <p className="text-sm">{formatDate(date, { onlyWeekday: true })}</p>
+              <p className="text-sm">
+                {temporalStatus === "current" ? "Today" : formatDate(date, { onlyWeekday: true })}
+              </p>
             </div>
           )
         })}
@@ -102,7 +105,7 @@ function TimeblockCell({
   tasklistId: string | undefined
 }) {
   const router = useRouterUtility()
-  const isActive = router.query.timeslot && router.query.timeslot === timeslot?.id
+  const isActive = !!router.query.timeslot && router.query.timeslot === timeslot?.id
   const temporalStatus = getTemporalStatus({
     date,
     startTime: timeblock.startTime,
@@ -174,12 +177,17 @@ function TimeblockCell({
       {...dropProps}
       className={twMerge(
         "group/timeblock-cell grid",
-        "rounded-md border",
+        "rounded-md border-2 border-transparent",
         "cursor-pointer hover:scale-105",
-        "has-[button[data-pressed]]:rounded-full has-[button[data-pressed]]:border-neutral-400",
-        timeslot ? "border-neutral-300" : "",
-        isActive ? "border-neutral-950" : "",
-        temporalStatus === "past" ? "bg-neutral-100" : "bg-canvas",
+        [
+          "has-[button[data-pressed]]:rounded-full",
+          "has-[button[data-pressed]]:outline-1",
+          "has-[button[data-pressed]]:-outline-offset-1",
+          "has-[button[data-pressed]]:outline-neutral-400",
+        ],
+        timeslot ? "" : "",
+        temporalStatus === "past" ? "bg-neutral-200" : "bg-neutral-100",
+        isActive ? "border-neutral-400" : "",
         isDropTarget ? "outline" : ""
       )}
     >
@@ -239,21 +247,23 @@ function TimeblockCellInnerContent({
 }: {
   timeblock: Timeblock
   timeslot?: Timeslot & { tasks: Task[] }
-  isPending?: boolean
-  temporalStatus?: TemporalStatus
+  isPending: boolean
+  temporalStatus: TemporalStatus
 }) {
   return (
     <div className="flex items-center justify-between overflow-hidden p-4">
       <div
         className={iconBox({
           size: "small",
-          className: timeslot
-            ? "text-neutral-950"
-            : [
-                "text-neutral-50",
-                "group-hover/timeblock-cell:text-neutral-950",
-                "group-data-pressed/inner-button:text-neutral-950",
-              ],
+          className: [
+            timeslot
+              ? "text-neutral-950"
+              : [
+                  "text-transparent",
+                  "group-hover/timeblock-cell:text-neutral-950",
+                  "group-data-pressed/inner-button:text-neutral-950",
+                ],
+          ],
         })}
       >
         {isPending ? <Loader className="text-gold-500 animate-spin" /> : <timeblock.Icon />}
