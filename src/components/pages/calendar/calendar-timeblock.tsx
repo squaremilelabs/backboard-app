@@ -3,29 +3,27 @@ import { useRef } from "react"
 import { isTextDropItem, useDrop } from "react-aria"
 import { Tasklist, Timeslot } from "@zenstackhq/runtime/models"
 import { LoaderIcon } from "lucide-react"
+import { Task } from "@prisma/client"
 import { CalendarTimeblockTimeslots } from "./calendar-timeblock-timeslots"
 import { getTemporalStatus, Timeblock } from "@/lib/utils-temporal"
 import { iconBox } from "@/styles/class-names"
-import { useCreateTimeslot, useUpdateManyTimeslot } from "@/database/generated/hooks"
+import { useTimeblockDrop } from "@/lib/timeblock-drop"
 
-export function CalendarTimeblock({
-  dateString,
-  timeblock,
-}: {
-  dateString: string
-  timeblock: Timeblock
-}) {
+type ExpandedTimeslot = Timeslot & { tasklist: Tasklist; tasks: Task[] }
+
+export function CalendarTimeblock({ date, timeblock }: { date: string; timeblock: Timeblock }) {
+  const { handleTimeslotDrop, handleTasklistDrop, isDropPending } = useTimeblockDrop({
+    date,
+    timeblock,
+  })
+
   const ref = useRef<HTMLDivElement>(null)
   const { dropProps, isDropTarget } = useDrop({
     ref,
-    getDropOperation: (types) => {
-      if (types.has("timeslot")) return "move"
-      if (types.has("tasklist")) return "copy"
-      return "cancel"
-    },
+    getDropOperation: () => "move",
     onDrop: async (e) => {
       // handle timeslot drop
-      const timeslots = await Promise.all<Timeslot>(
+      const timeslots = await Promise.all<ExpandedTimeslot>(
         e.items
           .filter(isTextDropItem)
           .filter((item) => item.types.has("timeslot"))
@@ -34,9 +32,7 @@ export function CalendarTimeblock({
           })
       )
       if (timeslots.length > 0) {
-        if (timeslots[0].date === dateString && timeslots[0].start_time === timeblock.startTime)
-          return
-        handleTimeslotsDrop(timeslots)
+        handleTimeslotDrop(timeslots[0])
       }
       // handle tasklist drop
       const tasklists = await Promise.all<Tasklist>(
@@ -48,41 +44,13 @@ export function CalendarTimeblock({
           })
       )
       if (tasklists.length > 0) {
-        handleTasklistsDrop(tasklists)
+        handleTasklistDrop(tasklists[0])
       }
     },
   })
 
-  const updateTimeslotsMutation = useUpdateManyTimeslot()
-  const handleTimeslotsDrop = (timeslots: Timeslot[]) => {
-    updateTimeslotsMutation.mutate({
-      where: { id: { in: timeslots.map((timeslot) => timeslot.id) } },
-      data: {
-        date: dateString,
-        start_time: timeblock.startTime,
-        end_time: timeblock.endTime,
-      },
-    })
-  }
-
-  const createTimeslotMutation = useCreateTimeslot()
-  const handleTasklistsDrop = (tasklists: Tasklist[]) => {
-    tasklists.forEach((tasklist) => {
-      createTimeslotMutation.mutate({
-        data: {
-          date: dateString,
-          start_time: timeblock.startTime,
-          end_time: timeblock.endTime,
-          tasklist: { connect: { id: tasklist.id } },
-        },
-      })
-    })
-  }
-
-  const isDropPending = createTimeslotMutation.isPending || updateTimeslotsMutation.isPending
-
   const temporalStatus = getTemporalStatus({
-    date: dateString,
+    date: date,
     startTime: timeblock.startTime,
     endTime: timeblock.endTime,
   })
@@ -118,7 +86,7 @@ export function CalendarTimeblock({
         )}
       </div>
       <div className="h-120 min-h-120">
-        <CalendarTimeblockTimeslots dateString={dateString} timeblock={timeblock} />
+        <CalendarTimeblockTimeslots date={date} timeblock={timeblock} />
       </div>
     </div>
   )
