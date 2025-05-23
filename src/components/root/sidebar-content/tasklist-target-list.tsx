@@ -13,7 +13,7 @@ import { useFindManyTasklist, useUpdateManyTask } from "@/database/generated/hoo
 import { defaultTasklistEmojiCode } from "@/lib/utils-tasklist"
 import { Emoji } from "@/components/primitives/emoji"
 import { iconBox, interactive } from "@/styles/class-names"
-import { TaskSizeSummaryChips } from "@/components/primitives/task-size"
+import { TaskSizeSummaryChips } from "@/components/portables/task-size"
 import { useWeekState } from "@/lib/week-state"
 import { useRouterUtility } from "@/lib/router-utility"
 import { getTaskSummary } from "@/lib/utils-task"

@@ -4,7 +4,7 @@ import { Button, Disclosure, DisclosurePanel, Heading } from "react-aria-compone
 import { twMerge } from "tailwind-merge"
 import { useRef, useState } from "react"
 import { TaskPropertyPicker } from "./task-property-picker"
-import { TaskSizeChip } from "@/components/primitives/task-size"
+import { TaskSizeChip } from "@/components/portables/task-size"
 import { ConfirmationButton } from "@/components/primitives/confirmation-button"
 import { EditableText } from "@/components/primitives/editable-text"
 import { formatDate } from "@/lib/utils-common"

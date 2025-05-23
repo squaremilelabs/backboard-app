@@ -20,7 +20,7 @@ import {
   useFindManyTimeslot,
   useUpdateManyTask,
 } from "@/database/generated/hooks"
-import { TaskSizeSummaryChips } from "@/components/primitives/task-size"
+import { TaskSizeSummaryChips } from "@/components/portables/task-size"
 import { useRouterUtility } from "@/lib/router-utility"
 
 export default function TasklistCalendarGrid({ tasklistId }: { tasklistId: string | undefined }) {

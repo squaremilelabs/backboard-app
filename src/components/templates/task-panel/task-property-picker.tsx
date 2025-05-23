@@ -2,7 +2,7 @@ import { TaskStatus } from "@zenstackhq/runtime/models"
 import { useState } from "react"
 import { ListBox, ListBoxItem, Popover, Selection } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
-import { TaskSizeChip } from "@/components/primitives/task-size"
+import { TaskSizeChip } from "@/components/portables/task-size"
 import { getTaskStatusChipColor, taskSizeOptions, taskStatusUIMap } from "@/lib/utils-task"
 import { chip, interactive, popover } from "@/styles/class-names"
 

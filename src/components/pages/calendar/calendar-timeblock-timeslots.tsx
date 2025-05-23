@@ -2,7 +2,7 @@ import { Button, GridList, GridListItem, useDragAndDrop } from "react-aria-compo
 import { twMerge } from "tailwind-merge"
 import { GripVerticalIcon, LoaderIcon, XIcon } from "lucide-react"
 import { Emoji } from "@/components/primitives/emoji"
-import { TaskSizeSummaryChips } from "@/components/primitives/task-size"
+import { TaskSizeSummaryChips } from "@/components/portables/task-size"
 import { ConfirmationButton } from "@/components/primitives/confirmation-button"
 import { useDeleteTimeslot, useFindManyTimeslot } from "@/database/generated/hooks"
 import { getTemporalStatus, sortTimeslots, Timeblock } from "@/lib/utils-temporal"
