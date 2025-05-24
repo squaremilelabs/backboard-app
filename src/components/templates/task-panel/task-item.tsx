@@ -1,5 +1,5 @@
 import { Task, TaskStatus } from "@prisma/client"
-import { ChevronDownIcon, DeleteIcon, TextIcon } from "lucide-react"
+import { CheckIcon, ChevronDownIcon, DeleteIcon, TextIcon } from "lucide-react"
 import { Button, Disclosure, DisclosurePanel, Heading } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
 import { useRef, useState } from "react"
@@ -8,7 +8,7 @@ import { TaskSizeChip } from "@/components/portables/task-size"
 import { ConfirmationButton } from "@/components/primitives/confirmation-button"
 import { EditableText } from "@/components/primitives/editable-text"
 import { formatDate } from "@/lib/utils-common"
-import { interactive } from "@/styles/class-names"
+import { iconBox, interactive } from "@/styles/class-names"
 
 export interface TaskItemValues {
   title?: string
@@ -41,15 +41,16 @@ export function TaskItem({
       className={twMerge("flex grow flex-col", isExpanded ? "0 gap-8 pb-16" : null)}
     >
       <Heading className="flex items-start gap-4">
+        {task.status === "DONE" && (
+          <div className={iconBox({ className: "text-blue-600" })}>
+            <CheckIcon />
+          </div>
+        )}
         <EditableText
           initialValue={task.title}
           onSave={(title) => onUpdate({ title })}
-          className={({ isActive, isButton }) =>
-            twMerge(
-              "grow",
-              task.status === "DONE" && isButton && !isActive ? "text-neutral-500" : "",
-              isExpanded ? "font-medium" : ""
-            )
+          className={({}) =>
+            twMerge("grow", isExpanded ? "font-medium" : "", task.status !== "DONE" ? "ml-2" : "")
           }
         />
         <Button

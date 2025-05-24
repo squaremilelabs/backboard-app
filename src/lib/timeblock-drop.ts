@@ -12,7 +12,15 @@ import {
 
 type ExpandedTimeslot = Timeslot & { tasklist: Tasklist; tasks: Task[] }
 
-export function useTimeblockDrop({ date, timeblock }: { date: string; timeblock: Timeblock }) {
+export function useTimeblockDrop({
+  date,
+  timeblock,
+  disableAutoDelete,
+}: {
+  date: string
+  timeblock: Timeblock
+  disableAutoDelete?: boolean
+}) {
   const temporalStatus = getTemporalStatus({ date, ...timeblock })
   const { data: existingTimeslots } = useFindManyTimeslot({
     where: { date: date, start_time: timeblock.startTime },
@@ -133,7 +141,7 @@ export function useTimeblockDrop({ date, timeblock }: { date: string; timeblock:
           })
           // If all tasks were done, so the timeslot is now empty, delete the original timeslot
           if (hasOnlyDoneTasks) {
-            deleteTimeslot({ where: { id: droppedTimeslot.id } })
+            if (!disableAutoDelete) deleteTimeslot({ where: { id: droppedTimeslot.id } })
           } else {
             // Otherwise the original timeslot will retain the undone tasks
           }
@@ -155,7 +163,7 @@ export function useTimeblockDrop({ date, timeblock }: { date: string; timeblock:
           })
           // If all tasks were undone, so the timeslot is now empty, delete the original timeslot
           if (hasOnlyUndoneTasks) {
-            deleteTimeslot({ where: { id: droppedTimeslot.id } })
+            if (!disableAutoDelete) deleteTimeslot({ where: { id: droppedTimeslot.id } })
           } else {
             // Otherwise the original timeslot will retain the done tasks
           }

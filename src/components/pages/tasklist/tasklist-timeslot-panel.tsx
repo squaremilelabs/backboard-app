@@ -4,6 +4,7 @@ import { parse } from "date-fns"
 import { CalendarIcon, XIcon } from "lucide-react"
 import { Button } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
+import { useDrag } from "react-aria"
 import { TaskPanel } from "@/components/templates/task-panel"
 import {
   useDeleteTimeslot,
@@ -19,9 +20,23 @@ import { ConfirmationButton } from "@/components/primitives/confirmation-button"
 
 export function TasklistTimeslotPanel({ timeslotId }: { timeslotId: string }) {
   const router = useRouterUtility()
-  const timeslotQuery = useFindUniqueTimeslot({ where: { id: timeslotId } })
+  const timeslotQuery = useFindUniqueTimeslot({
+    where: { id: timeslotId },
+    include: { tasklist: true, tasks: true },
+  })
   const tasksQuery = useFindManyTask({ where: { timeslot_id: timeslotId } })
   const taskOrder = timeslotQuery.data?.task_order ?? []
+
+  const { dragProps } = useDrag({
+    getItems: () => {
+      return [
+        {
+          "text/plain": timeslotQuery.data?.date + " " + timeslotQuery.data?.start_time,
+          "timeslot": JSON.stringify(timeslotQuery.data),
+        },
+      ]
+    },
+  })
 
   const updateTimeslotMutation = useUpdateTimeslot()
   const handleReorder = (reorderedIds: string[]) => {
@@ -38,6 +53,9 @@ export function TasklistTimeslotPanel({ timeslotId }: { timeslotId: string }) {
       deleteTimeslotMutation.mutate({ where: { id: timeslotId } })
     }
   }
+
+  const hasDoneTasks = tasksQuery.data?.some((task) => task.status === "DONE")
+  const hasNoTasks = tasksQuery.data?.length === 0
 
   const timeslot = timeslotQuery.data
   const isLoading = timeslotQuery.isLoading || tasksQuery.isLoading
@@ -67,7 +85,7 @@ export function TasklistTimeslotPanel({ timeslotId }: { timeslotId: string }) {
       headerContent={
         timeblock ? (
           <div className="flex w-full items-center gap-4 pr-8">
-            <div className={iconBox()}>
+            <div {...dragProps} className={iconBox({ className: "!cursor-move !select-auto" })}>
               <CalendarIcon />
             </div>
             <h2 className="font-semibold">
@@ -82,29 +100,40 @@ export function TasklistTimeslotPanel({ timeslotId }: { timeslotId: string }) {
               <p className="text-neutral-600">{timeblock.label}</p>
             </div>
             <div className="grow" />
-            <ConfirmationButton
-              onConfirm={handleDeleteTimeslot}
-              content="Any tasks will be moved to the Backlog."
-              confirmButtonText="Unschedule"
-              isDestructive
-            >
-              <Button
-                className={twMerge(
-                  interactive({ hover: "underline" }),
-                  "flex items-center gap-2",
-                  "text-sm text-neutral-500",
-                  deleteTimeslotMutation.isPending ? "hidden" : ""
-                )}
-              >
-                Unschedule
-                <XIcon size={14} />
-              </Button>
-            </ConfirmationButton>
+            {!hasDoneTasks &&
+              (hasNoTasks ? (
+                <UnscheduleButton onPress={handleDeleteTimeslot} />
+              ) : (
+                <ConfirmationButton
+                  onConfirm={handleDeleteTimeslot}
+                  content="All tasks will be moved to the Backlog."
+                  confirmButtonText="Unschedule"
+                  isDestructive
+                >
+                  <UnscheduleButton />
+                </ConfirmationButton>
+              ))}
           </div>
         ) : (
           "Loading..."
         )
       }
     />
+  )
+}
+
+function UnscheduleButton({ onPress }: { onPress?: () => void }) {
+  return (
+    <Button
+      onPress={onPress}
+      className={twMerge(
+        interactive({ hover: "underline" }),
+        "flex items-center gap-2",
+        "text-sm text-neutral-500"
+      )}
+    >
+      Unschedule
+      <XIcon size={14} />
+    </Button>
   )
 }

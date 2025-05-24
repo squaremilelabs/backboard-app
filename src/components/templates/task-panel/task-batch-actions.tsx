@@ -19,10 +19,17 @@ export function TaskBatchActions({
   list: AsyncListData<Task>
   selectableStatuses: TaskStatus[]
 }) {
-  const selectedIds =
+  const selectedTasks =
     list.selectedKeys === "all"
-      ? list.items.map((task) => task.id)
-      : ([...list.selectedKeys] as string[])
+      ? [...list.items]
+      : [...list.selectedKeys].map((key) => list.getItem(key) as Task)
+
+  const selectedIds = selectedTasks.map((task) => task.id)
+
+  const selectedTaskStatuses = [...new Set(selectedTasks.map((task) => task.status))]
+  const displayedStatuses = selectableStatuses.filter((status) => {
+    return !selectedTaskStatuses.includes(status)
+  })
 
   const updateTasksMutation = useUpdateManyTask()
   const deleteTasksMutation = useDeleteManyTask()
@@ -62,7 +69,7 @@ export function TaskBatchActions({
     <div className="flex flex-col gap-8">
       <div className="flex flex-wrap items-center gap-8">
         {/* Set Status Buttons */}
-        {selectableStatuses.map((status) => {
+        {displayedStatuses.map((status) => {
           const statusUI = taskStatusUIMap[status]
           return (
             <Button

@@ -1,13 +1,14 @@
 "use client"
 
 import { Task, TaskStatus } from "@zenstackhq/runtime/models"
-import { GripVerticalIcon, SquareCheckIcon, SquareIcon } from "lucide-react"
-import { Button, Checkbox, GridList, GridListItem, useDragAndDrop } from "react-aria-components"
+import { GripVerticalIcon } from "lucide-react"
+import { Button, GridList, GridListItem, useDragAndDrop } from "react-aria-components"
 import { AsyncListData } from "react-stately"
 import { twMerge } from "tailwind-merge"
 import { TaskItem, TaskItemValues } from "./task-item"
 import { iconBox, interactive } from "@/styles/class-names"
 import { useDeleteTask, useUpdateTask } from "@/database/generated/hooks"
+import { taskStatusUIMap } from "@/lib/utils-task"
 
 export function TaskGridList({
   list,
@@ -88,12 +89,14 @@ export function TaskGridList({
       selectionMode="multiple"
       selectedKeys={list.selectedKeys}
       onSelectionChange={list.setSelectedKeys}
+      selectionBehavior="replace"
       className="flex flex-col gap-2"
       renderEmptyState={() => (
         <div className={"p-8 text-neutral-500"}>{isLoading ? "Loading..." : "No tasks"}</div>
       )}
     >
       {(task) => {
+        const statusUI = taskStatusUIMap[task.status]
         return (
           <GridListItem
             id={task.id}
@@ -101,24 +104,18 @@ export function TaskGridList({
             className={twMerge(
               "group/task-grid-list-item",
               "flex items-start rounded-md p-4",
-              "data-selected:bg-neutral-100",
+              "data-selected:rounded-l-none data-selected:border-l-2",
               "hover:bg-neutral-50",
-              "-outline-offset-1 outline-neutral-300 focus-visible:outline"
+              "!outline-0 focus-visible:bg-neutral-100",
+              "box-content"
             )}
+            style={{
+              borderColor: `var(--bb-${statusUI.color}-500)`,
+            }}
           >
             <Button slot="drag" className={twMerge(iconBox(), interactive(), "text-neutral-400")}>
               <GripVerticalIcon />
             </Button>
-            <Checkbox
-              slot="selection"
-              className={twMerge(
-                iconBox(),
-                interactive({ hover: "background" }),
-                "mr-2 text-neutral-400 data-selected:text-neutral-700"
-              )}
-            >
-              {({ isSelected }) => (isSelected ? <SquareCheckIcon /> : <SquareIcon />)}
-            </Checkbox>
             <TaskItem
               task={task}
               onDelete={() => onDeleteTask(task.id)}

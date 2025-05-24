@@ -3,7 +3,7 @@ import { twMerge } from "tailwind-merge"
 import { Button, Dialog, DialogTrigger, Link, Popover } from "react-aria-components"
 import { Loader, PlusIcon } from "lucide-react"
 import { Timeslot } from "@prisma/client"
-import { Task } from "@zenstackhq/runtime/models"
+import { Task, Tasklist } from "@zenstackhq/runtime/models"
 import { useRef } from "react"
 import { isTextDropItem, useDrop } from "react-aria"
 import { formatDate } from "@/lib/utils-common"
@@ -22,6 +22,9 @@ import {
 } from "@/database/generated/hooks"
 import { TaskSizeSummaryChips } from "@/components/portables/task-size"
 import { useRouterUtility } from "@/lib/router-utility"
+import { useTimeblockDrop } from "@/lib/timeblock-drop"
+
+type ExpandedTimeslot = Timeslot & { tasklist: Tasklist; tasks: Task[] }
 
 export default function TasklistCalendarGrid({ tasklistId }: { tasklistId: string | undefined }) {
   const { activeWeekDates } = useWeekState()
@@ -52,10 +55,10 @@ export default function TasklistCalendarGrid({ tasklistId }: { tasklistId: strin
             <div
               key={date}
               className={twMerge(
-                "flex items-center justify-center",
-                "rounded-md px-4",
+                "box-content flex items-center justify-center",
+                "rounded-md bg-neutral-300 px-4 py-1",
                 "font-medium text-neutral-600",
-                temporalStatus === "current" ? "text-gold-500 font-semibold" : ""
+                temporalStatus === "current" ? "text-gold-500 bg-canvas border font-semibold" : ""
               )}
             >
               <p className="text-sm">
@@ -154,22 +157,45 @@ function TimeblockCell({
     }
   }
 
+  const { handleTimeslotDrop } = useTimeblockDrop({ date, timeblock, disableAutoDelete: true })
+
   const ref = useRef<HTMLDivElement>(null)
   const { dropProps, isDropTarget } = useDrop({
     ref,
     getDropOperation: (draggedItemTypes) => {
-      if (draggedItemTypes.has("task")) return "move"
+      if (draggedItemTypes.has("task")) {
+        if (timeslot) return "move"
+        return "cancel"
+      }
+      if (draggedItemTypes.has("timeslot")) return "move"
       return "cancel"
     },
     onDrop: async (e) => {
+      // handle tasks drop
       const tasks = await Promise.all<Task>(
-        e.items.filter(isTextDropItem).map(async (task) => {
-          return JSON.parse(await task.getText("task"))
-        })
+        e.items
+          .filter(isTextDropItem)
+          .filter((item) => item.types.has("task"))
+          .map(async (task) => {
+            return JSON.parse(await task.getText("task"))
+          })
       )
-      handleTasksDrop(tasks)
+      if (tasks.length > 0) {
+        handleTasksDrop(tasks)
+      }
+      // handle timeslots drop
+      const timeslots = await Promise.all<ExpandedTimeslot>(
+        e.items
+          .filter(isTextDropItem)
+          .filter((item) => item.types.has("timeslot"))
+          .map(async (timeslot) => {
+            return JSON.parse(await timeslot.getText("timeslot"))
+          })
+      )
+      if (timeslots.length > 0) {
+        handleTimeslotDrop(timeslots[0])
+      }
     },
-    isDisabled: !timeslot,
   })
 
   return (
@@ -178,7 +204,7 @@ function TimeblockCell({
       {...dropProps}
       className={twMerge(
         "group/timeblock-cell grid",
-        "rounded-md border-2 border-transparent",
+        "rounded-md border border-neutral-200",
         "cursor-pointer hover:scale-105",
         isBacklogActive ? "opacity-100" : isActive ? "opacity-100" : "opacity-60",
         [
@@ -190,7 +216,7 @@ function TimeblockCell({
         ],
         timeslot ? "" : "",
         temporalStatus === "past" ? "bg-neutral-200" : "bg-neutral-100",
-        isActive ? "bg-canvas border-neutral-300" : "",
+        isActive ? "bg-canvas border-2 border-neutral-300" : "",
         isDropTarget ? "outline" : ""
       )}
     >

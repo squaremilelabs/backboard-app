@@ -20,7 +20,11 @@ export function CalendarTimeblock({ date, timeblock }: { date: string; timeblock
   const ref = useRef<HTMLDivElement>(null)
   const { dropProps, isDropTarget } = useDrop({
     ref,
-    getDropOperation: () => "move",
+    getDropOperation: (draggedItemTypes) => {
+      if (draggedItemTypes.has("timeslot")) return "move"
+      if (draggedItemTypes.has("tasklist")) return "move"
+      return "cancel"
+    },
     onDrop: async (e) => {
       // handle timeslot drop
       const timeslots = await Promise.all<ExpandedTimeslot>(

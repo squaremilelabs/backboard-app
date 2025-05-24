@@ -81,6 +81,7 @@ export function TaskPanel({
     !isLoading && list.items.length > 1 && !isSameOrders(taskOrder, autoSortedTaskIds)
 
   const hasSelections = [...list.selectedKeys].length > 0
+  const hasMultipleSelections = [...list.selectedKeys].length > 1
 
   return (
     <div
@@ -105,12 +106,14 @@ export function TaskPanel({
         {hasSelections ? (
           <div
             className={twMerge(
-              "flex flex-col gap-8",
-              "bg-canvas/50 sticky top-0 z-10 border-b p-16 backdrop-blur-lg"
+              "flex flex-col gap-8 p-16 pb-8"
+              // "bg-canvas/50 sticky top-0 z-10 border-b p-16 backdrop-blur-lg"
             )}
           >
-            <TaskSelection list={list} />
-            <TaskBatchActions list={list} selectableStatuses={selectableStatuses} />
+            {hasSelections && <TaskSelection list={list} />}
+            {hasMultipleSelections && (
+              <TaskBatchActions list={list} selectableStatuses={selectableStatuses} />
+            )}
           </div>
         ) : (
           <div className="flex items-center p-16 pb-8">
@@ -139,7 +142,7 @@ export function TaskPanel({
             )}
           </div>
         )}
-        <div className={twMerge("px-16", hasSelections ? "py-8" : "pb-16")}>
+        <div className={twMerge("p-16 pt-8")}>
           <TaskGridList
             list={list}
             selectableStatuses={selectableStatuses}
@@ -164,7 +167,7 @@ function autoSortTasks(tasks: Task[]) {
     if (a.size_minutes !== b.size_minutes) {
       return a.size_minutes - b.size_minutes
     }
-    return a.created_at.getTime() - b.created_at.getTime()
+    return 0
   })
 }
 
