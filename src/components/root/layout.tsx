@@ -44,11 +44,14 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
 
 function Header() {
   const router = useRouterUtility()
+  const [sidebarOpen] = useSessionStorageUtility("sidebar-open", true)
   return (
     <header className="flex h-50 items-center gap-16 px-16">
-      <div className="hidden md:block">
-        <SidebarTrigger />
-      </div>
+      {!sidebarOpen && (
+        <div className="hidden md:block">
+          <SidebarTrigger />
+        </div>
+      )}
       {router.basePath === "calendar" ? (
         <>
           <WeekNavigator />
@@ -70,9 +73,11 @@ function Header() {
           </Link>
         </div>
       )}
-      <div className="block md:hidden">
-        <SidebarTrigger />
-      </div>
+      {!sidebarOpen && (
+        <div className="block md:hidden">
+          <SidebarTrigger />
+        </div>
+      )}
       <div className="hidden md:block">
         <SignedIn>
           <UserButton />
