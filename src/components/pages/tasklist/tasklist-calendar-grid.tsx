@@ -56,9 +56,13 @@ export default function TasklistCalendarGrid({ tasklistId }: { tasklistId: strin
               key={date}
               className={twMerge(
                 "box-content flex items-center justify-center",
-                "rounded-md bg-neutral-300 px-4 py-1",
+                "rounded-md border border-transparent px-4 py-1",
                 "font-medium text-neutral-600",
-                temporalStatus === "current" ? "text-gold-500 bg-canvas border font-semibold" : ""
+                temporalStatus === "current"
+                  ? "text-gold-500 bg-canvas border-neutral-200 font-semibold"
+                  : "",
+                temporalStatus === "past" ? "bg-neutral-300" : "",
+                temporalStatus === "future" ? "bg-neutral-200" : ""
               )}
             >
               <p className="text-sm">
