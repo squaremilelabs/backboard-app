@@ -22,7 +22,8 @@ export function useTimeblockDrop({
   disableAutoDelete?: boolean
 }) {
   const temporalStatus = getTemporalStatus({ date, ...timeblock })
-  const { timeslots: existingTimeslots } = useTimeslotsQuery()
+  const { getTimeblockTimeslots } = useTimeslotsQuery()
+  const existingTimeslots = getTimeblockTimeslots(date, timeblock)
 
   const { mutate: createTimeslot, ...createTimeslotMutation } = useCreateTimeslot()
   const { mutate: updateTimeslot, ...updateTimeslotMutation } = useUpdateTimeslot()
