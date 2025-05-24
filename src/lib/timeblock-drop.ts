@@ -84,8 +84,8 @@ export function useTimeblockDrop({
 
       // If timeblock is not in the past...
       if (temporalStatus !== "past") {
-        // If all tasks are undone, move the timeslot normally
-        if (hasOnlyUndoneTasks) {
+        // If all tasks are undone or there are no tasks, move the timeslot normally
+        if (hasOnlyUndoneTasks || !hasTasks) {
           updateTimeslot({
             where: { id: droppedTimeslot.id },
             data: { date, start_time: timeblock.startTime, end_time: timeblock.endTime },
