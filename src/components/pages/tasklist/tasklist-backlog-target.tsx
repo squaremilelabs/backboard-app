@@ -61,11 +61,11 @@ export function TasklistBacklogTarget({ tasklistId }: { tasklistId: string | und
       <Link
         href={`/tasklist/${tasklistId}`}
         className={twMerge(
-          "flex items-center gap-4 p-4",
+          "flex h-24 max-h-24 items-center gap-4 p-4",
           "rounded-md",
           "cursor-pointer",
           "border-2 border-transparent",
-          isActive ? "bg-canvas rounded-lg border-neutral-300 px-8" : "opacity-60 hover:scale-105",
+          isActive ? "bg-canvas rounded-lg border-neutral-300 px-8" : "hover:scale-105",
           isDropTarget ? "outline" : ""
         )}
       >

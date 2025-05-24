@@ -1,12 +1,14 @@
 "use client"
-import { Archive, EllipsisVertical } from "lucide-react"
-import { Button, Dialog, DialogTrigger, Popover } from "react-aria-components"
+import { ArchiveIcon, ArchiveRestoreIcon } from "lucide-react"
+import { Button } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
+import { TasklistBacklogTarget } from "./tasklist-backlog-target"
 import { EmojiSelect } from "@/components/primitives/emoji"
 import { EditableText } from "@/components/primitives/editable-text"
 import { useFindUniqueTasklist, useUpdateTasklist } from "@/database/generated/hooks"
 import { iconBox, interactive } from "@/styles/class-names"
 import { defaultTasklistEmojiCode } from "@/lib/utils-tasklist"
+import { ConfirmationButton } from "@/components/primitives/confirmation-button"
 
 export function TasklistHeader({ tasklistId }: { tasklistId: string | undefined }) {
   const tasklistQuery = useFindUniqueTasklist({ where: { id: tasklistId } })
@@ -32,7 +34,9 @@ export function TasklistHeader({ tasklistId }: { tasklistId: string | undefined 
     <div className="flex grow items-start gap-8">
       <div className="flex min-h-24 items-start gap-4">
         {!!tasklist && (
-          <>
+          <div
+            className={twMerge("flex items-start gap-4", tasklist?.archived_at ? "opacity-60" : "")}
+          >
             <EmojiSelect
               selected={tasklist.emoji?.code || null}
               fallback={defaultTasklistEmojiCode}
@@ -42,43 +46,36 @@ export function TasklistHeader({ tasklistId }: { tasklistId: string | undefined 
             <EditableText
               initialValue={tasklist?.title}
               onSave={(title) => handleUpdate({ title })}
-              className={() => "grow text-lg font-medium"}
+              className={() => [
+                "grow text-lg font-medium",
+                tasklist?.archived_at ? "line-through" : "",
+              ]}
             />
-          </>
+          </div>
         )}
       </div>
       <div className="grow" />
-      {tasklist?.archived_at ? (
-        <div className={iconBox({ size: "large", className: "text-neutral-500" })}>
-          <Archive />
-        </div>
-      ) : null}
-      <DialogTrigger>
+      <TasklistBacklogTarget tasklistId={tasklistId} />
+      <ConfirmationButton
+        onConfirm={handleArchiveToggle}
+        content={
+          tasklist?.archived_at
+            ? "Restore this tasklist? It will reappear in your sidebar."
+            : "Archive this tasklist? It will only be visible in weeks where it was active."
+        }
+        confirmButtonText={tasklist?.archived_at ? "Restore" : "Archive"}
+        isDestructive={!tasklist?.archived_at}
+      >
         <Button
           className={twMerge(
             iconBox({ size: "large" }),
             interactive({ hover: "background" }),
-            "text-neutral-400"
+            tasklist?.archived_at ? "text-neutral-600" : "text-neutral-400"
           )}
         >
-          <EllipsisVertical />
+          {tasklist?.archived_at ? <ArchiveRestoreIcon /> : <ArchiveIcon />}
         </Button>
-        <Popover
-          offset={2}
-          placement="left"
-          className="bg-canvas/30 rounded-md border px-8 py-4 backdrop-blur-lg"
-        >
-          <Dialog className="!outline-0">
-            <Button
-              className="flex cursor-pointer items-center gap-4 rounded-md text-neutral-500 !outline-0 hover:text-red-700
-                focus-visible:text-red-700"
-              onPress={handleArchiveToggle}
-            >
-              {tasklist?.archived_at ? "Unarchive Tasklist" : "Archive Tasklist"}
-            </Button>
-          </Dialog>
-        </Popover>
-      </DialogTrigger>
+      </ConfirmationButton>
     </div>
   )
 }

@@ -123,7 +123,8 @@ export function TasklistTargetList() {
                 "rounded-lg border border-transparent",
                 "-outline-offset-2",
                 isDropTarget ? "outline" : "",
-                isActive ? "border-neutral-300 bg-neutral-100" : ""
+                isActive ? "border-neutral-300 bg-neutral-100" : "",
+                tasklist.archived_at ? "opacity-60" : ""
               )
             }
           >
@@ -139,7 +140,8 @@ export function TasklistTargetList() {
                 className={twMerge(
                   "ml-4 truncate font-medium",
                   "group-hover/tasklist-item:underline",
-                  "underline-offset-4"
+                  "underline-offset-4",
+                  tasklist.archived_at ? "line-through" : ""
                 )}
               >
                 {tasklist.title}
