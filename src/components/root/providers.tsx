@@ -20,7 +20,7 @@ export function RootProviders({ children }: { children: React.ReactNode }) {
         <ClerkProvider>
           <QueryClientProvider client={queryClient}>
             <ZenstackHooksProvider value={{ endpoint: "/api/db" }}>
-              <NextThemeProvider>
+              <NextThemeProvider attribute="class">
                 <RouterProvider navigate={router.push}>{children}</RouterProvider>
               </NextThemeProvider>
             </ZenstackHooksProvider>

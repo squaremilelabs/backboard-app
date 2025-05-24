@@ -16,13 +16,15 @@ export function TasklistPage() {
     <div className="flex w-sm max-w-full flex-col gap-16 p-16">
       <TasklistHeader tasklistId={tasklistId} />
       <div className="h-1 bg-neutral-200" />
-      <div className="flex flex-col gap-8">
+      <div className="flex max-w-full flex-col gap-8">
         <div className="flex items-center">
           <WeekNavigator className="rounded-md border-none bg-transparent p-0" />
           <div className="grow" />
           <TasklistBacklogTarget tasklistId={tasklistId} />
         </div>
-        <TasklistCalendarGrid tasklistId={tasklistId} />
+        <div className="max-w-full overflow-auto pb-4">
+          <TasklistCalendarGrid tasklistId={tasklistId} />
+        </div>
       </div>
       <div className="h-1 bg-neutral-200" />
       {timeslotId ? (

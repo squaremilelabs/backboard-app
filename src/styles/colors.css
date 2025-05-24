@@ -63,7 +63,7 @@
   --bb-canvas: #ffffff;
 }
 
-[data-theme="dark"] {
+.dark {
   /* BACKBOARD NEUTRAL */
   --bb-neutral-50: oklch(0.145 0 0);
   --bb-neutral-100: oklch(0.205 0 0);
