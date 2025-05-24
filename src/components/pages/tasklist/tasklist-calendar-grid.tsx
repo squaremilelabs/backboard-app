@@ -212,7 +212,7 @@ function TimeblockCell({
         ],
         timeslot ? "" : "",
         temporalStatus === "past" ? "bg-neutral-200" : "bg-neutral-100",
-        isActive ? "bg-canvas border-2 border-neutral-300" : "",
+        isActive ? "bg-canvas rounded-lg border-2 border-neutral-300" : "",
         isDropTarget ? "outline" : ""
       )}
     >
