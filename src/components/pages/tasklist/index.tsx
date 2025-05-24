@@ -18,7 +18,7 @@ export function TasklistPage() {
   const [calendarOpen, setCalendarOpen] = useLocalStorageUtility("tasklist-calendar-open", false)
 
   return (
-    <div className="flex w-sm max-w-full flex-col gap-16 p-16">
+    <div className="flex w-sm max-w-full flex-col gap-24 p-16">
       <TasklistHeader tasklistId={tasklistId} />
       {/* <div className="h-1 bg-neutral-200" /> */}
       <Disclosure
