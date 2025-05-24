@@ -135,7 +135,7 @@ export function TasklistTargetList() {
               <GripVerticalIcon />
             </Button>
             <Emoji code={tasklist.emoji?.code ?? defaultTasklistEmojiCode} />
-            <div className={twMerge("flex grow items-start")}>
+            <div className={twMerge("flex grow items-start truncate")}>
               <p
                 className={twMerge(
                   "ml-4 truncate font-medium",

@@ -32,10 +32,13 @@ export function TasklistHeader({ tasklistId }: { tasklistId: string | undefined 
 
   return (
     <div className="flex grow items-start gap-8">
-      <div className="flex min-h-24 items-start gap-4">
+      <div className="flex min-h-24 grow items-start gap-4">
         {!!tasklist && (
           <div
-            className={twMerge("flex items-start gap-4", tasklist?.archived_at ? "opacity-60" : "")}
+            className={twMerge(
+              "flex grow items-start gap-4",
+              tasklist?.archived_at ? "opacity-60" : ""
+            )}
           >
             <EmojiSelect
               selected={tasklist.emoji?.code || null}
@@ -54,7 +57,6 @@ export function TasklistHeader({ tasklistId }: { tasklistId: string | undefined 
           </div>
         )}
       </div>
-      <div className="grow" />
       <TasklistBacklogTarget tasklistId={tasklistId} />
       <ConfirmationButton
         onConfirm={handleArchiveToggle}
