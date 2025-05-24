@@ -2,10 +2,10 @@
 
 import { Task, Tasklist, Timeslot } from "@zenstackhq/runtime/models"
 import { getTemporalStatus, Timeblock } from "./utils-temporal"
+import { useTimeslotsQuery } from "./query-timeslots"
 import {
   useCreateTimeslot,
   useDeleteTimeslot,
-  useFindManyTimeslot,
   useUpdateManyTask,
   useUpdateTimeslot,
 } from "@/database/generated/hooks"
@@ -22,10 +22,7 @@ export function useTimeblockDrop({
   disableAutoDelete?: boolean
 }) {
   const temporalStatus = getTemporalStatus({ date, ...timeblock })
-  const { data: existingTimeslots } = useFindManyTimeslot({
-    where: { date: date, start_time: timeblock.startTime },
-    include: { tasklist: true, tasks: true },
-  })
+  const { timeslots: existingTimeslots } = useTimeslotsQuery()
 
   const { mutate: createTimeslot, ...createTimeslotMutation } = useCreateTimeslot()
   const { mutate: updateTimeslot, ...updateTimeslotMutation } = useUpdateTimeslot()

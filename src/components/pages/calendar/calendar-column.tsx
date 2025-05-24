@@ -1,12 +1,12 @@
 import { CalendarTimeblock } from "./calendar-timeblock"
 import { presetTimeblocks } from "@/lib/utils-temporal"
 
-export function CalendarColumn({ dateString }: { dateString: string }) {
+export function CalendarColumn({ date }: { date: string }) {
   return (
     <>
-      {presetTimeblocks.map((timeblock) => (
-        <CalendarTimeblock key={timeblock.startTime} date={dateString} timeblock={timeblock} />
-      ))}
+      {presetTimeblocks.map((timeblock) => {
+        return <CalendarTimeblock key={timeblock.startTime} date={date} timeblock={timeblock} />
+      })}
     </>
   )
 }

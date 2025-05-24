@@ -15,27 +15,19 @@ import {
 } from "@/lib/utils-temporal"
 import { useWeekState } from "@/lib/week-state"
 import { iconBox, interactive, popover } from "@/styles/class-names"
-import {
-  useCreateTimeslot,
-  useFindManyTimeslot,
-  useUpdateManyTask,
-} from "@/database/generated/hooks"
+import { useCreateTimeslot, useUpdateManyTask } from "@/database/generated/hooks"
 import { TaskSizeSummaryChips } from "@/components/portables/task-size"
 import { useRouterUtility } from "@/lib/router-utility"
 import { useTimeblockDrop } from "@/lib/timeblock-drop"
+import { useTimeslotsQuery } from "@/lib/query-timeslots"
 
 type ExpandedTimeslot = Timeslot & { tasklist: Tasklist; tasks: Task[] }
 
 export default function TasklistCalendarGrid({ tasklistId }: { tasklistId: string | undefined }) {
   const { activeWeekDates } = useWeekState()
 
-  const { data: timeslots } = useFindManyTimeslot({
-    where: {
-      tasklist_id: tasklistId,
-      date: { in: activeWeekDates },
-    },
-    include: { tasks: true },
-  })
+  const { getTasklistTimeslots } = useTimeslotsQuery()
+  const timeslots = getTasklistTimeslots(tasklistId ?? "")
 
   return (
     <div className="flex flex-col gap-4">

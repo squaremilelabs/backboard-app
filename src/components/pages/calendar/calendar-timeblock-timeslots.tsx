@@ -5,10 +5,11 @@ import { Task, Tasklist, Timeslot } from "@zenstackhq/runtime/models"
 import { Emoji } from "@/components/primitives/emoji"
 import { TaskSizeSummaryChips } from "@/components/portables/task-size"
 import { ConfirmationButton } from "@/components/primitives/confirmation-button"
-import { useDeleteTimeslot, useFindManyTimeslot } from "@/database/generated/hooks"
+import { useDeleteTimeslot } from "@/database/generated/hooks"
 import { getTemporalStatus, sortTimeslots, TemporalStatus, Timeblock } from "@/lib/utils-temporal"
 import { defaultTasklistEmojiCode } from "@/lib/utils-tasklist"
 import { iconBox, interactive } from "@/styles/class-names"
+import { useTimeslotsQuery } from "@/lib/query-timeslots"
 
 type ExpandedTimeslot = Timeslot & { tasklist: Tasklist; tasks: Task[] }
 
@@ -24,15 +25,13 @@ export function CalendarTimeblockTimeslots({
     startTime: timeblock.startTime,
     endTime: timeblock.endTime,
   })
-  const timeslotsQuery = useFindManyTimeslot({
-    where: { date: date, start_time: timeblock.startTime },
-    include: { tasklist: true, tasks: true },
-  })
+  const { getTimeblockTimeslots, timeslotsQuery } = useTimeslotsQuery()
+  const timeslots = getTimeblockTimeslots(date, timeblock)
 
   const { dragAndDropHooks } = useDragAndDrop({
     getItems: (keys) => {
       return [...keys].map((key) => {
-        const timeslot = timeslotsQuery.data?.find((t) => t.id === key)
+        const timeslot = timeslots?.find((t) => t.id === key)
         return {
           "text/plain": timeslot?.tasklist.title ?? "-",
           "timeslot": JSON.stringify(timeslot),
@@ -41,7 +40,7 @@ export function CalendarTimeblockTimeslots({
     },
   })
 
-  const sortedTimeslots = sortTimeslots(timeslotsQuery.data ?? [], {
+  const sortedTimeslots = sortTimeslots(timeslots ?? [], {
     doneSort: temporalStatus === "past" ? "desc" : "asc",
   })
 

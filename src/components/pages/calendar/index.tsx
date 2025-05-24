@@ -29,16 +29,16 @@ export function CalendarPage() {
           gridTemplateColumns: `repeat(${activeWeekDisplayedDates.length}, minmax(var(--container-xs), 1fr))`,
         }}
       >
-        {activeWeekDisplayedDates.map((dateString) => {
+        {activeWeekDisplayedDates.map((date) => {
           return (
             <div
-              key={dateString}
+              key={date}
               className="grid w-full gap-4"
               style={{
                 gridTemplateRows: `repeat(${presetTimeblocks.length}, minimax(0,1fr))`,
               }}
             >
-              <CalendarColumn key={dateString} dateString={dateString} />
+              <CalendarColumn key={date} date={date} />
             </div>
           )
         })}
