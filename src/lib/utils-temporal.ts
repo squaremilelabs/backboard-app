@@ -1,7 +1,7 @@
 "use client"
 
 import { Task, Timeslot } from "@zenstackhq/runtime/models"
-import { CircleIcon, Clock3Icon, LucideIcon, MoonIcon, SunIcon } from "lucide-react"
+import { CircleIcon, CloudSunIcon, LucideIcon, MoonIcon, SunIcon } from "lucide-react";
 import { add, format, getISOWeek, getISOWeekYear, parse, startOfDay } from "date-fns"
 import { getTaskSummary } from "./utils-task"
 import { formatTimeString } from "./utils-common"
@@ -27,7 +27,7 @@ export const presetTimeblocks: Timeblock[] = [
     endTime: "17:00",
     label: "Afternoon",
     subLabel: "Noon to 5pm",
-    Icon: Clock3Icon,
+    Icon: CloudSunIcon,
   },
   {
     startTime: "17:00",
