@@ -21,7 +21,6 @@ import { getTaskSummary } from "@/lib/utils-task"
 type TasklistQueryResult = Tasklist & {
   tasks: Task[]
   _count: {
-    tasks: number
     timeslots: number
   }
 }
@@ -38,18 +37,19 @@ export function TasklistTargetList() {
     },
     include: {
       tasks: {
-        where: { timeslot: { date: { in: datesFilter } } },
+        where: {
+          OR: [{ timeslot: { date: { in: datesFilter } } }, { timeslot_id: null }],
+        },
       },
       _count: {
         select: {
-          tasks: { where: { timeslot_id: null, status: "TODO" } },
           timeslots: { where: { date: { in: datesFilter } } },
         },
       },
     },
   })
 
-  const sortedTasklists = sortTasklists(tasklistsQuery.data ?? [])
+  const sortedTasklists = sortTasklists(tasklistsQuery.data ?? [], { isPastWeek })
 
   const { dragAndDropHooks } = useDragAndDrop({
     getItems: (keys) => {
@@ -110,6 +110,10 @@ export function TasklistTargetList() {
     >
       {(tasklist) => {
         const isActive = router.params.tasklist_id === tasklist.id
+        const scheduledTasks = tasklist.tasks.filter((task) => task.timeslot_id !== null)
+        const unscheduledTasks = tasklist.tasks.filter((task) => task.timeslot_id === null)
+        const todoUnscheduledTasks = unscheduledTasks.filter((task) => task.status === "TODO")
+
         return (
           <GridListItem
             id={tasklist.id}
@@ -120,11 +124,11 @@ export function TasklistTargetList() {
                 "cursor-pointer",
                 "group/tasklist-item",
                 "flex items-start px-4 py-6",
-                "rounded-lg border border-transparent",
+                "rounded-md border border-transparent",
                 "-outline-offset-2",
                 isDropTarget ? "outline" : "",
-                isActive ? "border-neutral-300 bg-neutral-100" : "",
-                tasklist.archived_at ? "opacity-60" : ""
+                tasklist.archived_at ? "opacity-60 hover:opacity-100" : "",
+                isActive ? "border-neutral-300 bg-neutral-100 opacity-100" : ""
               )
             }
           >
@@ -141,19 +145,24 @@ export function TasklistTargetList() {
                   "ml-4 truncate font-medium",
                   "group-hover/tasklist-item:underline",
                   "underline-offset-4",
-                  tasklist.archived_at ? "line-through" : ""
+                  tasklist.archived_at ? "text-neutral-500 line-through" : ""
                 )}
               >
                 {tasklist.title}
               </p>
-              {tasklist._count.tasks > 0 ? (
-                <div className={iconBox({ className: "text-gold-500" })}>
+              {!isPastWeek && unscheduledTasks.length > 0 ? (
+                <div
+                  className={iconBox({
+                    className:
+                      todoUnscheduledTasks.length > 0 ? "text-gold-500" : "text-neutral-400",
+                  })}
+                >
                   <AsteriskIcon />
                 </div>
               ) : null}
               <div className="grow" />
               <TaskSizeSummaryChips
-                tasks={tasklist.tasks}
+                tasks={scheduledTasks}
                 useOverdueColor={isPastWeek}
                 consistentWeightVariant="medium"
                 showEmptyChip={tasklist._count.timeslots > 0}
@@ -166,33 +175,63 @@ export function TasklistTargetList() {
   )
 }
 
-function sortTasklists(tasklists: TasklistQueryResult[]) {
+function sortTasklists(tasklists: TasklistQueryResult[], { isPastWeek }: { isPastWeek: boolean }) {
   return tasklists.sort((a, b) => {
-    const aTasksSummary = getTaskSummary(a.tasks)
-    const bTasksSummary = getTaskSummary(b.tasks)
-    const aTodoMinutes = aTasksSummary.status.TODO.minutes
-    const bTodoMinutes = bTasksSummary.status.TODO.minutes
-    const aDoneMinutes = aTasksSummary.status.DONE.minutes
-    const bDoneMinutes = bTasksSummary.status.DONE.minutes
+    const aScheduledTasks = a.tasks.filter((task) => task.timeslot_id !== null)
+    const bScheduledTasks = b.tasks.filter((task) => task.timeslot_id !== null)
+    const aUnscheduledTasks = a.tasks.filter((task) => task.timeslot_id === null)
+    const bUnscheduledTasks = b.tasks.filter((task) => task.timeslot_id === null)
+    const aScheduledTasksSummary = getTaskSummary(aScheduledTasks)
+    const bScheduledTasksSummary = getTaskSummary(bScheduledTasks)
+    const aDoneMinutes = aScheduledTasksSummary.status.DONE.minutes
+    const bDoneMinutes = bScheduledTasksSummary.status.DONE.minutes
+    const aUnscheduledTasksSummary = getTaskSummary(aUnscheduledTasks)
+    const bUnscheduledTasksSummary = getTaskSummary(bUnscheduledTasks)
 
-    // Compare by TODO minutes in descending order
-    if (bTodoMinutes !== aTodoMinutes) {
-      return bTodoMinutes - aTodoMinutes
+    const aUnscheduledTodoMinutes = aUnscheduledTasksSummary.status.TODO.minutes
+    const bUnscheduledTodoMinutes = bUnscheduledTasksSummary.status.TODO.minutes
+
+    if (a.archived_at || b.archived_at) {
+      if (a.archived_at && b.archived_at) {
+        return new Date(a.archived_at).getTime() - new Date(b.archived_at).getTime()
+      }
+      return a.archived_at ? 1 : -1
     }
 
-    // Compare by count of timeslots in descending order
-    if (b._count.timeslots !== a._count.timeslots) {
-      return b._count.timeslots - a._count.timeslots
+    if (isPastWeek) {
+      if (bDoneMinutes !== aDoneMinutes) {
+        return bDoneMinutes - aDoneMinutes
+      }
+      return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
     }
 
-    // Compare by count of backlog tasks in descending order
-    if (b._count.tasks !== a._count.tasks) {
-      return b._count.tasks - a._count.tasks
+    // Compare by scheduled TODO minutes in descending order
+    const aScheduledTodoMinutes = aScheduledTasksSummary.status.TODO.minutes
+    const bScheduledTodoMinutes = bScheduledTasksSummary.status.TODO.minutes
+    if (bScheduledTodoMinutes !== aScheduledTodoMinutes) {
+      return bScheduledTodoMinutes - aScheduledTodoMinutes
+    }
+
+    // Compare by unscheduled TODO minutes in descending order
+    if (bUnscheduledTodoMinutes !== aUnscheduledTodoMinutes) {
+      return bUnscheduledTodoMinutes - aUnscheduledTodoMinutes
     }
 
     // Compare by DONE minutes in descending order
     if (bDoneMinutes !== aDoneMinutes) {
       return bDoneMinutes - aDoneMinutes
+    }
+
+    // // Compare by count of timeslots in descending order
+    // if (b._count.timeslots !== a._count.timeslots) {
+    //   return b._count.timeslots - a._count.timeslots
+    // }
+
+    // Compare by unscheduled DRAFT minutes in descending order
+    const aUnscheduledDraftMinutes = aUnscheduledTasksSummary.status.DRAFT.minutes
+    const bUnscheduledDraftMinutes = bUnscheduledTasksSummary.status.DRAFT.minutes
+    if (bUnscheduledDraftMinutes !== aUnscheduledDraftMinutes) {
+      return bUnscheduledDraftMinutes - aUnscheduledDraftMinutes
     }
 
     // Fallback to comparing by created_at in ascending order

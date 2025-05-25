@@ -47,7 +47,7 @@ export function TriageTarget() {
         className={twMerge(
           interactive(),
           "flex items-center px-4 py-6",
-          "rounded-lg border border-transparent",
+          "rounded-md border border-transparent",
           "-outline-offset-2",
           isDropTarget ? "outline" : "",
           isActive ? "border-neutral-300 bg-neutral-100" : ""

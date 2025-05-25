@@ -102,9 +102,9 @@ export function TaskSizeSummaryText({
   const undoneColor = useOverdueColor ? "text-red-700" : "text-gold-500"
 
   return (
-    <p className="min-w-fit">
+    <div className="flex min-w-fit items-center gap-2">
       {allDone && (
-        <span className={twMerge("min-w-fit text-sm font-semibold text-blue-500")}>
+        <span className={twMerge("min-w-fit text-sm font-semibold text-blue-600")}>
           {formatMinutes(doneMinutes)}
         </span>
       )}
@@ -118,12 +118,12 @@ export function TaskSizeSummaryText({
           <span className={twMerge("min-w-fit text-sm font-semibold", undoneColor)}>
             {formatMinutes(undoneMinutes)}
           </span>
-          <span className={twMerge("min-w-fit text-sm font-semibold text-neutral-500")}>
-            {" / "}
+          <span className="text-sm text-neutral-400">/</span>
+          <span className={twMerge("min-w-fit text-sm text-neutral-500")}>
             {formatMinutes(totalMinutes)}
           </span>
         </>
       )}
-    </p>
+    </div>
   )
 }
