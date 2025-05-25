@@ -33,8 +33,8 @@ export function WeekNavigator({ className }: { className?: ClassNameValue }) {
           <ChevronRightIcon />
         </Button>
       </div>
-      <p className="font-medium">{activeWeek}</p>
-      <div className="flex items-center px-4">
+      <p className="min-w-fit font-medium">{activeWeek}</p>
+      <div className="flex min-w-fit items-center px-4">
         {isUpcomingWeek && (
           <Button
             onPress={setToThisWeek}
@@ -49,7 +49,7 @@ export function WeekNavigator({ className }: { className?: ClassNameValue }) {
         )}
         <span
           className={twMerge(
-            "text-sm text-neutral-500",
+            "min-w-fit text-sm text-neutral-500",
             isCurrentWeek ? "text-gold-500 font-semibold" : ""
           )}
         >

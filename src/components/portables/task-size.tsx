@@ -81,3 +81,49 @@ export function TaskSizeSummaryChips({
     <TaskSizeChip status="DRAFT" minutes={0} size={size} />
   ) : null
 }
+
+export function TaskSizeSummaryText({
+  tasks,
+  useOverdueColor,
+}: {
+  tasks: Task[]
+  useOverdueColor?: boolean
+}) {
+  const taskSummary = getTaskSummary(tasks)
+
+  const totalMinutes = taskSummary.total.minutes
+  const undoneMinutes = taskSummary.status.TODO.minutes + taskSummary.status.DRAFT.minutes
+  const doneMinutes = taskSummary.status.DONE.minutes
+
+  const allDone = totalMinutes !== 0 && tasks.every((task) => task.status === "DONE")
+  const allUndone = totalMinutes !== 0 && tasks.every((task) => task.status !== "DONE")
+  const mixedStatuses = totalMinutes !== 0 && !allDone && !allUndone
+
+  const undoneColor = useOverdueColor ? "text-red-700" : "text-gold-500"
+
+  return (
+    <p className="min-w-fit">
+      {allDone && (
+        <span className={twMerge("min-w-fit text-sm font-semibold text-blue-500")}>
+          {formatMinutes(doneMinutes)}
+        </span>
+      )}
+      {allUndone && (
+        <span className={twMerge("min-w-fit text-sm font-semibold", undoneColor)}>
+          {formatMinutes(undoneMinutes)}
+        </span>
+      )}
+      {mixedStatuses && (
+        <>
+          <span className={twMerge("min-w-fit text-sm font-semibold", undoneColor)}>
+            {formatMinutes(undoneMinutes)}
+          </span>
+          <span className={twMerge("min-w-fit text-sm font-semibold text-neutral-500")}>
+            {" / "}
+            {formatMinutes(totalMinutes)}
+          </span>
+        </>
+      )}
+    </p>
+  )
+}

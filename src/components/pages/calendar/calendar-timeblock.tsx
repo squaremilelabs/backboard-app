@@ -8,6 +8,8 @@ import { CalendarTimeblockTimeslots } from "./calendar-timeblock-timeslots"
 import { getTemporalStatus, Timeblock } from "@/lib/utils-temporal"
 import { iconBox } from "@/styles/class-names"
 import { useTimeblockDrop } from "@/lib/timeblock-drop"
+import { useTimeslotsQuery } from "@/lib/query-timeslots"
+import { TaskSizeSummaryText } from "@/components/portables/task-size"
 
 type ExpandedTimeslot = Timeslot & { tasklist: Tasklist; tasks: Task[] }
 
@@ -59,11 +61,15 @@ export function CalendarTimeblock({ date, timeblock }: { date: string; timeblock
     endTime: timeblock.endTime,
   })
 
+  const { getTimeblockTimeslots } = useTimeslotsQuery()
+  const tasks = getTimeblockTimeslots(date, timeblock)?.flatMap((timeslot) => timeslot.tasks)
+
   return (
     <div
       ref={ref}
       {...dropProps}
       className={twMerge(
+        "group/calendar-timeblock",
         "rounded-lg border border-neutral-200",
         "overflow-auto",
         temporalStatus === "past" ? "bg-neutral-100" : "bg-canvas",
@@ -83,6 +89,9 @@ export function CalendarTimeblock({ date, timeblock }: { date: string; timeblock
         <p className="text-sm">{timeblock.label}</p>
         <p className="text-sm text-neutral-500">({timeblock.subLabel})</p>
         <div className="grow" />
+        <div className="opacity-0 transition-opacity group-hover/calendar-timeblock:opacity-100">
+          <TaskSizeSummaryText tasks={tasks ?? []} useOverdueColor={temporalStatus === "past"} />
+        </div>
         {isDropPending && (
           <div className={iconBox({ size: "base", className: "text-gold-500 animate-spin" })}>
             <LoaderIcon />

@@ -65,15 +65,24 @@ export function formatMinutes(
   if (minutes === null || minutes === undefined) return "-"
   const hours = Math.floor(minutes / 60)
   const remainingMinutes = minutes % 60
-  if (hours === 0) {
-    return `${remainingMinutes}m`
+
+  if (!options?.condense) {
+    if (hours === 0) return `${remainingMinutes}m`
+    if (remainingMinutes === 0) return `${hours}h`
+    return `${hours}h ${remainingMinutes}m`
   }
-  if (remainingMinutes === 0) {
-    return `${hours}h`
-  }
-  if (options?.condense) {
-    return `${hours}h+`
-  }
+
+  // Condensed logic
+  if (hours === 0) return `${remainingMinutes}m`
+
+  if (remainingMinutes === 0) return `${hours}h`
+  if (remainingMinutes >= 1 && remainingMinutes <= 19) return `${hours}h+`
+  if (remainingMinutes >= 20 && remainingMinutes <= 29) return `~${hours}.5h`
+  if (remainingMinutes === 30) return `${hours}.5h`
+  if (remainingMinutes >= 31 && remainingMinutes <= 49) return `${hours}.5h+`
+  if (remainingMinutes >= 50 && remainingMinutes <= 59) return `~${hours + 1}h`
+
+  // fallback
   return `${hours}h ${remainingMinutes}m`
 }
 

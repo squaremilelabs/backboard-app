@@ -10,7 +10,7 @@ export function CalendarPage() {
   const { activeWeekDisplayedDates } = useWeekState()
 
   return (
-    <div className="flex h-full w-full flex-col gap-4 overflow-auto p-16 pt-0">
+    <div className="flex h-full w-full flex-col gap-4 overflow-auto p-8 !pt-0 md:p-16">
       <div
         className={twMerge(
           "sticky top-0 z-20 min-w-fit",

@@ -10,6 +10,9 @@ import { useRouterUtility } from "@/lib/router-utility"
 import { WeekNavigator } from "@/components/portables/week-navigator"
 import { useLocalStorageUtility } from "@/lib/storage-utility"
 import { iconBox, interactive } from "@/styles/class-names"
+import { TaskSizeSummaryText } from "@/components/portables/task-size"
+import { useTimeslotsQuery } from "@/lib/query-timeslots"
+import { useWeekState } from "@/lib/week-state"
 
 export function TasklistPage() {
   const router = useRouterUtility()
@@ -17,9 +20,16 @@ export function TasklistPage() {
   const timeslotId = router.query.timeslot
   const [calendarOpen, setCalendarOpen] = useLocalStorageUtility("tasklist-calendar-open", false)
 
+  const { isPastWeek } = useWeekState()
+  const { getTasklistTimeslots } = useTimeslotsQuery()
+  const tasks = getTasklistTimeslots(tasklistId ?? "")?.flatMap((timeslot) => timeslot.tasks)
+
   return (
     <div
-      className={twMerge("flex w-sm max-w-full flex-col p-16", calendarOpen ? "gap-24" : "gap-16")}
+      className={twMerge(
+        "flex w-sm max-w-full flex-col p-8 md:p-16",
+        calendarOpen ? "gap-24" : "gap-16"
+      )}
     >
       <TasklistHeader tasklistId={tasklistId} />
       {/* <div className="h-1 bg-neutral-200" /> */}
@@ -28,7 +38,9 @@ export function TasklistPage() {
         onExpandedChange={setCalendarOpen}
         className="flex max-w-full flex-col data-expanded:gap-8"
       >
-        <Heading className={twMerge("flex items-center justify-between", calendarOpen ? "" : "")}>
+        <Heading
+          className={twMerge("flex items-center justify-between gap-8", calendarOpen ? "" : "")}
+        >
           {calendarOpen && <WeekNavigator className="rounded-md border-none bg-transparent p-0" />}
           <Button
             slot="trigger"
@@ -38,13 +50,17 @@ export function TasklistPage() {
               calendarOpen ? "" : "grow"
             )}
           >
-            <p
+            <div
               className={twMerge(
                 calendarOpen ? "text-sm text-neutral-500" : "px-8 font-medium text-neutral-500"
               )}
             >
-              {calendarOpen ? "Hide calendar" : "Show calendar"}
-            </p>
+              {calendarOpen ? (
+                <TaskSizeSummaryText tasks={tasks ?? []} useOverdueColor={isPastWeek} />
+              ) : (
+                "Show calendar"
+              )}
+            </div>
             {!calendarOpen && <div className="h-1 grow bg-neutral-200" />}
             <div
               className={iconBox({
