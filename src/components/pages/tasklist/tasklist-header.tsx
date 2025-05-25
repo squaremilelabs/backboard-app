@@ -58,26 +58,28 @@ export function TasklistHeader({ tasklistId }: { tasklistId: string | undefined 
         )}
       </div>
       <TasklistBacklogTarget tasklistId={tasklistId} />
-      <ConfirmationButton
-        onConfirm={handleArchiveToggle}
-        content={
-          tasklist?.archived_at
-            ? "Restore this tasklist? It will reappear in your sidebar."
-            : "Archive this tasklist? It will only be visible in weeks where it was active."
-        }
-        confirmButtonText={tasklist?.archived_at ? "Restore" : "Archive"}
-        isDestructive={!tasklist?.archived_at}
-      >
-        <Button
-          className={twMerge(
-            iconBox({ size: "large" }),
-            interactive({ hover: "background" }),
-            tasklist?.archived_at ? "text-neutral-600" : "text-neutral-400"
-          )}
+      <div className="flex h-24 items-center">
+        <ConfirmationButton
+          onConfirm={handleArchiveToggle}
+          content={
+            tasklist?.archived_at
+              ? "Restore this tasklist? It will reappear in your sidebar."
+              : "Archive this tasklist? It will only be visible in weeks where it was active."
+          }
+          confirmButtonText={tasklist?.archived_at ? "Restore" : "Archive"}
+          isDestructive={!tasklist?.archived_at}
         >
-          {tasklist?.archived_at ? <ArchiveRestoreIcon /> : <ArchiveIcon />}
-        </Button>
-      </ConfirmationButton>
+          <Button
+            className={twMerge(
+              iconBox({ size: "base" }),
+              interactive({ hover: "background" }),
+              tasklist?.archived_at ? "text-neutral-600" : "text-neutral-400"
+            )}
+          >
+            {tasklist?.archived_at ? <ArchiveRestoreIcon /> : <ArchiveIcon />}
+          </Button>
+        </ConfirmationButton>
+      </div>
     </div>
   )
 }

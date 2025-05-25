@@ -9,13 +9,11 @@ import { SignedIn, UserButton } from "@clerk/nextjs"
 import { ArrowLeftIcon } from "lucide-react"
 import { useTheme } from "next-themes"
 import { WeekNavigator } from "../portables/week-navigator"
-import { TaskSizeSummaryText } from "../portables/task-size"
 import { SidebarContent } from "./sidebar-content"
 import { useSessionStorageUtility } from "@/lib/storage-utility"
 import { iconBox, interactive } from "@/styles/class-names"
 import { useRouterUtility } from "@/lib/router-utility"
 import { useTimeslotsQuery } from "@/lib/query-timeslots"
-import { useWeekState } from "@/lib/week-state"
 
 export function RootLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen] = useSessionStorageUtility("sidebar-open", true)
@@ -46,7 +44,6 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
 }
 
 function Header() {
-  const { isPastWeek } = useWeekState()
   const router = useRouterUtility()
   const [sidebarOpen] = useSessionStorageUtility("sidebar-open", true)
   const { timeslots } = useTimeslotsQuery()
@@ -60,8 +57,7 @@ function Header() {
       )}
       {router.basePath === "calendar" ? (
         <div className="flex grow items-center gap-8">
-          <WeekNavigator />
-          <TaskSizeSummaryText tasks={tasks ?? []} useOverdueColor={isPastWeek} />
+          <WeekNavigator summaryTasks={tasks ?? []} />
         </div>
       ) : (
         <div className="flex grow items-center gap-8">

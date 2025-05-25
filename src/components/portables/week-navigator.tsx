@@ -2,10 +2,18 @@
 import { ClassNameValue, twMerge } from "tailwind-merge"
 import { ChevronLeftIcon, ChevronRightIcon, RedoIcon, UndoIcon } from "lucide-react"
 import { Button } from "react-aria-components"
+import { Task } from "@zenstackhq/runtime/models"
+import { TaskSizeSummaryText } from "./task-size"
 import { iconBox, interactive } from "@/styles/class-names"
 import { useWeekState } from "@/lib/week-state"
 
-export function WeekNavigator({ className }: { className?: ClassNameValue }) {
+export function WeekNavigator({
+  className,
+  summaryTasks,
+}: {
+  className?: ClassNameValue
+  summaryTasks?: Task[]
+}) {
   const {
     activeWeek,
     activeWeekLabel,
@@ -41,7 +49,7 @@ export function WeekNavigator({ className }: { className?: ClassNameValue }) {
             className={twMerge(
               interactive({ hover: "background" }),
               iconBox({ size: "base" }),
-              "text-gold-500"
+              "text-neutral-500"
             )}
           >
             <UndoIcon />
@@ -50,7 +58,7 @@ export function WeekNavigator({ className }: { className?: ClassNameValue }) {
         <span
           className={twMerge(
             "min-w-fit text-sm text-neutral-500",
-            isCurrentWeek ? "text-gold-500 font-semibold" : ""
+            isCurrentWeek ? "font-semibold text-neutral-600" : ""
           )}
         >
           {activeWeekLabel}
@@ -61,13 +69,18 @@ export function WeekNavigator({ className }: { className?: ClassNameValue }) {
             className={twMerge(
               interactive({ hover: "background" }),
               iconBox({ size: "base" }),
-              "text-gold-500"
+              "text-neutral-500"
             )}
           >
             <RedoIcon />
           </Button>
         )}
       </div>
+      {summaryTasks && summaryTasks.length > 0 && (
+        <div className="flex min-w-fit items-center border-l px-6">
+          <TaskSizeSummaryText tasks={summaryTasks} useOverdueColor={isPastWeek} />
+        </div>
+      )}
     </div>
   )
 }
