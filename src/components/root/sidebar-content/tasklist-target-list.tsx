@@ -222,10 +222,10 @@ function sortTasklists(tasklists: TasklistQueryResult[], { isPastWeek }: { isPas
       return bDoneMinutes - aDoneMinutes
     }
 
-    // // Compare by count of timeslots in descending order
-    // if (b._count.timeslots !== a._count.timeslots) {
-    //   return b._count.timeslots - a._count.timeslots
-    // }
+    // Compare by count of timeslots in descending order
+    if (b._count.timeslots !== a._count.timeslots) {
+      return b._count.timeslots - a._count.timeslots
+    }
 
     // Compare by unscheduled DRAFT minutes in descending order
     const aUnscheduledDraftMinutes = aUnscheduledTasksSummary.status.DRAFT.minutes
