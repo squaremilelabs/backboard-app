@@ -1,7 +1,7 @@
 "use client"
 
 import { Task, Timeslot } from "@zenstackhq/runtime/models"
-import { CircleIcon, CloudSunIcon, LucideIcon, MoonIcon, SunIcon } from "lucide-react";
+import { CircleIcon, CloudSunIcon, LucideIcon, MoonIcon, SunIcon } from "lucide-react"
 import { add, format, getISOWeek, getISOWeekYear, parse, startOfDay } from "date-fns"
 import { getTaskSummary } from "./utils-task"
 import { formatTimeString } from "./utils-common"
