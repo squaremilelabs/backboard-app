@@ -4,13 +4,11 @@ import {
   GridList,
   GridListItem,
   isTextDropItem,
-  Key,
   useDragAndDrop,
 } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
 import { AsteriskIcon, GripVerticalIcon } from "lucide-react"
 import { Task, Tasklist } from "@zenstackhq/runtime/models"
-import { useCallback } from "react"
 import { useFindManyTasklist, useUpdateManyTask } from "@/database/generated/hooks"
 import { defaultTasklistEmojiCode } from "@/lib/utils-tasklist"
 import { Emoji } from "@/components/primitives/emoji"
@@ -19,8 +17,6 @@ import { TaskSizeSummaryChips } from "@/components/portables/task-size"
 import { useWeekState } from "@/lib/week-state"
 import { useRouterUtility } from "@/lib/router-utility"
 import { getTaskSummary } from "@/lib/utils-task"
-import { useSessionStorageUtility } from "@/lib/storage-utility"
-import useScreenSize from "@/lib/screen-size"
 
 type TasklistQueryResult = Tasklist & {
   tasks: Task[]
@@ -101,25 +97,12 @@ export function TasklistTargetList() {
     }
   }
 
-  const screenSize = useScreenSize()
-  const [_, setSidebarOpen] = useSessionStorageUtility("sidebar-open", false)
-  const onPress = useCallback(
-    (tasklistId: Key) => {
-      router.push({ path: `/tasklist/${tasklistId}` })
-      const isBreakpointMd = screenSize.width <= 864
-      if (isBreakpointMd) setSidebarOpen(false)
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [screenSize.width]
-  )
-
   return (
     <GridList
       aria-label="Tasklists"
       dragAndDropHooks={dragAndDropHooks}
       items={sortedTasklists}
-      dependencies={[router.params.tasklist_id, screenSize.width]}
-      onAction={onPress}
+      dependencies={[router.params.tasklist_id]}
       className="flex flex-col gap-2"
       renderEmptyState={() =>
         tasklistsQuery.isLoading ? <div className="p-8 text-neutral-500">Loading...</div> : null
@@ -134,7 +117,7 @@ export function TasklistTargetList() {
         return (
           <GridListItem
             id={tasklist.id}
-            // href={`/tasklist/${tasklist.id}`}
+            href={`/tasklist/${tasklist.id}`}
             textValue={tasklist.title}
             className={({ isDropTarget }) =>
               twMerge(
