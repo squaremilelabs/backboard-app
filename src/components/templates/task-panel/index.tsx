@@ -14,6 +14,7 @@ import { TaskSizeSummaryChips } from "@/components/portables/task-size"
 import { useFindManyTask } from "@/database/generated/hooks"
 import { sortItemsByOrder } from "@/lib/utils-common"
 import { iconBox, interactive } from "@/styles/class-names"
+import { ConfirmationButton } from "@/components/primitives/confirmation-button"
 
 export function TaskPanel({
   headerContent,
@@ -116,7 +117,7 @@ export function TaskPanel({
             )}
           </div>
         ) : (
-          <div className="flex items-center p-16 pb-8">
+          <div className="flex items-center p-16 pb-4">
             <TaskCreate list={list} defaultTaskValues={defaultTaskValues} />
             {showAutoSortButton && (
               <div className="px-4">
@@ -125,18 +126,23 @@ export function TaskPanel({
                     <Loader />
                   </div>
                 ) : (
-                  <Button
-                    className={twMerge(
-                      iconBox(),
-                      interactive(),
-                      "-scale-x-100 text-neutral-400",
-                      "opacity-100 starting:opacity-0",
-                      "transition-opacity"
-                    )}
-                    onPress={handleAutoSort}
+                  <ConfirmationButton
+                    onConfirm={handleAutoSort}
+                    content="Tasks will be sorted by status and size and you'll lose the current priority order."
+                    confirmButtonText="Sort tasks"
                   >
-                    <ArrowDownNarrowWideIcon />
-                  </Button>
+                    <Button
+                      className={twMerge(
+                        iconBox(),
+                        interactive(),
+                        "text-neutral-400",
+                        "opacity-100 starting:opacity-0",
+                        "transition-opacity"
+                      )}
+                    >
+                      <ArrowDownNarrowWideIcon />
+                    </Button>
+                  </ConfirmationButton>
                 )}
               </div>
             )}

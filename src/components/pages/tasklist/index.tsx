@@ -1,89 +1,77 @@
 "use client"
 import { Button, Disclosure, DisclosurePanel, Heading } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
-import { ChevronLeft } from "lucide-react"
+import { ChevronDownIcon } from "lucide-react"
 import { TasklistTimeslotPanel } from "./tasklist-timeslot-panel"
 import { TasklistBacklogPanel } from "./tasklist-backlog-panel"
 import TasklistCalendarGrid from "./tasklist-calendar-grid"
-import { TasklistHeader } from "./tasklist-header"
+import { TasklistTitle } from "./tasklist-title"
+import { TasklistBacklogTarget } from "./tasklist-backlog-target"
+import TasklistContent from "./tasklist-content"
 import { useRouterUtility } from "@/lib/router-utility"
-import { WeekNavigator } from "@/components/portables/week-navigator"
 import { useLocalStorageUtility } from "@/lib/storage-utility"
-import { iconBox, interactive } from "@/styles/class-names"
-import { TaskSizeSummaryText } from "@/components/portables/task-size"
 import { useTimeslotsQuery } from "@/lib/query-timeslots"
-import { useWeekState } from "@/lib/week-state"
+import { iconBox, interactive } from "@/styles/class-names"
+import { WeekNavigator } from "@/components/portables/week-navigator"
 
 export function TasklistPage() {
   const router = useRouterUtility()
   const tasklistId = router.params.tasklist_id
   const timeslotId = router.query.timeslot
-  const [calendarOpen, setCalendarOpen] = useLocalStorageUtility("tasklist-calendar-open", false)
+  const [isExpanded, setIsExpanded] = useLocalStorageUtility("tasklist-calendar-open", false)
 
-  const { isPastWeek } = useWeekState()
   const { getTasklistTimeslots } = useTimeslotsQuery()
   const tasks = getTasklistTimeslots(tasklistId ?? "")?.flatMap((timeslot) => timeslot.tasks)
 
   return (
     <div
       className={twMerge(
-        "flex w-sm max-w-full flex-col p-8 md:p-16",
-        calendarOpen ? "gap-24" : "gap-16"
+        "flex max-h-full w-sm max-w-full flex-col p-8 md:p-16",
+        isExpanded ? "gap-24" : "gap-16"
       )}
     >
-      <TasklistHeader tasklistId={tasklistId} />
-      {/* <div className="h-1 bg-neutral-200" /> */}
       <Disclosure
-        isExpanded={calendarOpen}
-        onExpandedChange={setCalendarOpen}
-        className="flex max-w-full flex-col data-expanded:gap-8"
+        isExpanded={isExpanded}
+        onExpandedChange={setIsExpanded}
+        className="@container/tasklist-page-disclosure flex max-w-full flex-col data-expanded:gap-8"
       >
-        <Heading
-          className={twMerge("flex items-center justify-between gap-8", calendarOpen ? "" : "")}
-        >
-          {calendarOpen && <WeekNavigator className="rounded-md border-none bg-transparent p-0" />}
+        <Heading className={twMerge("flex items-center gap-8")}>
+          <TasklistTitle tasklistId={tasklistId} />
           <Button
             slot="trigger"
             className={twMerge(
               interactive(),
-              "flex items-center gap-4 transition-transform",
-              calendarOpen ? "" : "grow"
+              iconBox({ size: "large" }),
+              isExpanded ? "rotate-0" : "rotate-90",
+              "transition-transform"
             )}
           >
-            <div
-              className={twMerge(
-                calendarOpen ? "text-sm text-neutral-500" : "px-8 font-medium text-neutral-500"
-              )}
-            >
-              {calendarOpen ? (
-                <TaskSizeSummaryText tasks={tasks ?? []} useOverdueColor={isPastWeek} />
-              ) : (
-                "Show calendar"
-              )}
-            </div>
-            {!calendarOpen && <div className="h-1 grow bg-neutral-200" />}
-            <div
-              className={iconBox({
-                className: [
-                  "transition-transform",
-                  calendarOpen ? "-rotate-90 text-neutral-500" : "rotate-0 text-neutral-400",
-                ],
-              })}
-            >
-              <ChevronLeft />
-            </div>
+            <ChevronDownIcon />
           </Button>
         </Heading>
-        <DisclosurePanel className="max-w-full overflow-auto data-expanded:pb-4">
-          <TasklistCalendarGrid tasklistId={tasklistId} />
+        <DisclosurePanel className="flex flex-col gap-24">
+          <TasklistContent tasklistId={tasklistId} />
+          <div className="flex flex-col gap-8">
+            <div className="flex flex-wrap items-center justify-between gap-8">
+              <WeekNavigator
+                className={twMerge("py-2", !timeslotId ? "opacity-60 hover:opacity-100" : "")}
+                summaryTasks={tasks}
+              />
+              <TasklistBacklogTarget tasklistId={tasklistId} />
+            </div>
+            <div className="max-w-full overflow-auto p-2">
+              <TasklistCalendarGrid tasklistId={tasklistId} />
+            </div>
+          </div>
         </DisclosurePanel>
       </Disclosure>
-      {/* <div className="h-1 bg-neutral-200" /> */}
-      {timeslotId ? (
-        <TasklistTimeslotPanel timeslotId={timeslotId} />
-      ) : (
-        <TasklistBacklogPanel tasklistId={tasklistId} />
-      )}
+      <div className="grow overflow-auto">
+        {timeslotId ? (
+          <TasklistTimeslotPanel timeslotId={timeslotId} />
+        ) : (
+          <TasklistBacklogPanel tasklistId={tasklistId} />
+        )}
+      </div>
     </div>
   )
 }

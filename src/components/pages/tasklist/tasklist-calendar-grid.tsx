@@ -104,7 +104,6 @@ function TimeblockCell({
   tasklistId: string | undefined
 }) {
   const router = useRouterUtility()
-  const isBacklogActive = !router.query.timeslot
   const isActive = !!router.query.timeslot && router.query.timeslot === timeslot?.id
   const temporalStatus = getTemporalStatus({
     date,
@@ -202,7 +201,7 @@ function TimeblockCell({
         "group/timeblock-cell grid",
         "rounded-md border border-neutral-200",
         "cursor-pointer hover:scale-105",
-        isBacklogActive ? "opacity-100" : isActive ? "opacity-100" : "opacity-60",
+        isActive ? "opacity-100" : "opacity-60 hover:opacity-100",
         [
           "has-[button[data-pressed]]:rounded-full",
           "has-[button[data-pressed]]:outline-1",
