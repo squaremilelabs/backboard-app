@@ -1,13 +1,15 @@
 import { InboxIcon } from "lucide-react"
-import { Link } from "react-aria-components"
+import { Button } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
 import { isTextDropItem, useDrop } from "react-aria"
-import { useRef } from "react"
+import { useCallback, useRef } from "react"
 import { Task } from "@zenstackhq/runtime/models"
 import { iconBox, interactive } from "@/styles/class-names"
 import { useFindManyTask, useUpdateManyTask } from "@/database/generated/hooks"
 import { TaskSizeSummaryChips } from "@/components/portables/task-size"
 import { useRouterUtility } from "@/lib/router-utility"
+import useScreenSize from "@/lib/screen-size"
+import { useSessionStorageUtility } from "@/lib/storage-utility"
 
 export function TriageTarget() {
   const router = useRouterUtility()
@@ -40,13 +42,25 @@ export function TriageTarget() {
     })
   }
 
+  const screenSize = useScreenSize()
+  const [_, setSidebarOpen] = useSessionStorageUtility("sidebar-open", false)
+  const onPress = useCallback(
+    () => {
+      router.push({ path: `/triage` })
+      const isBreakpointMd = screenSize.width <= 864
+      if (isBreakpointMd) setSidebarOpen(false)
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [screenSize.width]
+  )
+
   return (
-    <div ref={ref} {...dropProps}>
-      <Link
-        href="/triage"
+    <div ref={ref} className="w-full" {...dropProps}>
+      <Button
+        onPress={onPress}
         className={twMerge(
           interactive(),
-          "flex items-center px-4 py-6",
+          "flex w-full items-center px-4 py-6",
           "rounded-md border border-transparent",
           "-outline-offset-2",
           isDropTarget ? "outline" : "",
@@ -66,7 +80,7 @@ export function TriageTarget() {
           tasks={triageTasksQuery.data ?? []}
           consistentWeightVariant="medium"
         />
-      </Link>
+      </Button>
     </div>
   )
 }
