@@ -51,7 +51,7 @@ export default function TasklistCalendarGrid({ tasklistId }: { tasklistId: strin
                 "rounded-md border border-transparent px-4 py-1",
                 "font-medium text-neutral-600",
                 temporalStatus === "current"
-                  ? "text-gold-500 bg-canvas border-neutral-200 font-semibold"
+                  ? "bg-canvas border-neutral-200 font-semibold text-neutral-950"
                   : "",
                 temporalStatus === "past" ? "bg-neutral-300" : "",
                 temporalStatus === "future" ? "bg-neutral-200" : ""

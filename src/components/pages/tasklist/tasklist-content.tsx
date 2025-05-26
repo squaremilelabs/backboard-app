@@ -25,10 +25,13 @@ export default function TasklistContent({ tasklistId }: { tasklistId: string | u
         <EditableText
           initialValue={tasklist?.content ?? ""}
           onSave={handleContentUpdate}
-          className={({}) => "grow text-neutral-600"}
+          className={({ isButton }) => [
+            "grow text-neutral-700",
+            isButton && !tasklist?.content ? "text-neutral-400" : "",
+          ]}
           allowEmpty
           isMultiline
-          placeholder="Description"
+          placeholder="Add a description..."
         />
       </div>
       <div className="flex items-center gap-4 px-8">
